@@ -30,7 +30,15 @@ Un arreglo urgente sale de `main` en `hotfix/*`, sube la versión de parche y vu
 | `pruebas` | CI, en cada PR y en cada push a `develop` y `main` | `scripts/probar_preflight.sh` y `scripts/preflight.sh` sin fallas. Ninguna planilla, export ni respaldo fuera de `tests/datos_inventados/`, solo códigos de estudiante que empiezan con 99 dentro de esa carpeta, ningún `.env` versionado, ningún secreto con valor y, en un PR, `MEMORIA.md` actualizado. Los tipos, las pruebas y la compilación se suman a este job cuando exista el código |
 | `flujo` | CI, en cada PR a `main` | Que el origen sea `develop` o `hotfix/*` |
 | `pre-commit` | En cada clon, activado con `git config core.hooksPath scripts/hooks` | La misma revisión sobre lo preparado, más `MEMORIA.md` dentro del commit |
-| SonarQube Cloud y Snyk | CI, como checks informativos | Se agregan cuando Jefferson cree los proyectos y guarde los tokens como secretos del repositorio |
+| Hook `Stop` de Claude Code | `.claude/settings.json`, al final de cada turno de Claude | Si quedan cambios sin commit y `MEMORIA.md` no está entre ellos, Claude sigue trabajando hasta registrarlos (`scripts/recordar_memoria.sh`) |
+| `secretos` | CI, en cada PR y push | gitleaks 8.30.1 sobre todo el historial, fijado por versión y suma SHA-256. Informativo hasta confirmar que no da falsos positivos |
+| SonarQube Cloud | Análisis automático, configurado en `.sonarcloud.properties` | Calidad y seguridad del código nuevo con la puerta «Sonar way» |
+| Snyk | Integración de Snyk con GitHub, con la política `.snyk` | Vulnerabilidades de las dependencias de npm, con excepciones que vencen |
+| Dependabot | `.github/dependabot.yml`, cada lunes | PR a `develop` con la versión nueva de cada acción de GitHub y su SHA |
+
+## SonarQube Cloud, Snyk y secretos
+
+Los tres controles siguen el modelo de IQBF y se refuerzan con gitleaks y Dependabot. El detalle, con los límites de los planes gratuitos y los pasos que Jefferson hace en cada consola, está en `docs/devops.md` de ABET-ULIMA-Back. Lo propio de este repositorio es que Snyk revisa las dependencias de npm cuando exista `package.json`, que SonarQube Cloud leerá la cobertura lcov de Vitest cuando el análisis pase a la CI, y que ninguna variable `VITE_*` puede llevar un secreto, porque todo lo que se compila llega al navegador.
 
 ## Memoria del trabajo
 
