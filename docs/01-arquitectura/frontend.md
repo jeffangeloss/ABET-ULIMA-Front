@@ -1,0 +1,129 @@
+# Frontend
+
+> **Estado 2026-10-28.** Todavía no hay código en `src/`. Este documento fija el inventario de pantallas del producto mínimo viable (MVP) y la forma del código que se escribe en la fase 4 del plan. Las rutas de archivo marcadas «(propuesta)» pueden cambiar en la spec, y este documento se corrige en el mismo PR.
+
+El Front es React con Vite, TypeScript y Tailwind, la misma pila de IQBF-ULIMA_Front. No toca datos personales ni la base, así que su elección no cambia el riesgo del sistema. Su regla central viene de `AGENTS.md`, regla 3. Cada pantalla nombra las historias que la justifican, y lo que ninguna historia pide no se muestra.
+
+Los textos entre comillas de esta página salen de los `.feature` de `specs/001-mvp-carga-r17/aceptacion/` del Back cuando un escenario los fija, y en ese caso se copian sin cambios. Los que ningún escenario fija salen de la spec y llevan la marca «(propuesta)».
+
+## 1. Estructura de `src/` (propuesta)
+
+```
+src/
+  main.tsx                 arranque de React
+  App.tsx                  sesión actual y pantalla visible
+  servicios/api.ts         la única puerta HTTP
+  servicios/tipos.ts       tipos de las respuestas del contrato
+  pantallas/
+    Ingreso.tsx            P1
+    MisSecciones.tsx       P2
+    SubirExport.tsx        P3
+    ResultadoCarga.tsx     P4
+    Cargas.tsx             P5 (corte 2)
+  componentes/
+    Mensaje.tsx            error, aviso o confirmación con el texto de la API
+    TablaRechazos.tsx      fila, PI, motivo y efecto
+    RotuloPiloto.tsx       «Solo exports con códigos inventados (99000000 a 99999999)»
+```
+
+## 2. `servicios/api.ts`, la única puerta
+
+Ningún componente llama a `fetch` directamente. `api.ts` expone una función por ruta del contrato (`iniciarSesion`, `sesionActual`, `cerrarSesion`, `listarSecciones`, `subirExport`, `obtenerCarga` y `urlR17`) y convierte cada error en un objeto con el código HTTP y el `detail` de la API. Los tipos de esas respuestas viven en `servicios/tipos.ts`.
+
+- La sesión viaja en la cookie `abet_sesion`, que el navegador manda solo porque el Front y la API comparten origen (ADR-004). `api.ts` nunca lee ni guarda un token, y nada de la sesión va a `localStorage`.
+- Todas las rutas son relativas (`/api/...`). En Vercel, el `vercel.json` del Front las reescribe hacia el Back, y en local las reenvía `server.proxy` de Vite hacia la API en la Mac.
+- La descarga del R-17 es un enlace normal a `/api/cargas/{carga_id}/r17.xlsx`, para que el navegador use el nombre de archivo que fija la API.
+- Una respuesta que no es JSON (por ejemplo, el 413 de Vercel ante un cuerpo de más de 4,5 MB) se convierte en un mensaje fijo y nunca muestra el cuerpo crudo.
+
+## 3. `App.tsx` y el estado
+
+`App.tsx` pide `GET /api/sesion` al arrancar. Sin sesión muestra P1, y con sesión muestra P2. El resto del estado vive en la pantalla que lo usa, sin un almacén global, porque el MVP tiene cinco pantallas y un solo flujo. Un 401 de cualquier ruta devuelve a P1 con el mensaje «La sesión venció. Ingrese otra vez.» (propuesta).
+
+## 4. Las pantallas
+
+| Pantalla | Archivo (propuesta) | Historias | Corte |
+|---|---|---|---|
+| P1 Ingreso | `pantallas/Ingreso.tsx` | US-05 (y US-20 en el corte 2) | 1 |
+| P2 Mis secciones | `pantallas/MisSecciones.tsx` | US-06 | 1 |
+| P3 Subir export | `pantallas/SubirExport.tsx` | US-07, US-08, US-09, US-11, US-12, US-13 (y US-18 y US-21 en el corte 2) | 1 |
+| P4 Resultado de la carga | `pantallas/ResultadoCarga.tsx` | US-07, US-10, US-12, US-13, US-14, US-15, US-16 | 1 |
+| P5 Cargas | `pantallas/Cargas.tsx` | US-18, US-19 | 2 |
+
+Las historias US-01 a US-04 (base, rol, periodo y usuarios) no tienen pantalla, porque en el MVP las ejecuta el administrador técnico con scripts. US-17 (despliegue) tampoco tiene pantalla propia, y su prueba de humo recorre P1, P2, P3 y P4 en el Front desplegado.
+
+### P1 Ingreso
+
+Justifican la pantalla US-05 (iniciar sesión con contraseña asignada) y, en el corte 2, US-20 (código de acceso en el correo institucional).
+
+Muestra el campo de correo, el campo de contraseña, el botón «Ingresar» y el rótulo del piloto. Ante un 401 muestra «Correo o contraseña incorrectos.», igual para un correo desconocido, un usuario inactivo y una contraseña errada. Ante el límite de intentos muestra el `detail` del 429, «Demasiados intentos. Espere 15 minutos.». En el corte 2 suma el pedido del código, que responde siempre «Si el correo está autorizado, recibirá un código en unos minutos.», y su verificación, con los mensajes «El código venció. Pida uno nuevo.», «El código ya se usó. Pida uno nuevo.» y «El código ya no es válido. Pida uno nuevo.».
+
+No muestra registro de cuentas, recuperación de contraseña, inicio con Microsoft, recordar el usuario ni ninguna pista de si el correo está autorizado.
+
+### P2 Mis secciones
+
+Justifica la pantalla US-06 (ver solo las secciones propias del periodo). El profesor ve sus secciones y el coordinador ve todas las de la carrera.
+
+Muestra una fila por sección del periodo vigente, con la forma «450002 Principios de Ingeniería Sostenible, sección 410, 2026-2» (propuesta), los PI del plan («5.1, 5.2, 5.3») y el estado de su carga («Sin carga» o «Publicada, 11 de 11 filas aceptadas»), que la pantalla arma con el campo `estado` y los conteos de la respuesta. Para el profesor, cada fila ofrece «Subir export», que abre P3, y, si tiene una carga publicada, el enlace a su resultado en P4. Una sección sin plan de medición muestra «La carrera aún no registra el plan de medición de esta sección» y deja «Subir export» desactivado.
+
+En el corte 1 el coordinador no sube exports, así que su P2 no muestra «Subir export» y ofrece solo el enlace a P4 y la descarga del R-17 de cada carga publicada (propuesta).
+
+No muestra secciones de otros docentes al profesor, periodos anteriores, nombres ni cantidad de estudiantes, porcentajes del R-17, filtros, búsquedas ni opciones de administración.
+
+### P3 Subir export
+
+Justifican la pantalla US-07 (subir y cargar en una transacción), US-08 (códigos que no son inventados), US-09 (export ya cargado), US-11 (archivo ilegible), US-12 (estructura) y US-13 (otra sección o periodo), y en el corte 2 US-18 (reemplazo) y US-21 (confirmar la sección).
+
+Muestra la sección elegida en P2, fija y sin selector, el campo de archivo que acepta .xlsx de hasta 1 MB, el botón «Subir» y el rótulo «Solo exports con códigos inventados (99000000 a 99999999)». Mientras la API responde, el botón queda desactivado para que no salgan dos subidas. Según la respuesta, la pantalla hace una de tres cosas.
+
+| Respuesta | Qué hace P3 |
+|---|---|
+| 201 (carga PUBLICADA o RECHAZADA) | Pasa a P4 con la constancia |
+| 200 (el mismo archivo ya está publicado en esta sección) | Muestra «Este archivo ya se cargó el <fecha y hora de Lima> y está publicado en la sección 410. No se cargó de nuevo.» (propuesta) con el enlace a P4 de esa carga |
+| 403, 409, 413 o 422 | Se queda en P3 con el `detail` de la API, por ejemplo «La sección no está a su cargo.», «El piloto solo admite códigos inventados, de 99000000 a 99999999. Revise la fila 4. No se guardó nada.» o «Este archivo ya está publicado en otra sección. No se cargó.» |
+
+En el corte 1, un archivo que no declara su sección ni en la hoja ni en el nombre recibe 422 y P3 muestra su `detail`, «El archivo no indica su sección. Sube el export de Blackboard sin cambiar el nombre de su hoja.». En el corte 2 (US-21), ante el 422 «El archivo no indica su sección. ¿Confirma que es de la sección 410 de 450002 en 2026-2?», P3 pide la confirmación y vuelve a enviar el archivo con `confirmar_seccion=true`.
+
+En el corte 2 (US-18), ante el 409 de una sección con carga publicada, P3 pregunta «La sección 410 ya tiene una carga publicada. ¿Desea reemplazarla?» y, si la respuesta es sí, envía el archivo en modo reemplazo. Si el reemplazo falla porque el archivo no se abre, muestra «No se pudo abrir el archivo. La carga publicada no cambió.».
+
+No muestra una vista previa del contenido del archivo, nombres de estudiantes, el código que rechaza la guardia, la ruta local del archivo ni un selector para cambiar a otra sección.
+
+### P4 Resultado de la carga
+
+Justifican la pantalla US-07 (la carga escrita), US-10 (filas inválidas y columnas dudosas), US-12 (rechazo por estructura), US-13 (rechazo por otra sección o periodo), US-14 (descartar nombres y valores leídos), US-15 (descargar el R-17) y US-16 (constancia de la carga).
+
+Muestra el estado de la carga y sus conteos con la forma «11 filas leídas, 10 aceptadas y 1 rechazada», o «11 filas leídas, 11 aceptadas y 0 rechazadas» cuando no hay rechazos. Si hay rechazos, la tabla de rechazos dice la fila, el PI, el motivo en palabras y su efecto, como «Fila 3, PI 5.2, nivel fuera de la escala 1 a 4. La fila completa queda fuera, también de 5.1 y 5.3.». Los avisos van aparte, como «PI 5.3. La columna declara 20 puntos y sus notas están entre 1 y 4. Se cargó igual.» (propuesta). Si la carga queda RECHAZADA por estructura o por sección, muestra el motivo, como «El archivo corresponde a la sección 411 y usted eligió la 410. No se publicó.». La constancia muestra el nombre del archivo sin ruta, la hoja, la huella SHA-256, el conjunto de reglas con la marca PROVISIONAL, el correo de quien sube el archivo y las horas de inicio y fin. El botón «Descargar R-17» aparece activo solo si la carga está PUBLICADA, y si no lo está la pantalla dice «No hay una carga publicada para esta sección» (propuesta).
+
+No muestra el valor leído de ninguna celda, nombres de estudiantes, Last Access, Availability, columnas de actividades ni los porcentajes del R-17, que viven solo en el archivo descargado.
+
+### P5 Cargas (corte 2)
+
+Justifican la pantalla US-18 (reemplazar la carga publicada de una sección) y US-19 (ver las cargas al alcance del usuario).
+
+Muestra las cargas de las secciones al alcance del usuario, de la más reciente a la más antigua, con la sección, la fecha, el estado, los conteos de filas, el nombre del archivo, los primeros 12 caracteres de la huella, el correo de quien la sube, el enlace a su constancia en P4 y la descarga del R-17 de la publicada. «Reemplazar carga» abre P3 en modo reemplazo, para el profesor en su sección y para el coordinador en cualquiera, con la regla de plazo que fije D-11.
+
+No muestra cargas fuera del alcance del usuario, ni opciones para borrar o editar una carga, porque la base no admite DELETE para la aplicación y una carga solo cambia por reemplazo.
+
+## 5. Piezas compartidas
+
+- `Mensaje.tsx` muestra el texto que devuelve la API sin reescribirlo, para que la pantalla y las pruebas de aceptación digan lo mismo.
+- `TablaRechazos.tsx` recibe la lista de rechazos de la constancia y no tiene columna para un valor leído.
+- `RotuloPiloto.tsx` muestra «Solo exports con códigos inventados (99000000 a 99999999)» en todas las pantallas mientras la guardia de datos inventados esté encendida, y es el mismo rótulo que P3 muestra junto al campo de archivo.
+
+## 6. Pruebas
+
+Vitest con Testing Library cubre cada pantalla en lo que debe mostrar y en lo que no debe mostrar, por ejemplo que P4 no tenga ningún texto que coincida con un nombre del export de prueba. La prueba de humo (recorrido mínimo de punta a punta que confirma que el sistema desplegado responde) con Playwright para Python (ADR-006) recorre P1, P2, P3 y P4 con el export que trae el 5 en la fila 3, y espera que P4 muestre «11 filas leídas, 10 aceptadas y 1 rechazada».
+
+## 7. Lo que todavía NO está
+
+1. **Código.** No existen `package.json`, `src/` ni `vercel.json`.
+2. **Diseño visual.** No hay prototipo en Figma ni guía de estilo, y las pantallas parten de componentes simples de Tailwind.
+3. **P5, el modo reemplazo de P3 y US-21.** Pertenecen al corte 2.
+4. **Pruebas de accesibilidad.** Ninguna historia las pide todavía, y conviene sumarlas antes del primer profesor externo.
+5. **Los textos marcados «(propuesta)».** Ningún `.feature` los fija todavía, y se confirman en las specs vivas `acceso`, `periodo`, `carga-export` y `r17`.
+6. **Lectura de Username en el navegador antes de enviar.** La crítica de arquitectura la propone y ninguna historia del MVP la pide, así que no está.
+
+## Referencias
+
+- [`03-api/contrato.md`](../03-api/contrato.md), las rutas que consume cada pantalla.
+- [`00-vision/adr/ADR-004-sesion-propia-mismo-origen.md`](../00-vision/adr/ADR-004-sesion-propia-mismo-origen.md), la sesión y el mismo origen.
+- La spec del MVP en `specs/001-mvp-carga-r17/spec.md` del Back y sus escenarios en `specs/001-mvp-carga-r17/aceptacion/`.

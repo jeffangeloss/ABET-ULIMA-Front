@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-10-28
-- **Rama de trabajo**: `chore/seguridad-y-memoria`, en PR a `develop`
+- **Rama de trabajo**: `docs/plan-mvp`, en PR a `develop` (después de `chore/seguridad-y-memoria`, PR #1)
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: hook de memoria para Claude Code, gitleaks, Dependabot y la configuración de SonarQube Cloud y Snyk
-- **En curso**: plan del MVP (subir el export de Blackboard y descargar el R-17), en revisión por Jefferson
-- **Siguiente paso**: aprobar el plan del MVP; después, inventario de pantallas justificado por las historias y documentación del sistema en `docs/`
+- **Último cambio**: documentación del sistema para el MVP en `docs/` (visión, ADR, pantallas, contrato de la API, entornos y flujo de specs)
+- **En curso**: aprobación del plan del MVP por Jefferson (spec `specs/001-mvp-carga-r17/` del Back y esta documentación)
+- **Siguiente paso**: con la spec aprobada, fase 1 (contrato) y fase 4 (pantallas P1 a P4 en `feat/001-mvp-carga-r17`)
 - **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
 
@@ -36,6 +36,17 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-28 16:40 (Lima) · docs/plan-mvp · Documentación del sistema para el MVP
+
+- **Quién**: Claude Code, con flujos de agentes. Cinco redactores escribieron la spec, los `.feature`, el plan y estos documentos con el esquema de IQBF. Cuatro revisores independientes (constructor, consistencia, hechos contra la base y estilo) hallaron 99 problemas, y dos vueltas de corrección los resolvieron, cada una cerrada por un verificador.
+- **Qué cambió**: `docs/README.md`, `docs/00-vision/panorama.md`, `docs/00-vision/adr/` (ADR-001 a ADR-006, en estado Propuesta), `docs/01-arquitectura/frontend.md` (pantallas P1 a P5, cada una con sus historias), `docs/03-api/contrato.md`, `docs/05-operacion/entornos-y-despliegue.md` y `docs/specs/` (flujo de trabajo, índice de features y de la API). `docs/devops.md` deja de nombrar `VITE_API_BASE_URL`, porque el Front llama a la API por la ruta relativa `/api` que reescribe `vercel.json`.
+- **Por qué**: pedido de Jefferson del 28/10/2026 («Dime el plan que implementaremos») con el esquema de specs de IQBF y las historias auditadas.
+- **Lo que debe hacer, cómo se probó**: el verificador final confirma que los IDs US-01 a US-21, los nombres de las specs vivas y sus prefijos BR, las rutas, los mensajes y la forma de las respuestas coinciden con los `.feature` del Back. `bash scripts/preflight.sh --staged` pasa sin fallas.
+- **Lo que no debe hacer, cómo se probó**: ningún ejemplo usa un dominio real; los correos de prueba son `@example.invalid` (barrido con grep del verificador) y no hay credenciales.
+- **Correcciones**: la carpeta de la spec se llamaba `001-export-a-r17` y los prefijos de reglas no coincidían con el Back; un correo de ejemplo usaba el dominio de la universidad; el export sin sección declarada tenía tres comportamientos; todo quedó alineado con las resoluciones de la revisión.
+- **Cómo se reporta**: PR de `docs/plan-mvp` a `develop`; su merge es la aprobación del plan.
+- **Pendiente y siguiente paso**: decisiones D-01 a D-13 de la carrera y J-01 a J-09 de Jefferson, listadas en la spec del Back.
 
 ### 2026-10-28 14:55 (Lima) · chore/seguridad-y-memoria · Descarga de gitleaks solo por HTTPS
 

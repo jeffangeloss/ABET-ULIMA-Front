@@ -52,4 +52,4 @@ Los tres controles siguen el modelo de IQBF y se refuerzan con gitleaks y Depend
 | Pruebas | `develop` | API de vista previa del Back, con la rama `develop` de Neon |
 | Local | cualquier rama | API local en la Mac |
 
-La dirección de la API llega en `VITE_API_BASE_URL` con un valor propio para Producción y otro para Vista previa en Vercel.
+El Front llama a la API siempre por la ruta relativa `/api`. En Vercel la reescribe `vercel.json` hacia el Back, y en local la reenvía el proxy de Vite (`server.proxy`) hacia la API en la Mac (ADR-004). Ninguna variable `VITE_*` lleva la URL de la API.
