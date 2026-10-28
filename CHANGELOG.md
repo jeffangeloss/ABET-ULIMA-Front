@@ -10,6 +10,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 - CI con la revisión previa `scripts/preflight.sh` (datos inventados, secretos y memoria) y `release.yml`, que crea el tag y el Release desde este archivo.
 - `MEMORIA.md` como memoria de trabajo, `AGENTS.md` con las reglas para personas y agentes, y el hook `pre-commit`.
 - Hook `Stop` de Claude Code (`.claude/settings.json`) que no deja terminar un turno con cambios sin registrar en `MEMORIA.md`.
+- Documentación del sistema para el MVP «del export de Blackboard al R-17 desde la base»: visión, ADR-001 a ADR-006, pantallas, contrato de la API, entornos y flujo de specs, pendiente de aprobación.
 
 ### Seguridad
 
