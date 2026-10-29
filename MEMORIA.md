@@ -15,7 +15,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-10-29
 - **Rama de trabajo**: `docs/002-capstone` (spec 002, apilada sobre `feat/001-mvp-carga-r17`, solo en local); el corte 1 sigue en `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: D-14 decidida (2026-10-29), con los tres cursos Capstone nombrados en frontend.md y ADR-007 (en local), pendiente de aprobación
+- **Último cambio**: contrato 11.5 y ADR-007 ajustados con la estructura de ocho R-17 reales de PIA (en local), pendiente de aprobación
 - **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 y los escenarios del profesor con varias secciones)
 - **Siguiente paso**: Jefferson aprueba la spec 002 del Back; hasta entonces las secciones de Capstone de estos documentos son propuesta, salvo D-14. El corte 1 sigue como antes
 - **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
@@ -106,6 +106,17 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Correcciones: P3 oculta el control nativo «Choose File» y ofrece el botón propio «Elegir archivo», con dos pruebas. El 403 único frente al 404 queda como propuesta en `contrato.md` (tabla 3.2, rutas 5 a 7 y sección 9.2), y el Front no maneja 404 mientras la API no lo emita. El contrato suma como propuesta los textos que la API emite y no estaban registrados.
 - Cómo se reporta: esta entrada, `CHANGELOG.md` y el registro de tareas en `specs/001-mvp-carga-r17/tasks.md` del Back. Sin PR.
 - Pendiente y siguiente paso: Hallazgos bajos abiertos tras la reverificación. (1) El candado de la cuenta se mantiene durante la verificación Argon2id y `now()` es la hora de inicio de la transacción, así que un fallo que espera detrás de un ingreso correcto puede quedar fechado antes y no contar para el límite; se corrige con `clock_timestamp()`. (2) Sigue abierta la decisión de Jefferson entre 403 y 404 para una sección o una carga inexistente; con 404, P3 y P4 deben ofrecer volver a P2. (3) La prueba de humo no corre en la CI y exige una API recién arrancada, y la ADR-006 todavía habla de Playwright para Python aunque se usó el de Node. La condición de la API recién arrancada para la prueba de humo queda documentada en su spec. Siguen pendientes las pruebas de aceptación ejecutables (T050 a T053), la auditoría de la fase 6 (T049 queda abierta) y el despliegue, que espera el proyecto de Neon, el de Vercel y el permiso de Jefferson. El orden de foco con teclado y el contraste no se revisaron en el navegador.
+
+### 2026-10-29 09:15 (Lima) · docs/002-capstone · Spec 002 ajustada con la estructura de R-17 reales de PIA
+
+- **Quién**: Jefferson adjunta el 2026-10-29 ocho R-17 reales de Capstone con «aquí hay cursos capstone como PIA». Claude Code coordina el flujo. Un agente en Sonnet extrae la estructura sin copiar datos personales, otro en Sonnet revisa la privacidad, un agente de ajuste edita los documentos, otro en Sonnet revisa el resultado, y esta entrada y el commit los hace Claude Code. Se verificó que el diff no trae nombres ni códigos reales y que `preflight.sh` no falla.
+- **Qué cambió**: `docs/03-api/contrato.md` (apartado 11.5) y `docs/00-vision/adr/ADR-007-plantilla-proyectos-segunda-subida.md` reflejan la hoja «Cursos Capstone» con su cabecera, la tabla de 224 filas y los valores provisionales de D-16, D-17, D-25 y D-29.
+- **Por qué**: la spec 002 del Back se ajusta con la evidencia de los R-17 reales de PIA, y el Front debe decir lo mismo.
+- **Lo que debe hacer, cómo se probó**: `bash scripts/preflight.sh` en este worktree termina sin fallas.
+- **Lo que no debe hacer, cómo se probó**: ningún dato personal entra al repositorio, según la revisión de privacidad del diff, y las copias temporales de los R-17 se borraron.
+- **Correcciones**: ninguna en esta entrada.
+- **Cómo se reporta**: este registro y el PR de `docs/002-capstone`.
+- **Pendiente y siguiente paso**: Jefferson responde D-16, D-17, D-25 y D-29 y aprueba la spec 002 del Back.
 
 ### 2026-10-29 08:47 (Lima) · docs/002-capstone · D-14 decidida, menciones de los cursos Capstone (en local)
 

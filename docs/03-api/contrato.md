@@ -501,11 +501,11 @@ Una sección con export y con subidas solo RECHAZADA sale `PENDIENTE`. Una secci
 
 ### 11.5 `GET /api/cargas/{carga_id}/r17.xlsx`: hoja por tipo de curso (propuesta, spec 002)
 
-La ruta 7 conserva su forma y sus cabeceras, y la API elige la hoja por el tipo de curso. Una sección de carrera sigue saliendo con «Cursos de Carrera». Una sección Capstone sale con «Cursos Capstone» y la hoja «Constancia», con una fila por medición y los seis datos de proyecto de la subida publicada, sin fórmulas. Los valores y el mapa de celdas de la hoja son provisionales hasta cerrar D-25.
+La ruta 7 conserva su forma y sus cabeceras, y la API elige la hoja por el tipo de curso. Una sección de carrera sigue saliendo con «Cursos de Carrera». Una sección Capstone sale con «Cursos Capstone» y la hoja «Constancia», con una fila por medición y los seis datos de proyecto de la subida publicada, sin fórmulas, incluidos los conteos y la fecha. El campo Profesor de la cabecera y la columna PROFESOR salen vacíos, y la constancia muestra el correo de quien sube (valor provisional de D-17). Los valores y el mapa de celdas de la hoja son provisionales hasta cerrar D-25, porque los ocho R-17 reales de Capstone que adjunta Jefferson usan el formato de siempre y no esa hoja.
 
 - Sin plantilla publicada, o con estudiantes sin fila, responde 200 con una franja bajo el título que dice «SIN DATOS DE PROYECTO» o «SIN DATOS DE PROYECTO PARA 2 DE 11 ESTUDIANTES» (propuesta, D-24). El nombre del archivo suma `_SIN_PROYECTOS` solo cuando no hay plantilla.
 - La hoja «Constancia» suma la huella de la plantilla y la línea «10 de 11 estudiantes con datos de proyecto».
-- Una sección que supera las filas de la hoja responde 422 con «La sección supera las filas de la plantilla del R-17.» (propuesta, spec 002), como en la ruta 7.
+- Una sección que supera las 224 filas de la hoja (de la 49 a la 272, una por medición) responde 422 con «La sección supera las filas de la plantilla del R-17.» (propuesta, spec 002), como en la ruta 7.
 
 ### 11.6 Lo que esta sección no cubre
 
