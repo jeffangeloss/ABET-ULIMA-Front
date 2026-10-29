@@ -2,7 +2,7 @@
 
 > **Estado 2026-10-28.** Ninguna funcionalidad (feature) está implementada. Los nombres y los prefijos son los que fija `specs/README.md` del Back, y las cuatro specs vivas ya tienen sus reglas numeradas (fase 1 de contrato, tareas T011 a T014).
 
-Cada feature es la carpeta de su spec viva en `specs/features/` de ABET-ULIMA-Back. «Pantallas que sirve» nombra las pantallas de [`01-arquitectura/frontend.md`](../01-arquitectura/frontend.md), y la columna «Spec» da la ruta relativa al Back. Todas las historias del producto mínimo viable (minimum viable product, MVP) viven además en `specs/001-mvp-carga-r17/spec.md`, y sus escenarios en `specs/001-mvp-carga-r17/aceptacion/`.
+Cada feature es la carpeta de su spec viva en `specs/features/` de ABET-ULIMA-Back. «Pantallas que sirve» nombra las pantallas de [`01-arquitectura/frontend.md`](../01-arquitectura/frontend.md), y la columna «Spec» da la ruta relativa al Back. Todas las historias del producto mínimo viable (minimum viable product, MVP) viven además en `specs/001-mvp-carga-r17/spec.md`, y sus escenarios en los siete `.feature` de `specs/001-mvp-carga-r17/aceptacion/`. Uno de ellos, `varias_secciones.feature`, prueba las reglas de `acceso` y de `carga-export` con un profesor que dicta tres secciones de dos asignaturas.
 
 | Feature | Reglas | Pantallas que sirve | Estado | Spec |
 | --- | --- | --- | --- | --- |

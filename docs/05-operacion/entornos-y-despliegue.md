@@ -58,7 +58,7 @@ Jefferson pega estas variables en la configuración del proyecto `abet-ulima-bac
 | Variable | Production | Preview | Qué hace |
 |---|---|---|---|
 | `DATABASE_URL` | Cadena con pooler (host con «-pooler») de la rama principal de Neon, usuario `abet_app` | Cadena con pooler de la rama `develop` de Neon, usuario `abet_app` | Conexión de la API, con psycopg 3 y `prepare_threshold=None` |
-| `SESION_SECRETO` | Valor aleatorio propio | Otro valor aleatorio | Clave del código de autenticación de mensajes basado en hash (hash-based message authentication code, HMAC) con que la base guarda el hash de cada token de sesión (propuesta) |
+| `SESION_SECRETO` | Valor aleatorio propio | Otro valor aleatorio | Secreto de la aplicación del que se deriva la clave del código de autenticación de mensajes basado en hash (hash-based message authentication code, HMAC) del correo de cada intento fallido en `acceso.intento_fallido` (regla de negocio BR-ACCESO-05 del Back, propuesta) |
 | `PERIODO_VIGENTE` | `2026-2` | `2026-2` | Periodo que lista P2 y que toma una carga nueva |
 | `CONJUNTO_REGLAS` | `R-2026-BORRADOR` | `R-2026-BORRADOR` | Conjunto de reglas que toma una carga nueva |
 | `GUARDIA_DATOS_INVENTADOS` | `1` | `1` | Rechaza todo export con un código fuera de 99000000 a 99999999 |

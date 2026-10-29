@@ -49,7 +49,7 @@ Los datos de todos los ejemplos son inventados. La sección 410 de la asignatura
 | Dónde | Qué contiene |
 |---|---|
 | `specs/001-mvp-carga-r17/` del Back | Spec, revisión de historias, plan, tareas y, al cerrar, `audit.md` del MVP |
-| `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back | Escenarios de aceptación en Gherkin en español (`base_neon`, `acceso`, `carga`, `r17_constancia`, `despliegue` y `reemplazo_y_cargas`) |
+| `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back | Escenarios de aceptación en Gherkin en español (`base_neon`, `acceso`, `carga`, `r17_constancia`, `despliegue`, `reemplazo_y_cargas` y `varias_secciones`) |
 | `tests/aceptacion/pasos/` del Back | Pasos de pytest-bdd que leen esos `.feature` desde su carpeta, sin copiarlos |
 | `specs/features/<feature>/<feature>.spec.md` del Back | Specs vivas `carga-export`, `r17`, `acceso` y `periodo`, con las reglas `BR-<FEATURE>-NN` |
 | `db/` del Back (hoy `bd/` del repositorio `ABET_ULIMA`) | Migraciones de Flyway, vistas del R-17 y pruebas de la base |
