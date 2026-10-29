@@ -2,13 +2,13 @@
 
 | | |
 |---|---|
-| **Estado** | Propuesta, pendiente de Jefferson (decisión J-03) |
+| **Estado** | Propuesta, pendiente de Jefferson (solo la fusión en `develop`, porque confirma J-03 el 2026-10-28) |
 | **Fecha** | 2026-10-28 |
 | **Ámbito** | `app/sesion.py` y `app/permisos.py` del Back, esquema `acceso` (V1_09), `vercel.json` del Front, `src/servicios/api.ts` del Front |
 
 ## Decisión
 
-El sistema maneja su propia sesión. En la semana 1 el usuario entra con una contraseña que asigna Jefferson por comando (decisión J-03), guardada como hash Argon2id en `acceso.credencial`. En el corte 2 se suma el código de 6 dígitos enviado al correo institucional (US-20), sin cambiar el resto de la capa.
+El sistema maneja su propia sesión. En la semana 1 el usuario entra con una contraseña que asigna Jefferson por comando (decisión J-03), guardada como hash Argon2id en `acceso.credencial`. Jefferson confirma J-03 con la aprobación del plan el 2026-10-28, así que el corte 1 usa la contraseña asignada. En el corte 2 se suma el código de 6 dígitos enviado al correo institucional (US-20), sin cambiar el resto de la capa.
 
 Al iniciar sesión, la API crea un token aleatorio, guarda solo su hash en `acceso.sesion` con su vencimiento y lo entrega en la cookie `abet_sesion`, con HttpOnly, Secure, SameSite=Lax y 12 horas de vida (Max-Age 43200). En cada petición la API lee la cookie, busca la sesión vigente y lee el rol y las secciones del usuario desde la base. El Front nunca ve el token y nunca guarda nada de la sesión en `localStorage`.
 
@@ -22,7 +22,7 @@ Se descarta Neon Auth para el MVP. Sus cookies viven en el dominio de Neon Auth,
 2. `POST /api/sesion` responde 401 con «Correo o contraseña incorrectos.» para un correo desconocido, un usuario inactivo y una contraseña errada.
 3. La base guarda el hash del token y el hash de la contraseña, nunca sus valores.
 4. El rol y las secciones del usuario se leen de la base en cada petición, nunca del cliente.
-5. El límite de intentos de ingreso corre en la API por correo, con 5 intentos fallidos en 15 minutos, y no bloquea a otro correo que entra desde el mismo origen.
+5. El límite de intentos de ingreso corre en la API por correo, con 5 intentos fallidos en 15 minutos contados en `acceso.intento_fallido` exista o no el usuario, y no bloquea a otro correo que entra desde el mismo origen.
 6. El Front llama siempre a rutas relativas `/api/...`, nunca a una URL absoluta del Back.
 
 ## Alternativas consideradas
@@ -77,7 +77,6 @@ pytest tests/unit -k sesion
 
 ## Lo que todavía NO está
 
-1. **La decisión J-03.** El valor recomendado es la contraseña asignada en la semana 1, y Jefferson todavía no lo confirma.
-2. **La prueba de que la reescritura conserva la cookie.** Pide 15 minutos con el primer despliegue.
-3. **Las cifras del límite de intentos.** El valor provisional de `acceso.feature` es 5 intentos fallidos por correo en 15 minutos, con 429 y «Demasiados intentos. Espere 15 minutos.», por confirmar en la spec viva `acceso` (BR-ACCESO).
-4. **Una comprobación de la cabecera `Origin`** en las rutas que escriben, que reforzaría SameSite=Lax y queda como propuesta.
+1. **La prueba de que la reescritura conserva la cookie.** Pide 15 minutos con el primer despliegue.
+2. **Las cifras del límite de intentos.** El valor provisional de `acceso.feature` es 5 intentos fallidos por correo en 15 minutos, con 429 y «Demasiados intentos. Espere 15 minutos.», y la regla BR-ACCESO-05 de la spec viva `acceso` las conserva como propuesta hasta su revisión.
+3. **Una comprobación de la cabecera `Origin`** en las rutas que escriben, que reforzaría SameSite=Lax y queda como propuesta.

@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-10-28
-- **Rama de trabajo**: `docs/plan-mvp`, en PR a `develop` (después de `chore/seguridad-y-memoria`, PR #1)
+- **Rama de trabajo**: `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: documentación del sistema para el MVP en `docs/` (visión, ADR, pantallas, contrato de la API, entornos y flujo de specs)
-- **En curso**: aprobación del plan del MVP por Jefferson (spec `specs/001-mvp-carga-r17/` del Back y esta documentación)
-- **Siguiente paso**: con la spec aprobada, fase 1 (contrato) y fase 4 (pantallas P1 a P4 en `feat/001-mvp-carga-r17`)
+- **Último cambio**: contrato de la API con los números BR reales y alineado con V1_09 del Back (T015, en local)
+- **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 y los escenarios del profesor con varias secciones)
+- **Siguiente paso**: fase 4, las pantallas P1 a P4 (T040 a T045), cuando la API del Back exista
 - **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
 
@@ -36,6 +36,17 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-28 20:50 (Lima) · feat/001-mvp-carga-r17 · Contrato de la API con reglas BR y alineado con V1_09 (T015, en local)
+
+- **Quién**: Claude Code con dos flujos de agentes, los mismos de la entrada de esta fecha en `MEMORIA.md` del Back (pista A). En la primera vuelta, un implementador escribe en el contrato los números BR reales; tres verificadores (consistencia, forma y refutación) encuentran que ADR-002 invertía el orden de la guardia y la huella, y un corrector lo cierra. En la segunda vuelta, un corrector alinea el contrato con V1_09 y un reverificador lo aprueba con seis hallazgos bajos. Claude Code repite la comprobación de la sección 10 y la revisión previa antes de aceptar el trabajo.
+- **Qué cambió**: `docs/03-api/contrato.md` (reglas BR reales, el 429 contado en `acceso.intento_fallido` por el HMAC del correo, el cierre de sesión con `least()`, la huella antes del tope de 1 MB, el PI de los rechazos de estructura desde `rechazo_fila.pi_id` y la sección 9 con cinco puntos abiertos); `docs/specs/api-contracts.md` y `docs/specs/feature-index.md` (reglas reales y features «en revisión»); `docs/specs/workflow.md`; `docs/01-arquitectura/frontend.md` (textos «(propuesta)» y la excepción del rótulo del piloto); ADR-001, ADR-002, ADR-004 y ADR-005.
+- **Por qué**: T015, que vive en el Front como en IQBF, y la regla del contrato antes del código. Jefferson aprueba la spec 001 en el chat el 2026-10-28 («Apruebo el plan»), y esta entrada lo registra en el Front.
+- **Lo que debe hacer, cómo se probó**: la comprobación de la sección 10 de `contrato.md` da «0 mensajes del contrato sin escenario» y «0 mensajes de los escenarios sin contrato» contra los `.feature` del Back; `bash scripts/preflight.sh` pasa sin fallas.
+- **Lo que no debe hacer, cómo se probó**: la prueba negativa de la sección 10 detecta un mensaje alterado en los dos sentidos; ninguna regla BR citada deja de existir en las specs vivas del Back; el grep de nombres viejos de V1_09 da 0.
+- **Correcciones**: ADR-002 dice ahora que la guardia actúa antes de buscar la huella en la base o escribir nada; ADR-004 da J-03 por confirmada, y ADR-005 saca la tabla de estudiantes de `abet.medicion` de la carga.
+- **Cómo se reporta**: esta entrada, `CHANGELOG.md` y la entrada de la misma fecha en `MEMORIA.md` del Back.
+- **Pendiente y siguiente paso**: la comprobación con OpenAPI de la sección 10 espera la API (fase 3); la sección 10 no lee los ejemplos JSON; `entornos-y-despliegue.md` describe `SESION_SECRETO` sin la clave del HMAC de BR-ACCESO-05; quedan documentos vencidos (`docs/README.md`, `panorama.md`, ADR-002 y ADR-003) y siglas sin glosa que vienen de antes. Pasan a la vuelta de varias secciones.
 
 ### 2026-10-28 16:40 (Lima) · docs/plan-mvp · Documentación del sistema para el MVP
 

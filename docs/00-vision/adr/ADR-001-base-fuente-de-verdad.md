@@ -12,7 +12,7 @@ La base PostgreSQL 16 del esquema `abet` es la única fuente de verdad del siste
 
 La razón es que el R-17 es evidencia ante ABET. Si un número del R-17 no se puede reconstruir desde la base con una consulta, nadie puede defenderlo. El diseño previo de la base ya pone en restricciones e índices únicos parciales las reglas que un programa puede olvidar. Las restricciones `ck_carga_filas` (aceptadas más rechazadas igual a leídas), `ck_carga_conciliada` (una carga publicada lee todas las filas del archivo) y `ck_medicion_nivel` (nivel de 1 a 4) conviven con los índices únicos parciales `uq_carga_publicada_por_seccion` (una sola carga publicada por sección) y `uq_carga_archivo_util` (un mismo archivo publicado en una sola carga). El programa valida antes para dar un mensaje legible, y la base detiene lo que el programa deje pasar.
 
-Lo nuevo del MVP también entra como migración. V1_09__crear_acceso.sql crea el esquema `acceso` (usuarios autorizados, credenciales, sesiones, docentes por sección y códigos de acceso), agrega `abet.carga.subida_por` y amplía `ck_rechazo_fila_motivo` con COLUMNA_CODIGO_AUSENTE, PI_REPETIDO, PERIODO_NO_COINCIDE y SECCION_SIN_DECLARAR. El esquema `acceso` va aparte de `abet` porque la consulta de control Q04 rechaza cualquier columna de contacto dentro de `abet`.
+Lo nuevo del MVP también entra como migración. V1_09__crear_acceso.sql crea el esquema `acceso` (usuarios autorizados, credenciales, sesiones, intentos fallidos de ingreso, docentes por sección y códigos de acceso), agrega `abet.carga.subida_por` y `abet.rechazo_fila.pi_id` y amplía `ck_rechazo_fila_motivo` con COLUMNA_CODIGO_AUSENTE, PI_REPETIDO, PERIODO_NO_COINCIDE y SECCION_SIN_DECLARAR. El esquema `acceso` va aparte de `abet` porque la consulta de control Q04 rechaza cualquier columna de contacto dentro de `abet`.
 
 El traslado de `bd/` al Back ocurre después del primer `flyway migrate` en Neon y de integrar la rama `preparacion-neon`, con su historia (git subtree), y antes de escribir V1_09. Después, el repositorio `ABET_ULIMA` queda archivado en solo lectura.
 
@@ -20,7 +20,7 @@ El traslado de `bd/` al Back ocurre después del primer `flyway migrate` en Neon
 
 1. Ningún cambio de esquema sale del código Python ni del Front. No hay `CREATE`, `ALTER` ni `DROP` fuera de `db/`.
 2. Una migración versionada aplicada no se edita. Un cambio se escribe como migración nueva.
-3. Los números del R-17 salen de `abet.v_r17_por_pi` y la tabla de estudiantes sale de `abet.v_tabla_maestra_pi`, nunca de recalcular el export.
+3. Los números del R-17 salen de `abet.v_r17_por_pi` y la tabla de estudiantes sale de `abet.medicion` de la carga publicada, con las mismas filas que `abet.v_tabla_maestra_pi` da para la sección, nunca de recalcular el export.
 4. El Front no tiene cadena de conexión ni habla con la base. Toda lectura y escritura pasa por la API.
 5. Las consultas de control Q01 a Q14 de `pruebas.sql` devuelven 0 filas en la CI del Back y después de cada carga de prueba.
 6. Los datos operativos (vigencia del catálogo, secciones, plan de medición y usuarios) viven en scripts de `db/datos/`, nunca en migraciones versionadas.

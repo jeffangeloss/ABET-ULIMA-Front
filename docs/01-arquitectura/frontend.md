@@ -4,7 +4,7 @@
 
 El Front es React con Vite, TypeScript y Tailwind, la misma pila de IQBF-ULIMA_Front. No toca datos personales ni la base, así que su elección no cambia el riesgo del sistema. Su regla central viene de `AGENTS.md`, regla 3. Cada pantalla nombra las historias que la justifican, y lo que ninguna historia pide no se muestra.
 
-Los textos entre comillas de esta página salen de los `.feature` de `specs/001-mvp-carga-r17/aceptacion/` del Back cuando un escenario los fija, y en ese caso se copian sin cambios. Los que ningún escenario fija salen de la spec y llevan la marca «(propuesta)».
+Los textos entre comillas de esta página salen de los `.feature` de `specs/001-mvp-carga-r17/aceptacion/` del Back cuando un escenario los fija, y en ese caso se copian sin cambios y conservan la marca «(propuesta)» si el `.feature` la lleva. Los que ningún escenario fija son propuestas de la pantalla y llevan esa misma marca. La excepción es el rótulo del piloto, «Solo exports con códigos inventados (99000000 a 99999999)», que no lleva la marca porque lo fijan la constitución del Back (Principio II) y ADR-002, aunque ningún escenario lo nombre.
 
 ## 1. Estructura de `src/` (propuesta)
 
@@ -55,7 +55,7 @@ Las historias US-01 a US-04 (base, rol, periodo y usuarios) no tienen pantalla, 
 
 Justifican la pantalla US-05 (iniciar sesión con contraseña asignada) y, en el corte 2, US-20 (código de acceso en el correo institucional).
 
-Muestra el campo de correo, el campo de contraseña, el botón «Ingresar» y el rótulo del piloto. Ante un 401 muestra «Correo o contraseña incorrectos.», igual para un correo desconocido, un usuario inactivo y una contraseña errada. Ante el límite de intentos muestra el `detail` del 429, «Demasiados intentos. Espere 15 minutos.». En el corte 2 suma el pedido del código, que responde siempre «Si el correo está autorizado, recibirá un código en unos minutos.», y su verificación, con los mensajes «El código venció. Pida uno nuevo.», «El código ya se usó. Pida uno nuevo.» y «El código ya no es válido. Pida uno nuevo.».
+Muestra el campo de correo, el campo de contraseña, el botón «Ingresar» (propuesta) y el rótulo del piloto. Ante un 401 muestra «Correo o contraseña incorrectos.», igual para un correo desconocido, un usuario inactivo y una contraseña errada. Ante el límite de intentos muestra el `detail` del 429, «Demasiados intentos. Espere 15 minutos.». En el corte 2 suma el pedido del código, que responde siempre «Si el correo está autorizado, recibirá un código en unos minutos.», y su verificación, con los mensajes «El código venció. Pida uno nuevo.», «El código ya se usó. Pida uno nuevo.» y «El código ya no es válido. Pida uno nuevo.».
 
 No muestra registro de cuentas, recuperación de contraseña, inicio con Microsoft, recordar el usuario ni ninguna pista de si el correo está autorizado.
 
@@ -63,7 +63,7 @@ No muestra registro de cuentas, recuperación de contraseña, inicio con Microso
 
 Justifica la pantalla US-06 (ver solo las secciones propias del periodo). El profesor ve sus secciones y el coordinador ve todas las de la carrera.
 
-Muestra una fila por sección del periodo vigente, con la forma «450002 Principios de Ingeniería Sostenible, sección 410, 2026-2» (propuesta), los PI del plan («5.1, 5.2, 5.3») y el estado de su carga («Sin carga» o «Publicada, 11 de 11 filas aceptadas»), que la pantalla arma con el campo `estado` y los conteos de la respuesta. Para el profesor, cada fila ofrece «Subir export», que abre P3, y, si tiene una carga publicada, el enlace a su resultado en P4. Una sección sin plan de medición muestra «La carrera aún no registra el plan de medición de esta sección» y deja «Subir export» desactivado.
+Muestra una fila por sección del periodo vigente, con la forma «450002 Principios de Ingeniería Sostenible, sección 410, 2026-2» (propuesta), los PI del plan («5.1, 5.2, 5.3», propuesta) y el estado de su carga («Sin carga» o «Publicada, 11 de 11 filas aceptadas»), que la pantalla arma con el campo `estado` y los conteos de la respuesta. Para el profesor, cada fila ofrece «Subir export», que abre P3, y, si tiene una carga publicada, el enlace a su resultado en P4. Una sección sin plan de medición muestra «La carrera aún no registra el plan de medición de esta sección» y deja «Subir export» desactivado.
 
 En el corte 1 el coordinador no sube exports, así que su P2 no muestra «Subir export» y ofrece solo el enlace a P4 y la descarga del R-17 de cada carga publicada (propuesta).
 
@@ -73,13 +73,14 @@ No muestra secciones de otros docentes al profesor, periodos anteriores, nombres
 
 Justifican la pantalla US-07 (subir y cargar en una transacción), US-08 (códigos que no son inventados), US-09 (export ya cargado), US-11 (archivo ilegible), US-12 (estructura) y US-13 (otra sección o periodo), y en el corte 2 US-18 (reemplazo) y US-21 (confirmar la sección).
 
-Muestra la sección elegida en P2, fija y sin selector, el campo de archivo que acepta .xlsx de hasta 1 MB, el botón «Subir» y el rótulo «Solo exports con códigos inventados (99000000 a 99999999)». Mientras la API responde, el botón queda desactivado para que no salgan dos subidas. Según la respuesta, la pantalla hace una de tres cosas.
+Muestra la sección elegida en P2, fija y sin selector, el campo de archivo que acepta .xlsx de hasta 1 MB, el botón «Subir» (propuesta) y el rótulo «Solo exports con códigos inventados (99000000 a 99999999)». Mientras la API responde, el botón queda desactivado para que no salgan dos subidas. Según la respuesta, la pantalla hace una de cuatro cosas.
 
 | Respuesta | Qué hace P3 |
 |---|---|
 | 201 (carga PUBLICADA o RECHAZADA) | Pasa a P4 con la constancia |
 | 200 (el mismo archivo ya está publicado en esta sección) | Muestra «Este archivo ya se cargó el <fecha y hora de Lima> y está publicado en la sección 410. No se cargó de nuevo.» (propuesta) con el enlace a P4 de esa carga |
 | 403, 409, 413 o 422 | Se queda en P3 con el `detail` de la API, por ejemplo «La sección no está a su cargo.», «El piloto solo admite códigos inventados, de 99000000 a 99999999. Revise la fila 4. No se guardó nada.» o «Este archivo ya está publicado en otra sección. No se cargó.» |
+| 500 (la transacción se deshace) | Se queda en P3 con el `detail` de la API, «La carga no se completó y no se guardó ningún dato. Intente de nuevo.» |
 
 En el corte 1, un archivo que no declara su sección ni en la hoja ni en el nombre recibe 422 y P3 muestra su `detail`, «El archivo no indica su sección. Sube el export de Blackboard sin cambiar el nombre de su hoja.». En el corte 2 (US-21), ante el 422 «El archivo no indica su sección. ¿Confirma que es de la sección 410 de 450002 en 2026-2?», P3 pide la confirmación y vuelve a enviar el archivo con `confirmar_seccion=true`.
 
@@ -91,7 +92,7 @@ No muestra una vista previa del contenido del archivo, nombres de estudiantes, e
 
 Justifican la pantalla US-07 (la carga escrita), US-10 (filas inválidas y columnas dudosas), US-12 (rechazo por estructura), US-13 (rechazo por otra sección o periodo), US-14 (descartar nombres y valores leídos), US-15 (descargar el R-17) y US-16 (constancia de la carga).
 
-Muestra el estado de la carga y sus conteos con la forma «11 filas leídas, 10 aceptadas y 1 rechazada», o «11 filas leídas, 11 aceptadas y 0 rechazadas» cuando no hay rechazos. Si hay rechazos, la tabla de rechazos dice la fila, el PI, el motivo en palabras y su efecto, como «Fila 3, PI 5.2, nivel fuera de la escala 1 a 4. La fila completa queda fuera, también de 5.1 y 5.3.». Los avisos van aparte, como «PI 5.3. La columna declara 20 puntos y sus notas están entre 1 y 4. Se cargó igual.» (propuesta). Si la carga queda RECHAZADA por estructura o por sección, muestra el motivo, como «El archivo corresponde a la sección 411 y usted eligió la 410. No se publicó.». La constancia muestra el nombre del archivo sin ruta, la hoja, la huella SHA-256, el conjunto de reglas con la marca PROVISIONAL, el correo de quien sube el archivo y las horas de inicio y fin. El botón «Descargar R-17» aparece activo solo si la carga está PUBLICADA, y si no lo está la pantalla dice «No hay una carga publicada para esta sección» (propuesta).
+Muestra el estado de la carga y sus conteos con la forma «11 filas leídas, 10 aceptadas y 1 rechazada», o «11 filas leídas, 11 aceptadas y 0 rechazadas» (propuesta) cuando no hay rechazos. Si hay rechazos, la tabla de rechazos dice la fila, el PI, el motivo en palabras y su efecto, como «Fila 3, PI 5.2, nivel fuera de la escala 1 a 4. La fila completa queda fuera, también de 5.1 y 5.3.». Los avisos van aparte, como «PI 5.3. La columna declara 20 puntos y sus notas están entre 1 y 4. Se cargó igual.» (propuesta). Si la carga queda RECHAZADA por estructura, por sección o por periodo, muestra el motivo, como «El archivo corresponde a la sección 411 y usted eligió la 410. No se publicó.». Cuando ninguna fila se acepta, la carga también queda RECHAZADA, y la pantalla muestra el `mensaje` de la respuesta, «Ninguna fila se pudo aceptar. La carga no se publicó.» (propuesta), junto con la tabla de rechazos. La constancia muestra el nombre del archivo sin ruta, la hoja, la huella SHA-256, el conjunto de reglas con la marca PROVISIONAL, el correo de quien sube el archivo y las horas de inicio y fin. El botón «Descargar R-17» (propuesta) aparece activo solo si la carga está PUBLICADA, y si no lo está la pantalla dice «No hay una carga publicada para esta sección» (propuesta).
 
 No muestra el valor leído de ninguna celda, nombres de estudiantes, Last Access, Availability, columnas de actividades ni los porcentajes del R-17, que viven solo en el archivo descargado.
 
@@ -99,7 +100,7 @@ No muestra el valor leído de ninguna celda, nombres de estudiantes, Last Access
 
 Justifican la pantalla US-18 (reemplazar la carga publicada de una sección) y US-19 (ver las cargas al alcance del usuario).
 
-Muestra las cargas de las secciones al alcance del usuario, de la más reciente a la más antigua, con la sección, la fecha, el estado, los conteos de filas, el nombre del archivo, los primeros 12 caracteres de la huella, el correo de quien la sube, el enlace a su constancia en P4 y la descarga del R-17 de la publicada. «Reemplazar carga» abre P3 en modo reemplazo, para el profesor en su sección y para el coordinador en cualquiera, con la regla de plazo que fije D-11.
+Muestra las cargas de las secciones al alcance del usuario, de la más reciente a la más antigua, con la sección, la fecha, el estado, los conteos de filas, el nombre del archivo, los primeros 12 caracteres de la huella, el correo de quien la sube, el enlace a su constancia en P4 y la descarga del R-17 de la publicada. «Reemplazar carga» (propuesta) abre P3 en modo reemplazo, para el profesor en su sección y para el coordinador en cualquiera, con la regla de plazo que fije D-11.
 
 No muestra cargas fuera del alcance del usuario, ni opciones para borrar o editar una carga, porque la base no admite DELETE para la aplicación y una carga solo cambia por reemplazo.
 
@@ -119,7 +120,7 @@ Vitest con Testing Library cubre cada pantalla en lo que debe mostrar y en lo qu
 2. **Diseño visual.** No hay prototipo en Figma ni guía de estilo, y las pantallas parten de componentes simples de Tailwind.
 3. **P5, el modo reemplazo de P3 y US-21.** Pertenecen al corte 2.
 4. **Pruebas de accesibilidad.** Ninguna historia las pide todavía, y conviene sumarlas antes del primer profesor externo.
-5. **Los textos marcados «(propuesta)».** Ningún `.feature` los fija todavía, y se confirman en las specs vivas `acceso`, `periodo`, `carga-export` y `r17`.
+5. **Los textos marcados «(propuesta)».** Ninguna decisión de la spec los fija todavía, aunque algunos ya figuran en un `.feature`, y se confirman con la revisión de las specs vivas `acceso`, `periodo`, `carga-export` y `r17`.
 6. **Lectura de Username en el navegador antes de enviar.** La crítica de arquitectura la propone y ninguna historia del MVP la pide, así que no está.
 
 ## Referencias
