@@ -4,13 +4,13 @@
 |---|---|
 | **Estado** | Propuesta, pendiente de Jefferson |
 | **Fecha** | 2026-10-28 |
-| **Ámbito** | `abet_carga/r17.py`, `abet_carga/constancia.py`, `plantillas/R017_ambiental_general.xlsx`, `GET /api/cargas/{carga_id}/r17.xlsx`, vistas `abet.v_r17_por_pi` y `abet.v_tabla_maestra_pi` |
+| **Ámbito** | `abet_carga/r17.py`, `abet_carga/constancia.py`, `plantillas/R017_ambiental_general.xlsx`, `GET /api/cargas/{carga_id}/r17.xlsx`, vistas `abet.v_r17_por_pi` y `abet.v_tabla_maestra_pi`, tabla `abet.medicion` |
 
 ## Decisión
 
 El R-17 se genera en el Back con openpyxl y Pillow sobre una copia vaciada y limpia de la plantilla vigente de Ambiental («Plantilla Base - Final.xlsx», hoja «Cursos de Carrera»), sin las referencias `#REF!` de la original. El generador escribe valores calculados, nunca fórmulas, en filas fijas y sin insertar filas.
 
-Los números salen de la base. La cabecera (facultad, carrera, código, asignatura, sección y periodo) sale de las tablas de la sección, los conteos por nivel, el nivel esperado o superior, el porcentaje y la meta salen de `abet.v_r17_por_pi`, y la tabla de estudiantes (SO, PI, código y calificación) sale de `abet.v_tabla_maestra_pi`. Como la vista solo ve cargas en estado PUBLICADA, una carga rechazada no produce R-17. El profesor escribe a mano las causas, las acciones y el comentario.
+Los números salen de la base. La cabecera (facultad, carrera, código, asignatura, sección y periodo) sale de las tablas de la sección, y los conteos por nivel, el nivel esperado o superior, el porcentaje y la meta salen de `abet.v_r17_por_pi`. La tabla de estudiantes (SO, PI, código y calificación) sale de `abet.medicion` de la carga, con `abet.estudiante` y `abet.pi`, ordenada por PI y por fila de origen (regla BR-R17-08 de la spec viva `r17` del Back). Son las mismas filas que `abet.v_tabla_maestra_pi` da para la sección, y la tabla no sale de esta vista porque no expone `carga_id` ni `fila_origen`. Como `v_r17_por_pi` solo ve cargas en estado PUBLICADA, una carga rechazada no produce R-17. El profesor escribe a mano las causas, las acciones y el comentario.
 
 La vista no expone el número de calificados. El «(6 de 10)» que acompaña a cada porcentaje lo arma `r17.py` con `n_esperado_o_superior` sobre `n_total - n_sin_evidencia`, ambos de `v_r17_por_pi`, y el porcentaje mismo es `pct_logro_sobre_calificados`.
 

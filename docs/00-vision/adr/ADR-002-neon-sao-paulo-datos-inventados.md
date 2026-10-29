@@ -12,7 +12,7 @@ La base del piloto vive en Neon, con PostgreSQL 16 en la región `aws-sa-east-1`
 
 Mientras la universidad no autorice el tratamiento de datos reales fuera del Perú (decisión D-10, Ley 29733 y DS 016-2024-JUS), el sistema solo admite códigos de estudiante inventados, de 99000000 a 99999999. La regla vive en tres lugares, porque cada uno cubre un hueco distinto.
 
-1. La API rechaza con 422, antes de calcular la huella o escribir nada, todo export que traiga un código fuera de ese rango, incluido uno mal formado como 9900001 (US-08), mientras `GUARDIA_DATOS_INVENTADOS=1`. El mensaje dice la fila y nunca el código, como en «El piloto solo admite códigos inventados, de 99000000 a 99999999. Revise la fila 4. No se guardó nada.».
+1. La API rechaza con 422 todo export que traiga un código fuera de ese rango, incluido uno mal formado como 9900001 (US-08), antes de buscar su huella en la base o escribir nada, mientras `GUARDIA_DATOS_INVENTADOS=1`. El mensaje dice la fila y nunca el código, como en «El piloto solo admite códigos inventados, de 99000000 a 99999999. Revise la fila 4. No se guardó nada.».
 2. La base repite la regla con `ck_estudiante_codigo_inventado CHECK (codigo LIKE '99%')` en `abet.estudiante`, aplicada solo en Neon desde `db/plataforma/neon/`. Así, un defecto del programa, un script de siembra o una sesión de psql tampoco escriben un código real.
 3. El preflight (la revisión previa de cada commit) de cada repositorio rechaza planillas fuera de `tests/datos_inventados/` y códigos de 8 dígitos que no empiezan con 99 dentro de esa carpeta.
 

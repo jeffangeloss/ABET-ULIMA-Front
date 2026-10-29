@@ -1,6 +1,6 @@
 # Flujo de specs de ABET
 
-> **Estado 2026-10-28.** El producto mínimo viable (MVP) está en el paso 4 (spec en revisión). Los pasos 1 a 3 quedan hechos el 2026-10-28 en la fase de descubrimiento.
+> **Estado 2026-10-28.** Los pasos 1 a 3 del producto mínimo viable (minimum viable product, MVP) quedan hechos el 2026-10-28 en la fase de descubrimiento, y Jefferson aprueba la spec en el chat el mismo día, con su registro en `MEMORIA.md` del Back. La fusión de su solicitud de integración (pull request, PR) en `develop` espera su permiso (T004), las reglas del paso 5 esperan la auditoría de la fase (T019) y el paso 7 empieza en local en la rama `feat/001-mvp-carga-r17`.
 
 Adaptación del flujo de IQBF a ABET, con dos cambios. Las historias pasan por una auditoría de refutación antes de la especificación (spec), y el flujo cubre también el sentido inverso, cuando el Back cambia el contrato y el Front se adapta. La regla que ordena todo es que la prisa cambia el tamaño de cada paso, nunca su orden ni su existencia.
 
@@ -39,8 +39,8 @@ Una funcionalidad nueva parte de la necesidad, no de la pantalla. La pantalla ap
 
 Cuando el Back cambia una ruta, el cambio sigue este orden.
 
-1. La spec viva del Back y `docs/specs/api-contracts.md` cambian en el mismo PR, antes del código.
-2. `docs/03-api/contrato.md` y `src/servicios/tipos.ts` del Front se actualizan en un PR del Front que cita el PR del Back.
+1. La spec viva del Back cambia en un PR del Back, antes del código.
+2. `docs/specs/api-contracts.md`, `docs/03-api/contrato.md` y `src/servicios/tipos.ts` del Front se actualizan en un PR del Front que cita el PR del Back, como pide la regla de oro de `api-contracts.md`.
 3. Un cambio incompatible publica primero la versión del Back y después la del Front (`docs/devops.md`).
 4. Se busca en `docs/` con `grep -rn` lo que todavía describe la ruta anterior y se corrige.
 
@@ -50,8 +50,6 @@ Un cambio de modelo empieza en el SQL de `db/migration/` del Back, se aprueba, s
 
 ## Lo que todavía NO está
 
-1. **La spec del MVP aprobada.** Está en el paso 4, en la rama `docs/plan-mvp`, sin PR.
+1. **La fusión de la spec del MVP.** Jefferson la aprueba en el chat el 2026-10-28, y su PR desde la rama `docs/plan-mvp` espera la fusión en `develop` (T004).
 2. **`specs/spec-template.md` en español** con `targets` alineados con el Back real.
-3. **La ratificación de la constitución.** `.specify/memory/constitution.md` del Back ya existe y espera la firma de Jefferson.
-4. **La prueba de pytest-bdd en español** del primer día de la fase de contrato (ADR-006).
-5. **Las specs vivas.** `carga-export`, `r17`, `acceso` y `periodo` se escriben en la fase 1 de contrato.
+3. **La revisión de las specs vivas.** `carga-export`, `r17`, `acceso` y `periodo` ya tienen sus reglas `BR-` de la fase 1 de contrato, y esperan la auditoría de la fase (T019) y la revisión de Jefferson en su PR.
