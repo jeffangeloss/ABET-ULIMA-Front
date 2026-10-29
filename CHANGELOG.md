@@ -12,6 +12,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 - Hook `Stop` de Claude Code (`.claude/settings.json`) que no deja terminar un turno con cambios sin registrar en `MEMORIA.md`.
 - Documentación del sistema para el MVP «del export de Blackboard al R-17 desde la base»: visión, ADR-001 a ADR-006, pantallas, contrato de la API, entornos y flujo de specs, aprobada por Jefferson en el chat el 2026-10-28.
 - Contrato de la API con las reglas BR reales de las specs vivas del Back, alineado con V1_09.
+- Contrato y documentos para el profesor con varias secciones de varios cursos, con dos mensajes de BR-CARGA-11 marcados «(propuesta)» y los siete `.feature` del Back.
 
 ### Seguridad
 

@@ -12,11 +12,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-10-28
+- **Fecha**: 2026-10-29
 - **Rama de trabajo**: `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: contrato de la API con los números BR reales y alineado con V1_09 del Back (T015, en local)
-- **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 y los escenarios del profesor con varias secciones)
+- **Último cambio**: contrato y documentos para el profesor con varias secciones de varios cursos (en local)
+- **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 en su árbol de trabajo)
 - **Siguiente paso**: fase 4, las pantallas P1 a P4 (T040 a T045), cuando la API del Back exista
 - **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-29 08:22 (Lima) · feat/001-mvp-carga-r17 · Contrato y documentos para el profesor con varias secciones
+- Quién: Claude Code como integrador, con el trabajo de los subagentes del flujo wf_d0250dfb-fda, el mismo de la entrada de esta fecha en `MEMORIA.md` del Back. El agente escribir:escenarios redacta los cambios de `docs/`, y un corrector cierra los hallazgos que tocan el contrato y la fila de `SESION_SECRETO`. Tres verificadores y un reverificador revisan en solo lectura, y el reverificador aprueba. Antes de aceptar el trabajo, Claude Code corre `scripts/preflight.sh` del Front y compara los seis archivos cambiados con la lista del informe.
+- Qué cambió: `docs/03-api/contrato.md` (dos mensajes nuevos de BR-CARGA-11, uno para otra sección de la misma asignatura y otro para otra asignatura, ambos marcados «(propuesta)», y la aclaración de que los mensajes del contrato salen de los textos entre «»); `docs/00-vision/adr/ADR-006-historias-gherkin-auditadas.md`, `docs/README.md`, `docs/specs/feature-index.md` y `docs/specs/workflow.md` (siete archivos `.feature` y la aprobación de la spec registrada en el Back); `docs/05-operacion/entornos-y-despliegue.md` (la fila de `SESION_SECRETO`); `CHANGELOG.md`.
+- Por qué: el pedido de Jefferson del 2026-10-28 sobre el profesor que dicta varias secciones de varios cursos, con la aprobación «Sí, agrégalos», y los mensajes que `varias_secciones.feature` del Back necesita del contrato (BR-CARGA-11 y BR-ACCESO-08).
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh` pasa sin fallas. La comprobación de la sección 10 del contrato, corrida por el agente en el Back, da 0 mensajes del contrato sin escenario y 0 de los escenarios sin contrato.
+- Lo que no debe hacer, cómo se probó: el contrato no afirma como definitivo ningún texto nuevo, porque los dos mensajes y el de otro periodo quedan marcados «(propuesta)» hasta que Jefferson los confirme. El cambio no toca código, y `preflight.sh` no encuentra datos reales ni secretos.
+- Correcciones: la fila de `SESION_SECRETO` decía que la base guarda el token con HMAC, lo que contradecía a BR-ACCESO-03, que guarda el SHA-256 del token sin clave. La fila ahora describe la clave de los intentos fallidos. La viñeta «Otra sección o periodo» de la sección 6 pasa a nombrar las dos formas de mensaje.
+- Cómo se reporta: esta entrada y `CHANGELOG.md`, junto con el commit de los escenarios del Back.
+- Pendiente y siguiente paso: Jefferson decide si el token de sesión se guarda con SHA-256 sin clave o con un HMAC, qué mensaje va cuando difieren a la vez la asignatura y la sección, y si el texto «El archivo corresponde a la sección 410 y usted eligió la 412» deja de ser propuesta. La fase 4, las pantallas P1 a P4 (T040 a T045), espera la API del Back.
 
 ### 2026-10-28 20:50 (Lima) · feat/001-mvp-carga-r17 · Contrato de la API con reglas BR y alineado con V1_09 (T015, en local)
 
