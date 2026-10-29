@@ -12,14 +12,14 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-02
-- **Rama de trabajo**: `develop`, que recibe el corte 1 desde el PR #3 con rebase, y `docs/002-capstone` con el PR #4, que espera la aprobación de la spec 002
+- **Fecha**: 2026-10-29
+- **Rama de trabajo**: `docs/002-capstone` (spec 002, apilada sobre `feat/001-mvp-carga-r17`, solo en local); el corte 1 sigue en `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: SonarQube Cloud aprueba el PR #3 con `npm ci --ignore-scripts`, y Jefferson aprueba fusionar el corte 1 en `develop`
-- **En curso**: T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
-- **Siguiente paso**: T062 para Jefferson, la aprobación de la spec 002 (PR #4) y, con su permiso, Neon y Vercel (fase 7)
-- **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, PR #3 y #4)
+- **Último cambio**: documentación del sistema para la spec 002 de Capstone (ADR-007, frontend, contrato y feature-index, en local), pendiente de aprobación
+- **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 y los escenarios del profesor con varias secciones)
+- **Siguiente paso**: Jefferson aprueba la spec 002 del Back; hasta entonces las secciones de Capstone de estos documentos son propuesta. El corte 1 sigue como antes
+- **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
 
 ## Plantilla de una entrada
 
@@ -106,6 +106,17 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Correcciones: P3 oculta el control nativo «Choose File» y ofrece el botón propio «Elegir archivo», con dos pruebas. El 403 único frente al 404 queda como propuesta en `contrato.md` (tabla 3.2, rutas 5 a 7 y sección 9.2), y el Front no maneja 404 mientras la API no lo emita. El contrato suma como propuesta los textos que la API emite y no estaban registrados.
 - Cómo se reporta: esta entrada, `CHANGELOG.md` y el registro de tareas en `specs/001-mvp-carga-r17/tasks.md` del Back. Sin PR.
 - Pendiente y siguiente paso: Hallazgos bajos abiertos tras la reverificación. (1) El candado de la cuenta se mantiene durante la verificación Argon2id y `now()` es la hora de inicio de la transacción, así que un fallo que espera detrás de un ingreso correcto puede quedar fechado antes y no contar para el límite; se corrige con `clock_timestamp()`. (2) Sigue abierta la decisión de Jefferson entre 403 y 404 para una sección o una carga inexistente; con 404, P3 y P4 deben ofrecer volver a P2. (3) La prueba de humo no corre en la CI y exige una API recién arrancada, y la ADR-006 todavía habla de Playwright para Python aunque se usó el de Node. La condición de la API recién arrancada para la prueba de humo queda documentada en su spec. Siguen pendientes las pruebas de aceptación ejecutables (T050 a T053), la auditoría de la fase 6 (T049 queda abierta) y el despliegue, que espera el proyecto de Neon, el de Vercel y el permiso de Jefferson. El orden de foco con teclado y el contraste no se revisaron en el navegador.
+
+### 2026-10-29 08:30 (Lima) · docs/002-capstone · Documentación del sistema para la spec 002 de Capstone (en local)
+
+- **Quién**: Claude Code con un flujo de agentes (wf_3c294f14-761). Tres redactores en Sonnet (profesor, coordinador y evidencia) escriben 46 candidatas de historia. Tres auditores en Sonnet verifican la necesidad, el solapamiento y el tamaño, y la verificabilidad contra la base. Un crítico de arquitectura propone las decisiones. Un redactor en Sonnet escribe la spec del Back y otro los documentos del Front. Dos revisores (constructor; hechos y forma) hallan una falla de severidad alta y cuatro medias. Un corrector las cierra y un reverificador aprueba con tres hallazgos bajos. Quedan 25 historias (US-01 a US-25), FR-001 a FR-029, SC-001 a SC-013, D-14 a D-29 y las decisiones J-11 a J-16 renumeradas. Un intento anterior del flujo se detuvo a los pocos minutos para bajar su costo (modelos y esfuerzo por etapa) y sus agentes no dejaron archivos. Claude Code integra el trabajo en dos commits locales y verifica antes de aceptarlo la renumeración, el Gherkin y la revisión previa.
+- **Qué cambió**: `docs/00-vision/adr/ADR-007-plantilla-proyectos-segunda-subida.md` (nuevo) y su fila en el README de los ADR; la sección 8 de `docs/01-arquitectura/frontend.md`; la sección 11 de `docs/03-api/contrato.md` (propuesta, spec 002); la sección de la spec 002 en `docs/specs/feature-index.md`; y `CHANGELOG.md`. Las J de la spec 002 pasan de J-10 a J-15 a J-11 a J-16 en todos esos documentos, y las J-01 a J-09 y las D-14 a D-29 no cambian.
+- **Por qué**: la spec 002 de Capstone del Back (`specs/002-capstone/`, rama `docs/002-capstone`), pedida por Jefferson como «Spec 002 aparte». Los libros de Excel que Jefferson adjunta traen datos reales y no entran al repositorio ni se citan.
+- **Lo que debe hacer, cómo se probó**: `bash scripts/preflight.sh` pasa sin fallas en este worktree; el recuento de J-11 a J-16 por documento coincide con el de J-10 a J-15 antes del cambio.
+- **Lo que no debe hacer, cómo se probó**: `grep -rn "J-10" docs` da 0, y ninguna J de la spec 001 ni ninguna D cambia de número.
+- **Correcciones**: la colisión de J-10 con el respaldo del esquema `acceso` de la spec 001 se resuelve renumerando en el orden J-15, J-14, J-13, J-12, J-11, J-10. Todo lo de la spec 002 queda marcado como propuesta.
+- **Cómo se reporta**: esta entrada, `CHANGELOG.md` y la entrada de la misma fecha en `MEMORIA.md` del Back.
+- **Pendiente y siguiente paso**: la aprobación de Jefferson (fusión del PR o su «apruebo» en el chat), sus respuestas a D-14 a D-29 y J-11 a J-16, y los tres hallazgos bajos del reverificador. Nada de Capstone se implementa antes. Nada se empuja sin permiso de Jefferson.
 
 ### 2026-10-29 08:22 (Lima) · feat/001-mvp-carga-r17 · Contrato y documentos para el profesor con varias secciones
 - Quién: Claude Code como integrador, con el trabajo de los subagentes del flujo wf_d0250dfb-fda, el mismo de la entrada de esta fecha en `MEMORIA.md` del Back. El agente escribir:escenarios redacta los cambios de `docs/`, y un corrector cierra los hallazgos que tocan el contrato y la fila de `SESION_SECRETO`. Tres verificadores y un reverificador revisan en solo lectura, y el reverificador aprueba. Antes de aceptar el trabajo, Claude Code corre `scripts/preflight.sh` del Front y compara los seis archivos cambiados con la lista del informe.

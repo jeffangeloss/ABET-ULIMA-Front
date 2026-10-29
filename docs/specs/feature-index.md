@@ -10,10 +10,17 @@ Cada feature es la carpeta de su spec viva en `specs/features/` de ABET-ULIMA-Ba
 | periodo | BR-PERIODO-01 a BR-PERIODO-04 | P2 Mis secciones (`MisSecciones.tsx`) | en revisión (contrato escrito para US-03 y el listado de US-06) | `specs/features/periodo/periodo.spec.md` |
 | carga-export | BR-CARGA-01 a BR-CARGA-20 | P3 Subir export (`SubirExport.tsx`), P4 Resultado de la carga (`ResultadoCarga.tsx`) y P5 Cargas (`Cargas.tsx`) | en revisión (contrato escrito para US-07 a US-14; US-18, US-19 y US-21 del corte 2 en BR-CARGA-18 a BR-CARGA-20, que completa T080) | `specs/features/carga-export/carga-export.spec.md` |
 | r17 | BR-R17-01 a BR-R17-10 | P4 Resultado de la carga (`ResultadoCarga.tsx`) | en revisión (contrato escrito para US-15 y US-16) | `specs/features/r17/r17.spec.md` |
+| proyectos-capstone (spec 002) | BR-PROYECTOS-NN (propuesta, por numerar en la spec viva) | P2 Mis secciones (`MisSecciones.tsx`), P3 Subir export (`SubirExport.tsx`, zona «Plantilla de proyectos») y P4 Resultado de la carga (`ResultadoCarga.tsx`, bloque de proyectos); la tabla maestra de Capstone no tiene pantalla | en revisión (borrador de la spec 002; rutas propuestas en la sección 11 de `03-api/contrato.md`) | `specs/features/proyectos-capstone/proyectos-capstone.spec.md` (por escribir en la tarea T010 del Back) |
 
 US-01, US-02 y US-17 son de plataforma (migración en Neon, rol `abet_app` y despliegue en Vercel), no abren una spec viva y se verifican en `specs/001-mvp-carga-r17/audit.md`. No tienen pantalla, aunque la prueba de humo de US-17 recorre P1 a P4.
 
 Las cuatro features siguen en revisión aunque su contrato ya está escrito, porque el paso «aprobada» de la escala pide la fusión (merge) en `develop` de la solicitud de integración (pull request, PR) de la spec 001 (T004), y el contrato espera además la auditoría de la fase 1 (T019). Jefferson aprueba la spec 001 en el chat el 2026-10-28, y `MEMORIA.md` del Back registra esa aprobación.
+
+## Spec 002, Capstone
+
+La spec 002 (`specs/002-capstone/spec.md` del Back, rama `docs/002-capstone`) tiene su propia épica, EP-02, con 25 historias, US-01 a US-24 en el corte 1 y US-25 en el corte 2, y 83 escenarios en `specs/002-capstone/aceptacion/`. Sus historias se citan como «US-NN de la spec 002». Es una funcionalidad aparte del corte 1 de la spec 001 y no lo frena, y su código espera la fusión de ese corte en `develop`. La fila `proyectos-capstone` sigue la misma escala de estados y queda en «en revisión» hasta que Jefferson apruebe el PR de la spec 002. La decisión de arquitectura es [`ADR-007`](../00-vision/adr/ADR-007-plantilla-proyectos-segunda-subida.md). Sus pantallas son cambios de P2, P3 y P4, descritos en la sección 8 de [`01-arquitectura/frontend.md`](../01-arquitectura/frontend.md).
+
+La vista `abet.v_tabla_maestra_capstone` (US-21) y el tipo de curso en el plan de estudios (US-01) no tienen pantalla ni spec viva propia, y se verifican en `specs/002-capstone/audit.md` (por escribir al cerrar la fase 6), como US-01, US-02 y US-17 de la spec 001.
 
 ## Estados
 
