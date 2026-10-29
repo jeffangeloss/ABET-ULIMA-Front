@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-10-29
 - **Rama de trabajo**: `docs/002-capstone` (spec 002, apilada sobre `feat/001-mvp-carga-r17`, solo en local); el corte 1 sigue en `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: documentación del sistema para la spec 002 de Capstone (ADR-007, frontend, contrato y feature-index, en local), pendiente de aprobación
+- **Último cambio**: D-14 decidida (2026-10-29), con los tres cursos Capstone nombrados en frontend.md y ADR-007 (en local), pendiente de aprobación
 - **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 y los escenarios del profesor con varias secciones)
-- **Siguiente paso**: Jefferson aprueba la spec 002 del Back; hasta entonces las secciones de Capstone de estos documentos son propuesta. El corte 1 sigue como antes
+- **Siguiente paso**: Jefferson aprueba la spec 002 del Back; hasta entonces las secciones de Capstone de estos documentos son propuesta, salvo D-14. El corte 1 sigue como antes
 - **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
 
@@ -106,6 +106,17 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Correcciones: P3 oculta el control nativo «Choose File» y ofrece el botón propio «Elegir archivo», con dos pruebas. El 403 único frente al 404 queda como propuesta en `contrato.md` (tabla 3.2, rutas 5 a 7 y sección 9.2), y el Front no maneja 404 mientras la API no lo emita. El contrato suma como propuesta los textos que la API emite y no estaban registrados.
 - Cómo se reporta: esta entrada, `CHANGELOG.md` y el registro de tareas en `specs/001-mvp-carga-r17/tasks.md` del Back. Sin PR.
 - Pendiente y siguiente paso: Hallazgos bajos abiertos tras la reverificación. (1) El candado de la cuenta se mantiene durante la verificación Argon2id y `now()` es la hora de inicio de la transacción, así que un fallo que espera detrás de un ingreso correcto puede quedar fechado antes y no contar para el límite; se corrige con `clock_timestamp()`. (2) Sigue abierta la decisión de Jefferson entre 403 y 404 para una sección o una carga inexistente; con 404, P3 y P4 deben ofrecer volver a P2. (3) La prueba de humo no corre en la CI y exige una API recién arrancada, y la ADR-006 todavía habla de Playwright para Python aunque se usó el de Node. La condición de la API recién arrancada para la prueba de humo queda documentada en su spec. Siguen pendientes las pruebas de aceptación ejecutables (T050 a T053), la auditoría de la fase 6 (T049 queda abierta) y el despliegue, que espera el proyecto de Neon, el de Vercel y el permiso de Jefferson. El orden de foco con teclado y el contraste no se revisaron en el navegador.
+
+### 2026-10-29 08:47 (Lima) · docs/002-capstone · D-14 decidida, menciones de los cursos Capstone (en local)
+
+- **Quién**: Jefferson decide, en el chat del 2026-10-29 y en nombre de la carrera, que los cursos Capstone son 450025 «Formulación y Evaluación de Proyectos Sostenibles», 450024 «Proyecto de Ingeniería Aplicada I» y 450026 «Proyecto de Ingeniería Aplicada II». Claude Code solo registra la decisión en la documentación, sin subagentes.
+- **Qué cambió**: `docs/01-arquitectura/frontend.md` (punto 3 de lo abierto) y `docs/00-vision/adr/ADR-007-plantilla-proyectos-segunda-subida.md` (punto 1 del cierre) nombran los tres cursos y pasan D-14 a decidida. El contrato y el resto de los documentos no nombran cursos y no cambian.
+- **Por qué**: D-14 de la spec 002 del Back, que registra la misma fecha y las palabras de Jefferson.
+- **Lo que debe hacer, cómo se probó**: `bash scripts/preflight.sh` en este worktree termina con «Revisión previa sin fallas (todo)».
+- **Lo que no debe hacer, cómo se probó**: `git diff --stat` toca solo esos dos documentos y `MEMORIA.md`, sin cambiar rutas, campos ni pantallas.
+- **Correcciones**: ninguna en esta entrada.
+- **Cómo se reporta**: este registro y el PR de `docs/002-capstone`.
+- **Pendiente y siguiente paso**: Jefferson aprueba la spec 002 del Back; D-15 a D-29 siguen abiertas.
 
 ### 2026-10-29 08:30 (Lima) · docs/002-capstone · Documentación del sistema para la spec 002 de Capstone (en local)
 

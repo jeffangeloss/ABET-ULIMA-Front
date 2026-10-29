@@ -239,7 +239,7 @@ Vitest con Testing Library suma, con respuestas del contrato dentro de las prueb
 
 1. **Código.** Ningún archivo de esta sección existe.
 2. **Los textos marcados «(propuesta)».** Se confirman al aprobar la spec 002 y al escribir la spec viva `proyectos-capstone` del Back.
-3. **La definición de Capstone (D-14).** Hasta cerrarla, la zona depende solo de lo que la API diga en `tipo_curso`.
+3. **La definición de Capstone (D-14, decidida el 2026-10-29).** Son 450025 «Formulación y Evaluación de Proyectos Sostenibles», 450024 «Proyecto de Ingeniería Aplicada I» y 450026 «Proyecto de Ingeniería Aplicada II», los cursos de los últimos ciclos de AMB-2026. La zona sigue dependiendo solo de lo que la API diga en `tipo_curso`.
 4. **Diseño visual de la zona y del bloque.** Parten de componentes simples de Tailwind.
 5. **Reemplazo de la plantilla, vista previa de la tabla maestra y R-18 (D-15).** Quedan fuera de alcance de la spec 002.
 6. **El texto de J-16.** Cuando el reemplazo del export llegue a una sección con plantilla publicada, P3 debe mostrar el 409 que fije la spec, que hoy es «La sección tiene una plantilla de proyectos publicada. Su reemplazo todavía no está disponible.» (propuesta).

@@ -64,7 +64,7 @@ grep -rn "Estudiante Ficticio" src/ | wc -l
 
 ## Lo que todavía NO está
 
-1. **El cierre de D-14 a D-29 y J-11 a J-16.** Jefferson aprueba el PR de la spec 002 y lleva las decisiones a la carrera.
+1. **El cierre de D-15 a D-29 y J-11 a J-16.** D-14 queda decidida el 2026-10-29, y los cursos Capstone son 450025, 450024 y 450026. Jefferson aprueba el PR de la spec 002 y lleva las decisiones a la carrera.
 2. **Las reglas `BR-PROYECTOS-NN`.** La spec viva `proyectos-capstone` del Back las numera en la fase 1 (propuesta), y el contrato del Front las cita entonces.
 3. **El mapa de celdas de «Cursos Capstone» (D-25).** El R-17 Capstone se prueba con valores provisionales hasta conseguirlo.
 4. **El reemplazo de la plantilla y la declaración de US-25.** La primera queda fuera de alcance y la segunda es del corte 2.
