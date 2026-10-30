@@ -1,6 +1,6 @@
 # Índice de features
 
-> **Estado 2026-10-28.** Ninguna funcionalidad (feature) está implementada. Los nombres y los prefijos son los que fija `specs/README.md` del Back, y las cuatro specs vivas ya tienen sus reglas numeradas (fase 1 de contrato, tareas T011 a T014).
+> **Estado 2026-10-30.** Las funcionalidades del corte 1 están implementadas en local y `audit.md` del Back las cruza con sus pruebas; la línea `Verification` de las specs vivas lleva fecha. El corte 2 sigue sin implementar. Los nombres y los prefijos son los que fija `specs/README.md` del Back.
 
 Cada feature es la carpeta de su spec viva en `specs/features/` de ABET-ULIMA-Back. «Pantallas que sirve» nombra las pantallas de [`01-arquitectura/frontend.md`](../01-arquitectura/frontend.md), y la columna «Spec» da la ruta relativa al Back. Todas las historias del producto mínimo viable (minimum viable product, MVP) viven además en `specs/001-mvp-carga-r17/spec.md`, y sus escenarios en los siete `.feature` de `specs/001-mvp-carga-r17/aceptacion/`. Uno de ellos, `varias_secciones.feature`, prueba las reglas de `acceso` y de `carga-export` con un profesor que dicta tres secciones de dos asignaturas.
 
@@ -31,6 +31,6 @@ Un matiz va entre paréntesis, como «implementada (solo hoja Cursos de Carrera)
 
 ## Lo que todavía NO está
 
-1. **La línea `Verification` de cada spec viva.** Las cuatro specs la traen preparada y sin fecha, y la llenan las corridas aprobadas de la fase 6 (T061).
+1. **La verificación a mano.** Las cuatro specs vivas traen su línea `Verification` con fecha del 2026-10-30, y queda abierta T062, la prueba en el navegador que Jefferson cumple con la guía de `audit.md`.
 2. **Las reglas definitivas del corte 2.** BR-ACCESO-09 y BR-CARGA-18 a BR-CARGA-20 recogen los escenarios del corte 2, y T080 las completa antes de implementarlas.
-3. **Las pantallas.** Los archivos `.tsx` de la columna «Pantallas que sirve» se escriben en la fase 4.
+3. **Las pantallas del corte 2.** Las pantallas P1 a P4 del corte 1 ya existen en `src/`, y las del corte 2 se escriben con T080 y siguientes.

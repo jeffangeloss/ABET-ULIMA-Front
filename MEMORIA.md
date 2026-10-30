@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-10-30
 - **Rama de trabajo**: `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: la ADR-006 y la arquitectura del Front con Playwright para Node (T053), en local
-- **En curso**: la unión del corte 1 ya corre de punta a punta en local; faltan la auditoría de la fase (T049) y la decisión de Jefferson sobre el 403 frente al 404
-- **Siguiente paso**: la auditoría de la fase 6 (T060 a T069) y, con el permiso de Jefferson, Neon y Vercel
+- **Último cambio**: la documentación del Front con P1 a P4 y el estado del contrato al día (T063, T049 y T059), en local
+- **En curso**: T062, la verificación a mano de Jefferson, y la decisión sobre el 403 frente al 404
+- **Siguiente paso**: T062 para Jefferson y, con su permiso, Neon y Vercel (fase 7)
 - **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen y el empuje espera el permiso de Jefferson; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-30 13:41 (Lima) · feat/001-mvp-carga-r17 · Documentación del Front y auditoría del corte 1 (T063, T049 y T059)
+- Quién: Claude Code como integrador. El documentador (Sonnet) actualiza `docs/` con P1 a P4 y el enlace al contrato. El revisor (modelo principal) detecta que la cabecera del contrato, el índice de funcionalidades y `docs/README.md` siguen con el estado del 2026-10-28. Este commit y sus ajustes los hace Sonnet.
+- Qué cambió: `docs/01-arquitectura/frontend.md` (columna «Rutas que consume», P2 corregida contra el código y la prueba de humo descrita como existe), `docs/README.md`, `docs/03-api/contrato.md` y `docs/specs/feature-index.md` (estado del 2026-10-30), y `CHANGELOG.md`.
+- Por qué: T063, y las auditorías de fase T049 y T059 del plan, con `audit.md` del Back como cruce de historia, escenario y prueba.
+- Lo que debe hacer, cómo se probó: `npm test` da 76 pruebas aprobadas en 8 archivos y `bash scripts/preflight.sh` sale sin fallas. `npm run build` compiló en la entrada del 2026-10-30 13:20 y este commit solo cambia documentos.
+- Lo que no debe hacer, cómo se probó: ya no queda «Playwright para Python» fuera de la constitución ni del historial de `MEMORIA.md` y `CHANGELOG.md` (`grep -rIniE "playwright.{0,40}python"`).
+- Correcciones: la cabecera del contrato decía que la API no existe, el índice decía que ninguna funcionalidad está implementada y `docs/README.md` nombraba la rama `docs/plan-mvp` como la del trabajo. Las tres frases quedan al día.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y `audit.md` del Back.
+- Pendiente y siguiente paso: T062 para Jefferson, con la guía de `audit.md` del Back, y la decisión sobre el 403 frente al 404. El despliegue (fase 7) espera Neon, Vercel y el permiso de empujar. La enmienda de la constitución del Back (Playwright para Node) la decide Jefferson.
 
 ### 2026-10-30 13:20 (Lima) · feat/001-mvp-carga-r17 · ADR-006 con Playwright para Node (T053)
 - Quién: Claude Code como integrador, con los agentes de la fase 5 del Back (arnés, escenarios, cobertura en Sonnet; refutación y corrección con el modelo principal). Ninguno escribe en este repositorio. El integrador corrige la documentación y verifica el Front.
