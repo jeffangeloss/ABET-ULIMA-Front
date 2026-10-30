@@ -261,12 +261,13 @@ Sin cuerpo. Responde 200 con la constancia de la carga. Para una carga PUBLICADA
 
 #### `GET /api/cargas/{carga_id}/r17.xlsx`: descargar el R-17 (BR-R17-01 a BR-R17-09 y BR-ACCESO-08)
 
-Sin cuerpo. Responde 200 con el libro y estas cabeceras. El tipo y el nombre del archivo los fijan los escenarios, y `attachment` y `Cache-Control` son (propuesta).
+Sin cuerpo. Responde 200 con el libro y estas cabeceras. El tipo y el nombre del archivo los fijan los escenarios, `attachment` y `Cache-Control` son (propuesta), y `X-Content-Type-Options: nosniff`, que impide que el navegador lea el libro como otro tipo, lo aprueba Jefferson el 2026-10-30 (BR-R17-06).
 
 ```
 Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 Content-Disposition: attachment; filename="R017_450002_410_2026-2_PROVISIONAL.xlsx"
 Cache-Control: no-store
+X-Content-Type-Options: nosniff
 ```
 
 Reglas y por qué existen.

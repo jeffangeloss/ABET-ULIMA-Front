@@ -15,7 +15,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-10-30
 - **Rama de trabajo**: `feat/001-mvp-carga-r17`, rebasada sobre `develop`, empujada y con su PR #3 a `develop` (sin fusionar), y `docs/002-capstone` con el PR #4, apilado sobre ella
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: Jefferson autoriza fusionar los PR #1 y #2 en `develop` y empujar las ramas, y los PR #3 y #4 quedan abiertos, sin fusionar
+- **Último cambio**: el contrato del R-17 con `X-Content-Type-Options: nosniff`, igual que la API del PR #3 del Back
 - **En curso**: la revisión de los PR #3 y #4, T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
 - **Siguiente paso**: T062 para Jefferson y, con su permiso, Neon y Vercel (fase 7)
 - **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-30 14:52 (Lima) · feat/001-mvp-carga-r17 · Contrato del R-17 con X-Content-Type-Options: nosniff
+- Quién: Jefferson aprueba en el chat («Sí, corrígelos») los dos arreglos de SonarQube Cloud del PR #3 del Back. Claude Code actualiza el contrato y escribe esta entrada. En el flujo de agentes del Back, el revisor de seguridad (modelo principal) revisa la prosa nueva del contrato y el verificador (Sonnet) corre Vitest y la revisión previa.
+- Qué cambió: `docs/03-api/contrato.md` (las cabeceras de `GET /api/cargas/{carga_id}/r17.xlsx` suman `X-Content-Type-Options: nosniff`) y `CHANGELOG.md`.
+- Por qué: BR-R17-06 del Back pide ahora esa cabecera por el hallazgo pythonsecurity:S5131 de SonarQube Cloud, y el contrato debe decir lo mismo que la API.
+- Lo que debe hacer, cómo se probó: `npm test` da 76 pruebas aprobadas en 8 archivos y `bash scripts/preflight.sh` sale sin fallas. Solo cambian documentos.
+- Lo que no debe hacer, cómo se probó: el contrato no cambia otra ruta ni otra cabecera, y antes de esta entrada el diff solo toca `docs/03-api/contrato.md` y `CHANGELOG.md`.
+- Correcciones: ninguna en el Front.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR #3 del Front.
+- Pendiente y siguiente paso: T062 para Jefferson, la decisión sobre el 403 frente al 404, la enmienda de la constitución del Back (Playwright para Node), Neon y Vercel.
 
 ### 2026-10-30 14:30 (Lima) · feat/001-mvp-carga-r17 · PR #1 y #2 fusionados en develop, ramas rebasadas y empujadas y PR #3 y #4 abiertos
 - Quién: Jefferson autoriza en el chat «Sí, fusiona y empuja», con el pedido de fusionar los PR #1 y #2 en `develop`, empujar `feat/001-mvp-carga-r17` y `docs/002-capstone` en los dos repos y abrir sus PR a `develop` sin fusionarlos. Claude Code, sin subagentes, fusiona, rebasa, empuja, abre los PR y escribe esta entrada.
