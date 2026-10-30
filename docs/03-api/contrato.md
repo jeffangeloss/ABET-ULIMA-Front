@@ -10,7 +10,9 @@ La API es una aplicación FastAPI en Python 3.12 (ADR-003) con prefijo `/api`, d
 
 La API lee y escribe en Neon con el rol `abet_app` por la cadena con pooler (el agrupador de conexiones de Neon). Toda carga ocurre en una sola transacción (ADR-001).
 
-Al arrancar, la API comprueba contra la base el periodo de `PERIODO_VIGENTE` y el conjunto de reglas de `CONJUNTO_REGLAS`, porque la base no marca ninguno como vigente (BR-PERIODO-01 y BR-PERIODO-02). Si no los encuentra, se detiene con «PERIODO_VIGENTE 2027-1 no existe en abet.periodo» o «CONJUNTO_REGLAS R-NO-EXISTE no existe para Ambiental» (propuesta).
+Al arrancar, la API comprueba contra la base el periodo de `PERIODO_VIGENTE` y el conjunto de reglas de `CONJUNTO_REGLAS`, porque la base no marca ninguno como vigente (BR-PERIODO-01 y BR-PERIODO-02). Si no los encuentra, se detiene con «PERIODO_VIGENTE 2027-1 no existe en abet.periodo» o «CONJUNTO_REGLAS R-NO-EXISTE no existe para Ambiental» (propuesta). También se detiene si `DATABASE_URL` entra con un rol de administración (superusuario, creación de roles o de bases, sin seguridad por filas o de replicación), con «DATABASE_URL entra con un rol de administración, y la API necesita el rol de la aplicación.» (propuesta), porque la aplicación trabaja solo con el rol `abet_app`.
+
+En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SECURE=1`, que deja la cookie sin el atributo Secure para servir por http en 127.0.0.1 (propuesta). La API admite esa variable solo con una base local, por socket de Unix, localhost o 127.0.0.1, y fuera de Vercel, y en otro caso no arranca.
 
 ## 2. Tabla resumen de rutas
 
@@ -41,6 +43,10 @@ Ningún `detail` lleva el valor leído de una celda, un código de estudiante, u
 
 FastAPI responde por omisión un cuerpo mal formado con una lista en `detail`, así que el Back reemplaza ese manejador para que el 422 de validación también traiga un texto, «La petición no tiene la forma esperada.» (propuesta).
 
+Los demás errores genéricos también traen un texto. Una ruta que no existe responde 404 con «La ruta no existe.» (propuesta), un método que la ruta no admite responde 405 con «El método no se admite en esta ruta.» (propuesta) y un error no previsto responde 500 con «Ocurrió un error interno. Intente de nuevo.» (propuesta).
+
+Toda respuesta de `/api`, de éxito o de error, lleva `Cache-Control: no-store`, para que ni una caché intermedia ni el historial de un equipo compartido retengan datos de una sesión (propuesta).
+
 ### 3.2 Códigos de estado
 
 | Código | Cuándo | Qué hace la persona |
@@ -51,7 +57,7 @@ FastAPI responde por omisión un cuerpo mal formado con una lista en `detail`, a
 | 204 | Sesión cerrada | Nada |
 | 401 | Sin sesión, sesión vencida o credenciales que no coinciden | Ingresa otra vez |
 | 403 | La sección o la carga no está a cargo del usuario | Elige una sección propia |
-| 404 | La sección o la carga no existe (propuesta) | Vuelve a P2 |
+| 404 | La ruta no existe (propuesta). Una sección o una carga que no existe recibe por ahora el mismo 403 que una ajena (propuesta, sección 9) | Vuelve a P2 |
 | 409 | La sección ya tiene otra carga publicada, el archivo ya está publicado en otra sección o se pide el R-17 de una carga que no está PUBLICADA | Lee el `detail` |
 | 422 | El archivo no se puede cargar o espera la confirmación de su sección (corte 2), la sección no tiene plan de medición, el cuerpo o el periodo de la petición no tienen la forma esperada o el R-17 no cabe en la plantilla. No se guarda nada | Lee el `detail` y corrige el archivo o la petición |
 | 429 | Demasiados intentos de ingreso | Espera y vuelve a intentar |
@@ -135,7 +141,7 @@ Reglas y por qué existen.
 - `tiene_plan` es falso cuando `abet.plan_medicion` no tiene filas para esa asignatura y periodo, y entonces `pi` viene vacío. P2 muestra «La carrera aún no registra el plan de medición de esta sección» y la ruta 5 rechaza la subida (BR-PERIODO-04).
 - La respuesta del profesor no trae ningún dato de secciones ajenas.
 
-Errores 401 y 422 (periodo con formato distinto de `AAAA-C`, propuesta).
+Errores 401 y 422 con «El periodo no tiene la forma AAAA-C.» (propuesta), para un periodo con formato distinto de `AAAA-C`, con C de 0 a 2 como `ck_periodo_ciclo`.
 
 ## 6. Cargas
 
@@ -232,7 +238,7 @@ Errores, todos sin rastro en la base salvo el 201 de una carga RECHAZADA.
 |---|---|
 | 401 | «La sesión venció. Ingrese otra vez.» (propuesta) |
 | 403 | «La sección no está a su cargo.» |
-| 404 | «La sección no existe.» (propuesta) |
+| 403 | Una sección que no existe recibe el mismo 403 que una ajena, sin un 404 propio (propuesta, sección 9) |
 | 409 | «La sección 410 ya tiene una carga publicada. No se cargó el archivo.» |
 | 409 | «Este archivo ya está publicado en otra sección. No se cargó.» |
 | 422 | «No se pudo abrir el archivo. Descárguelo otra vez desde Blackboard.» |
@@ -251,7 +257,7 @@ Errores, todos sin rastro en la base salvo el 201 de una carga RECHAZADA.
 
 #### `GET /api/cargas/{carga_id}`: constancia de una carga (BR-R17-10 y BR-ACCESO-08)
 
-Sin cuerpo. Responde 200 con la constancia de la carga. Para una carga PUBLICADA el cuerpo es igual al de la respuesta 201 de la ruta 5, porque los dos salen de la base, y una carga RECHAZADA también tiene constancia, armada desde `abet.carga`, `abet.archivo_origen` y `abet.rechazo_fila`. En PI_DEL_PLAN_AUSENTE y PI_REPETIDO esta constancia nombra el mismo PI que la respuesta 201, en su `mensaje` y en el `pi` de su rechazo, porque `abet.rechazo_fila.pi_id` lo guarda (BR-R17-10). El coordinador la recibe de cualquier sección. Errores 401, 403 («La sección no está a su cargo.») y 404 («La carga no existe.», propuesta).
+Sin cuerpo. Responde 200 con la constancia de la carga. Para una carga PUBLICADA el cuerpo es igual al de la respuesta 201 de la ruta 5, porque los dos salen de la base, y una carga RECHAZADA también tiene constancia, armada desde `abet.carga`, `abet.archivo_origen` y `abet.rechazo_fila`. En PI_DEL_PLAN_AUSENTE y PI_REPETIDO esta constancia nombra el mismo PI que la respuesta 201, en su `mensaje` y en el `pi` de su rechazo, porque `abet.rechazo_fila.pi_id` lo guarda (BR-R17-10). El coordinador la recibe de cualquier sección. Errores 401 y 403 («La sección no está a su cargo.»), también para una carga que no existe (propuesta, sección 9).
 
 #### `GET /api/cargas/{carga_id}/r17.xlsx`: descargar el R-17 (BR-R17-01 a BR-R17-09 y BR-ACCESO-08)
 
@@ -273,7 +279,7 @@ Reglas y por qué existen.
 - Ni el nombre del archivo ni sus propiedades llevan nombres de personas. El autor y el último autor del libro están vacíos o dicen «ABET_SIS_MED» (BR-R17-06 y BR-R17-07).
 - El profesor descarga el R-17 de sus secciones y el coordinador el de cualquier sección (BR-ACCESO-08).
 
-Errores 401, 403 («La sección no está a su cargo.»), 404 (propuesta), 409 («La carga no está publicada y no tiene R-17.», con el código 409 como propuesta) y 422 («La sección supera las filas de la plantilla del R-17.», propuesta, para una sección de más de 47 estudiantes con 3 PI).
+Errores 401, 403 («La sección no está a su cargo.», también para una carga que no existe, propuesta de la sección 9), 409 («La carga no está publicada y no tiene R-17.», con el código 409 como propuesta) y 422 («La sección supera las filas de la plantilla del R-17.», propuesta, para una sección de más de 47 estudiantes con 3 PI).
 
 ## 7. Rutas del corte 2
 
@@ -306,7 +312,7 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 ## 9. Lo que el contrato no cubre todavía
 
 1. **Los textos marcados «(propuesta)».** Ninguna decisión de la spec los fija todavía, aunque algunos ya figuran en un escenario, y las specs vivas los conservan con esa marca hasta que la revisión del contrato los confirme.
-2. **Las respuestas de los códigos 403 y 404 para un recurso ajeno.** La propuesta es 403 para un recurso que existe fuera del alcance, y conviene revisar si un 404 distinto para el que no existe revela su existencia.
+2. **Las respuestas de los códigos 403 y 404 para un recurso ajeno.** La propuesta es 403 para un recurso que existe fuera del alcance. El Back del corte 1 responde también el mismo 403 «La sección no está a su cargo.» a una sección o una carga que no existe, porque un 404 distinto revelaría qué identificadores existen y `app/permisos.py` ya responde el mismo no (propuesta). La decisión queda para Jefferson, y si la revierte, la API vuelve al 404 y P3 y P4 ofrecen volver a P2.
 3. **Una ruta de salud** (`/api/salud`) para la prueba de humo y el monitoreo, que ninguna historia pide.
 4. **Los nombres de los esquemas Pydantic**, que se fijan con el código.
 5. **El plazo del reemplazo (D-11).** Quién reemplaza está decidido para el corte 2, y hasta cuándo sigue abierto.

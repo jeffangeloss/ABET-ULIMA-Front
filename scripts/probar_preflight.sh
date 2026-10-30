@@ -73,6 +73,15 @@ caso "hook de memoria: repositorio limpio no bloquea" 0 bash -c 'printf "{}" | C
 caso "hook de memoria: cambio sin MEMORIA.md bloquea" 1 bash -c 'echo y >> README.md; printf "{}" | CLAUDE_PROJECT_DIR="$PWD" bash scripts/recordar_memoria.sh'
 caso "hook de memoria: cambio con MEMORIA.md no bloquea" 0 bash -c 'echo y >> README.md; echo e >> MEMORIA.md; printf "{}" | CLAUDE_PROJECT_DIR="$PWD" bash scripts/recordar_memoria.sh'
 caso "hook de memoria: no bloquea dos veces seguidas" 0 bash -c 'echo y >> README.md; printf "{\"stop_hook_active\": true}" | CLAUDE_PROJECT_DIR="$PWD" bash scripts/recordar_memoria.sh'
+caso "src con localStorage falla" 1 bash -c 'mkdir -p src; echo "const a = window.localStorage;" > src/x.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "src con sessionStorage falla" 1 bash -c 'mkdir -p src; echo "sessionStorage.setItem(1, 2);" > src/x.tsx; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "src con una URL absoluta falla" 1 bash -c 'mkdir -p src; echo "const u = \"https://otro.example.invalid/x\";" > src/x.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "fetch fuera de servicios/api.ts falla" 1 bash -c 'mkdir -p src; echo "fetch(\"/api/sesion\");" > src/x.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "XMLHttpRequest en src falla" 1 bash -c 'mkdir -p src; echo "new XMLHttpRequest();" > src/x.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "ruta que no es /api en servicios/api.ts falla" 1 bash -c 'mkdir -p src/servicios; echo "await fetch(\"/otra/ruta\");" > src/servicios/api.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "fetch de una ruta /api en servicios/api.ts pasa" 0 bash -c 'mkdir -p src/servicios; echo "await fetch(\"/api/sesion\");" > src/servicios/api.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "localStorage en las pruebas de tests/ pasa" 0 bash -c 'mkdir -p tests src; echo "window.localStorage.clear();" > tests/x.test.ts; echo "export const a = 1;" > src/x.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
+caso "src sin almacenamiento ni URLs pasa y no muestra el contenido" 0 bash -c 'mkdir -p src; echo "export const a = \"/api/x\";" > src/x.ts; echo e >> MEMORIA.md; git add -A; bash scripts/preflight.sh --staged'
 
 echo "Prueba de la revisión previa y del hook de memoria: $bien bien, $mal mal."
 [ "$mal" -eq 0 ]
