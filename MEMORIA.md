@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-10-30
-- **Rama de trabajo**: `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
+- **Rama de trabajo**: `feat/001-mvp-carga-r17`, rebasada sobre `develop`, empujada y con su PR #3 a `develop` (sin fusionar), y `docs/002-capstone` con el PR #4, apilado sobre ella
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: la documentación del Front con P1 a P4 y el estado del contrato al día (T063, T049 y T059), en local
-- **En curso**: T062, la verificación a mano de Jefferson, y la decisión sobre el 403 frente al 404
+- **Último cambio**: Jefferson autoriza fusionar los PR #1 y #2 en `develop` y empujar las ramas, y los PR #3 y #4 quedan abiertos, sin fusionar
+- **En curso**: la revisión de los PR #3 y #4, T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
 - **Siguiente paso**: T062 para Jefferson y, con su permiso, Neon y Vercel (fase 7)
-- **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen y el empuje espera el permiso de Jefferson; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
+- **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, PR #3 y #4)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-30 14:30 (Lima) · feat/001-mvp-carga-r17 · PR #1 y #2 fusionados en develop, ramas rebasadas y empujadas y PR #3 y #4 abiertos
+- Quién: Jefferson autoriza en el chat «Sí, fusiona y empuja», con el pedido de fusionar los PR #1 y #2 en `develop`, empujar `feat/001-mvp-carga-r17` y `docs/002-capstone` en los dos repos y abrir sus PR a `develop` sin fusionarlos. Claude Code, sin subagentes, fusiona, rebasa, empuja, abre los PR y escribe esta entrada.
+- Qué cambió: `develop` recibe los PR #1 y #2 con rebase. Esta rama se rebasa sobre `develop` desde el commit viejo de `docs/plan-mvp`, y `docs/002-capstone`, sobre el commit nuevo del contrato, porque GitHub reescribe los SHA al fusionar con rebase. Las dos suben con sus PR #3 y #4 a `develop`. En el repositorio solo cambia esta memoria.
+- Por qué: el permiso de empujar que esperaba el «Punto actual» y el paso 5 («Aprobación») de la skill specs-back-front.
+- Lo que debe hacer, cómo se probó: `git diff --quiet` entre la punta vieja y la nueva de cada rama sale sin diferencias, y `git merge-base --is-ancestor` confirma que esta rama contiene `develop` y que `docs/002-capstone` sale del contrato rebasado.
+- Lo que no debe hacer, cómo se probó: ningún commit ni PR trae `Co-Authored-By` ni la firma de una herramienta (0 coincidencias), y lo que agregan las dos ramas no trae números de 8 cifras fuera de los inventados, de 99000000 a 99999999.
+- Correcciones: el PR #2 chocaba con `develop` después de fusionar el #1 con rebase, y se rebasó sobre `develop` antes de fusionarlo, con el mismo árbol.
+- Cómo se reporta: esta entrada y los PR #3 (corte 1) y #4 (spec 002, apilado sobre el #3), enlazados con los PR #3 y #4 del Back.
+- Pendiente y siguiente paso: los checks de los PR #3 y #4 corren en GitHub. Siguen T062, la decisión sobre el 403 frente al 404, la enmienda de la constitución del Back (Playwright para Node), Neon y Vercel.
 
 ### 2026-10-30 13:41 (Lima) · feat/001-mvp-carga-r17 · Documentación del Front y auditoría del corte 1 (T063, T049 y T059)
 - Quién: Claude Code como integrador. El documentador (Sonnet) actualiza `docs/` con P1 a P4 y el enlace al contrato. El revisor (modelo principal) detecta que la cabecera del contrato, el índice de funcionalidades y `docs/README.md` siguen con el estado del 2026-10-28. Este commit y sus ajustes los hace Sonnet.
