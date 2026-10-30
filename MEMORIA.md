@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-10-30
 - **Rama de trabajo**: `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: las pantallas P1 a P4 con su prueba de humo contra la API real (T040 a T045), en local
+- **Último cambio**: la ADR-006 y la arquitectura del Front con Playwright para Node (T053), en local
 - **En curso**: la unión del corte 1 ya corre de punta a punta en local; faltan la auditoría de la fase (T049) y la decisión de Jefferson sobre el 403 frente al 404
-- **Siguiente paso**: las pruebas de aceptación ejecutables (T050 a T053), la auditoría de la fase 6 y, con el permiso de Jefferson, Neon y Vercel
+- **Siguiente paso**: la auditoría de la fase 6 (T060 a T069) y, con el permiso de Jefferson, Neon y Vercel
 - **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen y el empuje espera el permiso de Jefferson; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-30 13:20 (Lima) · feat/001-mvp-carga-r17 · ADR-006 con Playwright para Node (T053)
+- Quién: Claude Code como integrador, con los agentes de la fase 5 del Back (arnés, escenarios, cobertura en Sonnet; refutación y corrección con el modelo principal). Ninguno escribe en este repositorio. El integrador corrige la documentación y verifica el Front.
+- Qué cambió: `docs/00-vision/adr/ADR-006-historias-gherkin-auditadas.md` y `docs/01-arquitectura/frontend.md`, que ahora nombran Playwright para Node y `e2e/humo.spec.ts` como la prueba de humo, y `CHANGELOG.md`.
+- Por qué: T053 queda cubierta por la prueba de humo que el Front ya trae, y los documentos decían Playwright para Python.
+- Lo que debe hacer, cómo se probó: `npm test` da 76 aprobadas en 8 archivos, `npm run build` compila y `bash scripts/preflight.sh` sale sin fallas.
+- Lo que no debe hacer, cómo se probó: el cambio no toca `src/`, `tests/` ni `e2e/`, y `git diff --stat` muestra solo dos archivos de documentación.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y `CHANGELOG.md`.
+- Pendiente y siguiente paso: la prueba de humo comprueba el nombre del archivo y la firma PK, y las cifras 60,0 / 60,0 / 70,0 las comprueba el Back en `r17_constancia.feature`. Falta que corra en la CI y contra Preview (T075). Siguen la auditoría de la fase 6 y el despliegue.
 
 ### 2026-10-30 12:05 (Lima) · feat/001-mvp-carga-r17 · Front del corte 1, pantallas P1 a P4 con su prueba de humo (T040 a T045)
 - Quién: Claude Code como integrador, con seis subagentes. El constructor del Front (Sonnet) escribe T040 a T045, y el constructor de la API (modelo principal, esfuerzo medio) escribe en el Back las rutas que estas pantallas consumen. El integrador de la unión (Sonnet) agrega la prueba de humo con Playwright y la corre contra la API real. Tres verificadores (seguridad con esfuerzo alto, contrato y pantallas con Sonnet) dejan dos hallazgos de severidad media y varios bajos, el corrector (Sonnet) los cierra y el reverificador (Sonnet) aprueba con tres bajos. Antes de aceptar el trabajo, el integrador corre en este árbol `npm test`, `npm run build`, `bash scripts/preflight.sh` y `bash scripts/probar_preflight.sh`, comprueba que `node_modules/`, `dist/` y `test-results/` quedan ignorados (`playwright-report/` ya figura en `.gitignore`) y lee los informes de los seis agentes. Una salvedad del constructor, que ejecuta `git add -N .` y lo deshace con `git restore --staged .`, deja el índice como estaba.

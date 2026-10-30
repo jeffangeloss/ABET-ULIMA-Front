@@ -4,6 +4,10 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+### Cambiado
+
+- ADR-006 y arquitectura del Front con Playwright para Node (`e2e/humo.spec.ts`) como prueba de humo.
+
 ### Agregado
 
 - Ramas `main` y `develop` con la configuración de IQBF: `develop` por defecto, PR obligatorio, checks `pruebas` y `flujo`, sin empujes forzados ni borrado (`docs/devops.md`).
