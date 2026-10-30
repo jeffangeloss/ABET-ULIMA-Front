@@ -12,13 +12,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-10-29
+- **Fecha**: 2026-10-30
 - **Rama de trabajo**: `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: contrato y documentos para el profesor con varias secciones de varios cursos (en local)
-- **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 en su árbol de trabajo)
-- **Siguiente paso**: fase 4, las pantallas P1 a P4 (T040 a T045), cuando la API del Back exista
-- **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
+- **Último cambio**: las pantallas P1 a P4 con su prueba de humo contra la API real (T040 a T045), en local
+- **En curso**: la unión del corte 1 ya corre de punta a punta en local; faltan la auditoría de la fase (T049) y la decisión de Jefferson sobre el 403 frente al 404
+- **Siguiente paso**: las pruebas de aceptación ejecutables (T050 a T053), la auditoría de la fase 6 y, con el permiso de Jefferson, Neon y Vercel
+- **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen y el empuje espera el permiso de Jefferson; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
 
 ## Plantilla de una entrada
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-10-30 12:05 (Lima) · feat/001-mvp-carga-r17 · Front del corte 1, pantallas P1 a P4 con su prueba de humo (T040 a T045)
+- Quién: Claude Code como integrador, con seis subagentes. El constructor del Front (Sonnet) escribe T040 a T045, y el constructor de la API (modelo principal, esfuerzo medio) escribe en el Back las rutas que estas pantallas consumen. El integrador de la unión (Sonnet) agrega la prueba de humo con Playwright y la corre contra la API real. Tres verificadores (seguridad con esfuerzo alto, contrato y pantallas con Sonnet) dejan dos hallazgos de severidad media y varios bajos, el corrector (Sonnet) los cierra y el reverificador (Sonnet) aprueba con tres bajos. Antes de aceptar el trabajo, el integrador corre en este árbol `npm test`, `npm run build`, `bash scripts/preflight.sh` y `bash scripts/probar_preflight.sh`, comprueba que `node_modules/`, `dist/` y `test-results/` quedan ignorados (`playwright-report/` ya figura en `.gitignore`) y lee los informes de los seis agentes. Una salvedad del constructor, que ejecuta `git add -N .` y lo deshace con `git restore --staged .`, deja el índice como estaba.
+- Qué cambió: proyecto con Vite, React, TypeScript y Tailwind (`package.json`, `package-lock.json` con versiones exactas, `vite.config.ts` con el proxy de `/api`, `tsconfig.json`, `index.html`), `src/` con `servicios/api.ts` como única puerta HTTP, `servicios/tipos.ts` y las pantallas P1 Ingreso, P2 Mis secciones, P3 Subir export y P4 Resultado, 76 pruebas en `tests/` con las respuestas del contrato solo allí, la prueba de humo en `e2e/`, `playwright.config.ts` y `scripts/e2e.sh`, la regla 7 de `scripts/preflight.sh` con sus 9 casos en `scripts/probar_preflight.sh`, el job de Node en `ci.yml` (con `actions/setup-node` v7.1.0 fijada por SHA), Dependabot de npm con espera de 14 días, `docs/01-arquitectura/frontend.md` y `docs/03-api/contrato.md`.
+- Por qué: US-05 a US-16 en su parte de pantallas, T040 a T045 del plan del corte 1.
+- Lo que debe hacer, cómo se probó: `npm test` da 76 de 76 en 8 archivos, `npm run build` pasa (`tsc --noEmit` y `vite build`), `bash scripts/preflight.sh` sale sin fallas y `bash scripts/probar_preflight.sh` da 28 bien y 0 mal. La prueba de humo con `scripts/e2e.sh` da 2 de 2 contra la API y Vite reales, en la corrida del reverificador. `docente410` recorre P1 a P4 con «11 filas leídas, 10 aceptadas y 1 rechazada», el rechazo de la fila 3 del PI 5.2, el aviso del PI 5.3 y el R-17 descargado con firma de xlsx. Las 5 capturas quedan fuera del repositorio, en `ABET_SIS_MED/demo_corte1/capturas/`.
+- Lo que no debe hacer, cómo se probó: la regla 7 falla si un archivo de `src/` usa `localStorage`, `sessionStorage` o `indexedDB`, una URL absoluta, otro canal HTTP, `fetch` fuera de `api.ts` o una ruta literal que no empiece con `/api`, y sus casos negativos pasan sin mostrar el contenido. Las pruebas comprueban que el navegador no guarda nada de la sesión. `docente.varias` recibe el 403 «La sección no está a su cargo.» al pedir la 410 de otra asignatura. Las capturas no muestran contraseñas, nombres ni valores leídos, y `test-results/` queda vacío e ignorado.
+- Correcciones: P3 oculta el control nativo «Choose File» y ofrece el botón propio «Elegir archivo», con dos pruebas. El 403 único frente al 404 queda como propuesta en `contrato.md` (tabla 3.2, rutas 5 a 7 y sección 9.2), y el Front no maneja 404 mientras la API no lo emita. El contrato suma como propuesta los textos que la API emite y no estaban registrados.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el registro de tareas en `specs/001-mvp-carga-r17/tasks.md` del Back. Sin PR.
+- Pendiente y siguiente paso: Hallazgos bajos abiertos tras la reverificación. (1) El candado de la cuenta se mantiene durante la verificación Argon2id y `now()` es la hora de inicio de la transacción, así que un fallo que espera detrás de un ingreso correcto puede quedar fechado antes y no contar para el límite; se corrige con `clock_timestamp()`. (2) Sigue abierta la decisión de Jefferson entre 403 y 404 para una sección o una carga inexistente; con 404, P3 y P4 deben ofrecer volver a P2. (3) La prueba de humo no corre en la CI y exige una API recién arrancada, y la ADR-006 todavía habla de Playwright para Python aunque se usó el de Node. La condición de la API recién arrancada para la prueba de humo queda documentada en su spec. Siguen pendientes las pruebas de aceptación ejecutables (T050 a T053), la auditoría de la fase 6 (T049 queda abierta) y el despliegue, que espera el proyecto de Neon, el de Vercel y el permiso de Jefferson. El orden de foco con teclado y el contraste no se revisaron en el navegador.
 
 ### 2026-10-29 08:22 (Lima) · feat/001-mvp-carga-r17 · Contrato y documentos para el profesor con varias secciones
 - Quién: Claude Code como integrador, con el trabajo de los subagentes del flujo wf_d0250dfb-fda, el mismo de la entrada de esta fecha en `MEMORIA.md` del Back. El agente escribir:escenarios redacta los cambios de `docs/`, y un corrector cierra los hallazgos que tocan el contrato y la fila de `SESION_SECRETO`. Tres verificadores y un reverificador revisan en solo lectura, y el reverificador aprueba. Antes de aceptar el trabajo, Claude Code corre `scripts/preflight.sh` del Front y compara los seis archivos cambiados con la lista del informe.

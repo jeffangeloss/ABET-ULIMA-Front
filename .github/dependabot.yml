@@ -1,6 +1,7 @@
 # Actualizaciones de las acciones de GitHub (docs/devops.md). Dependabot propone cada semana la
 # versión nueva de cada acción con su SHA y su comentario de versión, en un PR a develop.
-# Los ecosistemas pip y npm se suman cuando existan sus manifiestos.
+# El ecosistema npm espera 14 días tras la publicación de cada versión (cooldown), igual que la
+# instalación local con --before. El ecosistema pip se suma cuando exista su manifiesto.
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -11,6 +12,19 @@ updates:
       day: monday
       time: "07:00"
       timezone: America/Lima
+    commit-message:
+      prefix: chore
+    open-pull-requests-limit: 5
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: America/Lima
+    cooldown:
+      default-days: 14
     commit-message:
       prefix: chore
     open-pull-requests-limit: 5
