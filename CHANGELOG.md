@@ -24,3 +24,4 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 - Job `secretos` con gitleaks 8.30.1 fijado por suma SHA-256, y `.gitleaks.toml`.
 - Dependabot para las acciones de GitHub, `.sonarcloud.properties` para SonarQube Cloud y `.snyk` con excepciones que vencen.
+- El contrato de `GET /api/cargas/{carga_id}/r17.xlsx` suma `X-Content-Type-Options: nosniff`, que el Back agrega por un hallazgo de SonarQube Cloud (BR-R17-06).
