@@ -14,7 +14,7 @@ Antes de entrar a la spec, las historias pasan una auditoría de refutación. Tr
 
 Los escenarios viven en un solo lugar, `specs/001-mvp-carga-r17/aceptacion/` del Back, repartidos en siete archivos, que son `base_neon.feature` (US-01 a US-04), `acceso.feature` (US-05, US-06 y US-20), `carga.feature` (US-07 a US-14 y US-21), `r17_constancia.feature` (US-15 y US-16), `despliegue.feature` (US-17), `reemplazo_y_cargas.feature` (US-18 y US-19) y `varias_secciones.feature`. Este último reúne los seis escenarios del profesor que dicta varias secciones (US-06, US-07, US-09 y US-13). Los pasos viven en `tests/aceptacion/pasos/` y leen esos archivos desde su carpeta con `scenarios()` de pytest-bdd y la ruta relativa, así que nadie los copia ni los mueve a `tests/`. La spec lista, por historia, el archivo donde vive cada escenario, y cada escenario lleva su etiqueta `@US-NN` y `@corte1` o `@corte2`.
 
-El Gherkin ejecutable cubre la carga y el R-17. El resto de las historias conserva su Gherkin como criterio escrito y se prueba con pytest. El primer día de la fase de contrato se prueba durante 30 minutos pytest-bdd 9 con un `.feature` que use Característica, Antecedentes, Esquema del escenario y Ejemplos. Si falla, se usa behave con `lang = es`. Una sola prueba de humo (recorrido mínimo de punta a punta que confirma que el sistema desplegado responde) con Playwright para Python ingresa, sube el export con el 5 en la fila 3, ve 11 leídas, 10 aceptadas y 1 rechazada y descarga el R-17 con 60,0 / 60,0 / 70,0.
+El Gherkin ejecutable cubre la carga y el R-17. El resto de las historias conserva su Gherkin como criterio escrito y se prueba con pytest. El primer día de la fase de contrato se prueba durante 30 minutos pytest-bdd 9 con un `.feature` que use Característica, Antecedentes, Esquema del escenario y Ejemplos. Si falla, se usa behave con `lang = es`. Una sola prueba de humo (recorrido mínimo de punta a punta que confirma que el sistema desplegado responde) con Playwright para Node (`e2e/humo.spec.ts`) ingresa, sube el export con el 5 en la fila 3, ve 11 leídas, 10 aceptadas y 1 rechazada y descarga el R-17 con 60,0 / 60,0 / 70,0.
 
 ## Invariantes
 
@@ -33,7 +33,7 @@ El Gherkin ejecutable cubre la carga y el R-17. El resto de las historias conser
 
 **Copiar los `.feature` a `tests/aceptacion/features/`.** Se descarta porque dos copias se separan con el primer cambio, y la spec, que es la fuente revisada, dejaría de ser la que se ejecuta.
 
-**Selenium para la prueba de humo.** Se descarta por Playwright, que trae esperas automáticas, trazas y una skill oficial en Python.
+**Selenium para la prueba de humo.** Se descarta por Playwright, que trae esperas automáticas, trazas y un paquete oficial para Node, el mismo lenguaje del Front.
 
 ## Consecuencias
 
