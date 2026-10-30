@@ -1,6 +1,6 @@
 # Documentación del sistema de medición ABET
 
-> **Estado 2026-10-28.** Primer juego de documentos del producto mínimo viable (minimum viable product, MVP) «Del export de Blackboard al R-17 desde la base» (épica EP-01). Todo lo que describe la API, la base y el despliegue es plan en revisión, porque todavía no existe código de producto en ninguno de los dos repositorios. Cada documento separa lo decidido de lo propuesto con la marca «(propuesta)» y cierra con su sección «Lo que todavía NO está».
+> **Estado 2026-10-30.** Primer juego de documentos del producto mínimo viable (minimum viable product, MVP) «Del export de Blackboard al R-17 desde la base» (épica EP-01). Las pantallas P1 a P4 del corte 1 están construidas en `src/` y [`frontend.md`](01-arquitectura/frontend.md) las describe tal como quedaron. El despliegue, el modo reemplazo y P5 del corte 2 siguen siendo plan en revisión. Cada documento separa lo decidido de lo propuesto con la marca «(propuesta)» y cierra con su sección «Lo que todavía NO está».
 
 Esta carpeta reúne la visión, la arquitectura, el contrato de la API, la operación y las decisiones del sistema completo de la Carrera de Ingeniería Ambiental de la Universidad de Lima. Sigue el esquema de IQBF-ULIMA_Front, con una diferencia deliberada. En IQBF la documentación del sistema vive en el Front por razones históricas, y en ABET vive aquí por decisión, porque el Front es el consumidor del contrato y el lugar donde cada pantalla nombra las historias que la justifican. La especificación (spec) del MVP, las reglas de negocio y los escenarios de aceptación viven en `specs/` de [ABET-ULIMA-Back](https://github.com/jeffangeloss/ABET-ULIMA-Back), y los pasos que los ejecutan viven en `tests/aceptacion/pasos/` del mismo repositorio.
 
@@ -27,7 +27,7 @@ Los datos de todos los ejemplos son inventados. La sección 410 de la asignatura
 
 ### 01 · Arquitectura
 
-- [`frontend.md`](01-arquitectura/frontend.md) describe las cinco pantallas (P1 a P5), las historias que justifican cada una, lo que muestra y lo que no muestra, y la única puerta HTTP `src/servicios/api.ts`.
+- [`frontend.md`](01-arquitectura/frontend.md) describe las pantallas P1 a P4 construidas y P5, que es del corte 2, con las historias que justifican cada una, las rutas de [`contrato.md`](03-api/contrato.md) que consume, lo que muestra y lo que no muestra, y la única puerta HTTP `src/servicios/api.ts`.
 
 ### 03 · API
 
@@ -68,7 +68,7 @@ Cuando un documento y el código discrepan, gana el código. Cuando un documento
 
 ## Lo que todavía NO está
 
-1. **Código de producto.** Ni el Front ni el Back tienen código todavía, así que ninguna afirmación de esta carpeta se comprueba aún contra una ruta de archivo de implementación.
-2. **La spec aprobada.** La spec, el plan, las tareas y estos documentos están en la rama `docs/plan-mvp` de los dos repositorios, sin PR. La aprobación es el merge (la fusión del PR) en `develop`, que decide Jefferson.
+1. **Verificación a mano del corte 1.** `specs/001-mvp-carga-r17/audit.md` del Back cruza cada historia con su prueba, y queda abierta la tarea T062, que Jefferson cumple en el navegador con la guía de ese archivo.
+2. **La spec aprobada.** La spec, el plan, las tareas y estos documentos están en la rama `docs/plan-mvp` de los dos repositorios, sin PR, y el trabajo del corte 1 vive en `feat/001-mvp-carga-r17`. La aprobación es el merge (la fusión del PR) en `develop`, que decide Jefferson.
 3. **`02-datos/` y `04-dominio/`.** Este juego no trae el modelo de datos columna por columna ni la explicación del dominio. Mientras tanto, el modelo se lee en las migraciones V1_01 a V1_08 y en las vistas `R__vista_r17_por_pi.sql` y `R__vista_tabla_maestra_pi.sql`.
 4. **`specs/spec-template.md`.** La plantilla de spec viva en español queda para la fase de contrato (fase 1 del plan).

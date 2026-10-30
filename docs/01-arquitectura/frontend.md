@@ -34,7 +34,7 @@ tests/                     Vitest y Testing Library, con las respuestas del cont
 scripts/                   preflight.sh, probar_preflight.sh y e2e.sh
 ```
 
-Los comandos de `package.json` son `npm run dev` (Vite con el proxy de `/api`), `npm run build` (TypeScript y Vite), `npm test` (Vitest) y `npm run e2e`, que falla a propósito mientras la prueba de humo de la sección 6 no exista.
+Los comandos de `package.json` son `npm run dev` (Vite con el proxy de `/api`), `npm run build` (TypeScript y Vite), `npm test` (Vitest) y `npm run e2e`, que corre la prueba de humo de la sección 6 con `scripts/e2e.sh` (exige la variable `ABET_CLAVES_ARCHIVO`).
 
 ## 2. `servicios/api.ts`, la única puerta
 
@@ -53,15 +53,15 @@ Ningún componente llama a `fetch` directamente. `api.ts` expone una función po
 
 ## 4. Las pantallas
 
-| Pantalla | Archivo (propuesta) | Historias | Corte |
-|---|---|---|---|
-| P1 Ingreso | `pantallas/Ingreso.tsx` | US-05 (y US-20 en el corte 2) | 1 |
-| P2 Mis secciones | `pantallas/MisSecciones.tsx` | US-06 | 1 |
-| P3 Subir export | `pantallas/SubirExport.tsx` | US-07, US-08, US-09, US-11, US-12, US-13 (y US-18 y US-21 en el corte 2) | 1 |
-| P4 Resultado de la carga | `pantallas/ResultadoCarga.tsx` | US-07, US-10, US-12, US-13, US-14, US-15, US-16 | 1 |
-| P5 Cargas | `pantallas/Cargas.tsx` | US-18, US-19 | 2 |
+| Pantalla | Archivo | Historias | Rutas que consume ([contrato](../03-api/contrato.md)) | Corte |
+|---|---|---|---|---|
+| P1 Ingreso | `pantallas/Ingreso.tsx` | US-05 (y US-20 en el corte 2) | `POST /api/sesion` (sección 4) | 1 |
+| P2 Mis secciones | `pantallas/MisSecciones.tsx` | US-06 | `GET /api/secciones` (sección 5) | 1 |
+| P3 Subir export | `pantallas/SubirExport.tsx` | US-07, US-08, US-09, US-11, US-12, US-13 (y US-18 y US-21 en el corte 2) | `POST /api/secciones/{seccion_id}/cargas` (sección 6) | 1 |
+| P4 Resultado de la carga | `pantallas/ResultadoCarga.tsx` | US-07, US-10, US-12, US-13, US-14, US-15, US-16 | `GET /api/cargas/{carga_id}` y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | 1 |
+| P5 Cargas | `pantallas/Cargas.tsx` | US-18, US-19 | `GET /api/cargas` (sección 7) | 2 |
 
-Las historias US-01 a US-04 (base, rol, periodo y usuarios) no tienen pantalla, porque en el MVP las ejecuta el administrador técnico con scripts. US-17 (despliegue) tampoco tiene pantalla propia, y su prueba de humo recorre P1, P2, P3 y P4 en el Front desplegado.
+La sesión (`GET` y `DELETE /api/sesion`, sección 4 del contrato) la usan `App.tsx` y su botón «Salir». Las historias US-01 a US-04 (base, rol, periodo y usuarios) no tienen pantalla, porque en el MVP las ejecuta el administrador técnico con scripts. US-17 (despliegue) tampoco tiene pantalla propia, y su prueba de humo recorre P1, P2, P3 y P4 en el Front desplegado.
 
 ### P1 Ingreso
 
@@ -75,9 +75,9 @@ No muestra registro de cuentas, recuperación de contraseña, inicio con Microso
 
 Justifica la pantalla US-06 (ver solo las secciones propias del periodo). El profesor ve sus secciones y el coordinador ve todas las de la carrera.
 
-Muestra una fila por sección del periodo vigente, con la forma «450002 Principios de Ingeniería Sostenible, sección 410, 2026-2» (propuesta), los PI del plan («5.1, 5.2, 5.3», propuesta) y el estado de su carga («Sin carga» o «Publicada, 11 de 11 filas aceptadas»), que la pantalla arma con el campo `estado` y los conteos de la respuesta. Para el profesor, cada fila ofrece «Subir export», que abre P3, y, si tiene una carga publicada, el botón «Ver resultado» (propuesta), que abre su resultado en P4. Un usuario sin secciones asignadas ve «No tiene secciones asignadas en este periodo.» (propuesta). Una sección sin plan de medición muestra «La carrera aún no registra el plan de medición de esta sección» y deja «Subir export» desactivado.
+Muestra una fila por sección del periodo vigente, con la forma «450002 Principios de Ingeniería Sostenible, sección 410, 2026-2» (propuesta), los PI del plan («PI del plan: 5.1, 5.2, 5.3», propuesta) y el estado de su carga («Sin carga» o «Publicada, 11 de 11 filas aceptadas»), que la pantalla arma con el campo `estado` y los conteos de la respuesta. Para el profesor, cada fila ofrece «Subir export», que abre P3, y, si la sección tiene una carga, el botón «Ver resultado» (propuesta), que abre su resultado en P4. Un usuario sin secciones asignadas ve «No tiene secciones asignadas en este periodo.» (propuesta). Una sección sin plan de medición muestra «La carrera aún no registra el plan de medición de esta sección» y deja «Subir export» desactivado.
 
-En el corte 1 el coordinador no sube exports, así que su P2 no muestra «Subir export» y ofrece solo el enlace a P4 y la descarga del R-17 de cada carga publicada (propuesta).
+En el corte 1 el coordinador no sube exports, así que su P2 no muestra «Subir export» y ofrece el botón «Ver resultado» y el enlace «Descargar R-17» (propuesta) de cada sección con carga. El profesor descarga el R-17 desde P4.
 
 No muestra secciones de otros docentes al profesor, periodos anteriores, nombres ni cantidad de estudiantes, porcentajes del R-17, filtros, búsquedas ni opciones de administración.
 
@@ -130,7 +130,7 @@ Vitest con Testing Library (`npm test`) cubre cada pantalla en lo que debe mostr
 
 ## 7. Lo que todavía NO está
 
-1. **Despliegue.** No existe `vercel.json`, así que la reescritura de `/api/:path*` hacia el Back solo funciona en local con el proxy de Vite. Tampoco existe la prueba de humo con Playwright, y `npm run e2e` falla hasta que se escriba.
+1. **Despliegue.** No existe `vercel.json`, así que la reescritura de `/api/:path*` hacia el Back solo funciona en local con el proxy de Vite. La prueba de humo con Playwright para Node existe (`e2e/humo.spec.ts`), pero no corre en la CI y exige una API recién arrancada con `bash ../back/scripts/api_local.sh --sin-https`, Vite en el puerto 5173 y la variable `ABET_CLAVES_ARCHIVO`, porque la carga de la sección 410 se hace una sola vez. Su corrida contra Preview llega con el despliegue.
 2. **Diseño visual.** No hay prototipo en Figma ni guía de estilo, y las pantallas parten de componentes simples de Tailwind.
 3. **P5, el modo reemplazo de P3 y US-21.** Pertenecen al corte 2.
 4. **Pruebas de accesibilidad automáticas.** Las pantallas llevan etiquetas, roles, foco y textos en español, y las pruebas lo comprueban, pero ninguna herramienta como axe revisa el contraste ni el orden del foco, y conviene sumarla antes del primer profesor externo.
@@ -139,6 +139,6 @@ Vitest con Testing Library (`npm test`) cubre cada pantalla en lo que debe mostr
 
 ## Referencias
 
-- [`03-api/contrato.md`](../03-api/contrato.md), las rutas que consume cada pantalla.
+- [`03-api/contrato.md`](../03-api/contrato.md), las rutas que consume cada pantalla, con sus errores y sus mensajes literales. La sección 10 del contrato comprueba que esos mensajes coinciden con los de los escenarios.
 - [`00-vision/adr/ADR-004-sesion-propia-mismo-origen.md`](../00-vision/adr/ADR-004-sesion-propia-mismo-origen.md), la sesión y el mismo origen.
 - La spec del MVP en `specs/001-mvp-carga-r17/spec.md` del Back y sus escenarios en `specs/001-mvp-carga-r17/aceptacion/`.

@@ -7,6 +7,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 ### Cambiado
 
 - ADR-006 y arquitectura del Front con Playwright para Node (`e2e/humo.spec.ts`) como prueba de humo.
+- Documentación del Front con las pantallas P1 a P4, el enlace al contrato y el estado del 2026-10-30 en el contrato, el índice de funcionalidades y `docs/README.md` (T063).
 
 ### Agregado
 
