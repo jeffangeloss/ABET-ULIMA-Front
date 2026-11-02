@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-02
-- **Rama de trabajo**: `feat/001-mvp-carga-r17`, rebasada sobre `develop`, empujada y con su PR #3 a `develop` (sin fusionar), y `docs/002-capstone` con el PR #4, apilado sobre ella
+- **Rama de trabajo**: `develop`, que recibe el corte 1 desde el PR #3 con rebase, y `docs/002-capstone` con el PR #4, que espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: la CI con `npm ci --ignore-scripts`, por la nota C de seguridad que SonarQube Cloud da al PR #3, después del contrato del R-17 con `X-Content-Type-Options: nosniff`
-- **En curso**: la revisión de los PR #3 y #4, T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
-- **Siguiente paso**: T062 para Jefferson y, con su permiso, Neon y Vercel (fase 7)
+- **Último cambio**: SonarQube Cloud aprueba el PR #3 con `npm ci --ignore-scripts`, y Jefferson aprueba fusionar el corte 1 en `develop`
+- **En curso**: T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
+- **Siguiente paso**: T062 para Jefferson, la aprobación de la spec 002 (PR #4) y, con su permiso, Neon y Vercel (fase 7)
 - **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, PR #3 y #4)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 15:09 (Lima) · feat/001-mvp-carga-r17 · Corte 1 aprobado para develop
+- Quién: Jefferson aprueba en el chat («Sí, fusiónalo») fusionar el corte 1 en `develop`. Claude Code, sin subagentes, comprueba los checks y escribe esta entrada.
+- Qué cambió: solo esta memoria. Después de este commit, el PR #3 entra a `develop` con rebase.
+- Por qué: llevar el corte 1 a `develop`, con todos sus checks aprobados.
+- Lo que debe hacer, cómo se probó: con a698d71, el quality gate de SonarQube Cloud del PR #3 pasa, igual que `pruebas`, `secretos` y GitGuardian.
+- Lo que no debe hacer, cómo se probó: la CI no corre scripts de instalación (`npm ci --ignore-scripts`), y el proyecto del Front en SonarQube Cloud sigue privado, porque su API no lo muestra sin sesión.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR #3 del Front.
+- Pendiente y siguiente paso: rebasar `docs/002-capstone` sobre el `develop` nuevo. Siguen T062, la decisión sobre el 403 frente al 404, la enmienda de la constitución del Back (Playwright para Node), la aprobación de la spec 002, Neon y Vercel.
 
 ### 2026-11-02 10:26 (Lima) · feat/001-mvp-carga-r17 · CI del Front con npm ci --ignore-scripts por SonarQube Cloud
 - Quién: Jefferson aprueba en el chat («Sí, corrígelo») corregir la nota C de seguridad que SonarQube Cloud da al PR #3. Claude Code, sin subagentes, confirma el hallazgo, hace el cambio y escribe esta entrada.
