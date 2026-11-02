@@ -19,6 +19,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 - Contrato de la API con las reglas BR reales de las specs vivas del Back, alineado con V1_09.
 - Contrato y documentos para el profesor con varias secciones de varios cursos, con dos mensajes de BR-CARGA-11 marcados «(propuesta)» y los siete `.feature` del Back.
 - Front del corte 1 con Vite, React, TypeScript y Tailwind, las pantallas P1 a P4 (ingreso, mis secciones, subir export y resultado de la carga), `src/servicios/api.ts` como única puerta HTTP, 76 pruebas con Vitest y Testing Library, la prueba de humo con Playwright (`e2e/`, `scripts/e2e.sh`), la regla 7 de `scripts/preflight.sh` y el job de Node en la CI.
+- Documentación del sistema para la spec 002 de Capstone (ADR-007, arquitectura del Front, contrato de la API y feature-index), como propuesta pendiente de aprobación de Jefferson.
 
 ### Seguridad
 

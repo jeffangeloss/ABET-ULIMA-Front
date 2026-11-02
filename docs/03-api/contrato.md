@@ -376,3 +376,140 @@ for texto in sobran:
     print("  -", texto)
 PY
 ```
+
+## 11. Rutas de la spec 002, Capstone (propuesta, spec 002)
+
+> **Estado 2026-10-29.** Esta sección es una propuesta de la spec 002 (`specs/002-capstone/` del Back, rama `docs/002-capstone`), pendiente de la aprobación de Jefferson. No lleva reglas `BR-` todavía, porque la spec viva `proyectos-capstone` las numera en la fase 1 del plan de la spec 002 (tarea T010 del Back). Las historias se citan como «US-NN de la spec 002». Las secciones 1 a 10 no cambian, y la tabla de la sección 2 y el índice `docs/specs/api-contracts.md` suman las rutas cuando la spec se apruebe (tarea T014 del Back). Cada mensaje de esta sección lleva la marca de propuesta, aunque un escenario de `specs/002-capstone/aceptacion/` lo fije, porque la comprobación de la sección 10 solo lee los escenarios de la spec 001. Cuando la spec 002 se apruebe, esa comprobación lee las dos carpetas y las marcas se quitan.
+
+Todo el vocabulario nuevo es propuesta. Una sección Capstone es la de un curso que `abet.plan_estudios.tipo_curso` marca como CAPSTONE (J-12), la plantilla de proyectos es el libro de Excel con una fila por estudiante que llena el profesor, y la subida es el registro `abet.carga_proyecto` de una plantilla. El profesor sube la plantilla después del export publicado de la misma sección (D-26).
+
+### 11.1 Resumen de rutas
+
+| # | Método | Ruta | Sesión | Éxito | Qué hace | Historias de la spec 002 | Corte |
+|---|---|---|---|---|---|---|---|
+| 11 | POST | `/api/secciones/{seccion_id}/proyectos` | Sí | 201 o 200 | Sube la plantilla de proyectos, la une a los estudiantes del export y devuelve la constancia | US-03 a US-17, US-25 | 1 (la declaración, 2) |
+| 4 | GET | `/api/secciones?periodo=2026-2` | Sí | 200 | Suma `tipo_curso` y el estado de proyectos a cada sección | US-23 | 1 |
+| 6 | GET | `/api/cargas/{carga_id}` | Sí | 200 | Suma el bloque `proyectos` a la constancia | US-18 | 1 |
+| 7 | GET | `/api/cargas/{carga_id}/r17.xlsx` | Sí | 200 | Elige la hoja «Cursos Capstone» cuando la sección es Capstone | US-19, US-20 | 1 |
+
+El número 11 es nuevo y los otros tres son rutas de la sección 2 con campos o comportamientos nuevos. La tabla maestra de Capstone no tiene ruta, porque `abet.v_tabla_maestra_capstone` se consulta con psql y Power BI (US-21 de la spec 002).
+
+### 11.2 `POST /api/secciones/{seccion_id}/proyectos`: subir la plantilla de proyectos (propuesta, spec 002)
+
+Recibe `multipart/form-data` con el campo `archivo`, un .xlsx de hasta 1 MB cuya hoja se llama «Hoja1» y cuya fila de encabezado trae CÓDIGO, ALUMNO, GRUPO, TÍTULO DEL PROYECTO, TIPO DE EMPRESA, RUC, NOMBRE DE ORGANIZACIÓN y LÍNEA DE INVESTIGACIÓN (D-26). Desde el corte 2 suma el campo `declaracion_sin_personas`, que solo admite `true` (US-25). Solo el profesor de la sección lo llama en el corte 1, y el coordinador recibe 403.
+
+La API comprueba en este orden y se detiene en el primero que falla. Son la sesión, el permiso, el tipo de curso, el export publicado, el tamaño y la legibilidad del archivo, la huella ya registrada, la plantilla ya publicada, la guardia de datos inventados, la estructura y, al final, las reglas por fila y la del grupo. Las reglas viven en la spec 002 (FR-006 a FR-016) y se numeran como `BR-PROYECTOS-NN` más adelante.
+
+```jsonc
+// Respuesta 201 con la plantilla inventada que trae 99000113 en la fila 4 (propuesta, spec 002)
+{
+  "carga_proyecto_id": 3,
+  "carga_id": 7,
+  "estado": "PUBLICADA",
+  "nombre_archivo": "plantilla_proyectos_inventada_420_con_error.xlsx",
+  "hoja": "Hoja1",
+  "sha256": "<64 caracteres hexadecimales en minúscula>",
+  "filas_de_datos": 11,
+  "filas_leidas": 11,
+  "filas_aceptadas": 10,
+  "filas_rechazadas": 1,
+  "estudiantes_en_export": 11,
+  "estudiantes_con_proyecto": 10,
+  "mensaje": null,
+  "rechazos": [
+    { "fila": 4, "columna": "CÓDIGO", "motivo": "CODIGO_FUERA_DEL_EXPORT", "efecto": "RECHAZA_FILA",
+      "mensaje": "<texto de la API, sin el valor leído>" }
+  ],
+  "avisos": [
+    { "motivo": "ESTUDIANTE_SIN_PROYECTO", "efecto": "AVISO", "cuenta": 1,
+      "mensaje": "<texto de la API, sin códigos de estudiante>" }
+  ],
+  "subida_por": "docente420@example.invalid",
+  "iniciada_en": "2026-10-29T10:15:00-05:00",
+  "terminada_en": "2026-10-29T10:15:01-05:00"
+}
+```
+
+El ejemplo usa solo datos inventados, y los campos exactos se fijan al aprobar la spec 002 (J-14). Los motivos de fila son CODIGO_FUERA_DEL_EXPORT, CODIGO_DUPLICADO, CAMPO_VACIO, GRUPO_INVALIDO, TEXTO_DEMASIADO_LARGO, TIPO_EMPRESA_INVALIDO, RUC_FORMATO_INVALIDO, RUC_PERSONA_NATURAL y GRUPO_INCONSISTENTE. Los de estructura, con efecto RECHAZA_CARGA, son PLANTILLA_SIN_HOJA, ENCABEZADO_AUSENTE, ENCABEZADO_REPETIDO y ARCHIVO_SIN_FILAS. Una estructura inválida responde 201 con estado RECHAZADA, 0 filas leídas y un solo rechazo, como el export.
+
+Reglas y por qué existen, sin número de regla todavía.
+
+- **Una sola transacción.** El archivo, la subida, los proyectos y los rechazos entran juntos o no entra nada, y ante un fallo responde 500 sin rastro, como la ruta 5.
+- **La columna ALUMNO se descarta.** El lector la exige como encabezado y no la guarda, y ningún campo de la respuesta trae un nombre, el valor leído de una celda, un título, una organización ni un RUC.
+- **Un estudiante del export sin fila en la plantilla** deja un solo aviso ESTUDIANTE_SIN_PROYECTO con la cuenta, y la subida se publica (D-23).
+- **Un grupo con datos distintos entre sus integrantes** se rechaza entero con GRUPO_INCONSISTENTE (D-22).
+- **La misma plantilla en la misma sección** responde 200 con la constancia existente, sin escribir nada.
+- **Guardia de datos inventados.** Con `GUARDIA_DATOS_INVENTADOS=1`, un código de 8 dígitos que no empieza con 99 o un RUC con la forma `^20[0-9]{9}$` que no empieza con 20999 responde 422 sin escribir (ADR-002). La guardia solo mira los valores que ya tienen la forma válida, así que una celda vacía o mal formada recibe su motivo por fila.
+
+| Código | `detail` |
+|---|---|
+| 200 | Cuerpo igual al del 201, para la misma plantilla ya publicada en la misma sección |
+| 401 | «La sesión venció. Ingrese otra vez.» (propuesta, spec 002) |
+| 403 | «La sección no está a su cargo.» (propuesta, spec 002) |
+| 404 | «La sección no existe.» (propuesta, spec 002) |
+| 409 | «Esta sección no es de un curso Capstone. No se cargó nada.» (propuesta, spec 002) |
+| 422 | «La carrera aún no registra el plan de medición de esta sección.», el texto de la spec 001, cuando la sección no tiene plan y su tipo de curso no se resuelve (propuesta, spec 002) |
+| 409 | «Suba primero el export de Blackboard de la sección {numero}. La plantilla de proyectos se une a los estudiantes de ese export.» (propuesta, spec 002) |
+| 409 | «Este archivo ya está publicado en otra sección. No se cargó.» (propuesta, spec 002) |
+| 409 | «La sección {numero} ya tiene una plantilla de proyectos publicada. No se cargó el archivo.» (propuesta, spec 002) |
+| 422 | «El archivo ya está registrado como export de Blackboard. No se cargó nada.» (propuesta, spec 002) |
+| 422 | «No se pudo abrir el archivo. No se cargó nada.» (propuesta, spec 002) |
+| 422 | «El archivo supera el máximo de 1 MB.» (propuesta, spec 002) |
+| 422 | «El piloto solo admite códigos inventados, de 99000000 a 99999999. Revise la fila 4. No se guardó nada.» (propuesta, spec 002) |
+| 422 | «El piloto solo admite RUC inventados. Revise la fila 11. No se guardó nada.» (propuesta, spec 002) |
+| 422 | «Confirme que los títulos y nombres de organización no nombran personas.» (propuesta, spec 002, corte 2) |
+| 500 | «La carga no se completó y no se guardó ningún dato. Intente de nuevo.» (propuesta, spec 002) |
+
+Los mensajes de los rechazos y del aviso van en el campo `mensaje` de cada elemento, con el número de fila y el nombre del encabezado y nunca con el valor leído. Los escenarios de `specs/002-capstone/aceptacion/carga_proyectos.feature` fijan estos textos, con la fila del ejemplo.
+
+| Motivo | `mensaje` |
+|---|---|
+| CAMPO_VACIO | «Fila 6, falta el dato de {encabezado}. La fila completa queda fuera.» (propuesta, spec 002) |
+| GRUPO_INVALIDO | «Fila 6, el grupo debe ser un número entero mayor o igual que 1.» (propuesta, spec 002) |
+| TIPO_EMPRESA_INVALIDO | «Fila 11, el tipo de empresa debe ser EMPRESA, ESTADO u ONG.» (propuesta, spec 002) |
+| RUC_PERSONA_NATURAL | «Fila 11, RUC, no corresponde a una organización.» (propuesta, spec 002) |
+| RUC_FORMATO_INVALIDO | «Fila 11, el RUC debe tener 11 dígitos y empezar con 20.» (propuesta, spec 002) |
+| GRUPO_INCONSISTENTE | «Fila 5, el grupo 2 trae datos de proyecto distintos entre sus integrantes. El grupo completo queda fuera.» (propuesta, spec 002) |
+| ESTUDIANTE_SIN_PROYECTO | «2 estudiantes del export no tienen fila en la plantilla.» (propuesta, spec 002) |
+
+La sección 8 sigue valiendo, y el 413 de Vercel para un cuerpo de más de 4,5 MB llega antes de FastAPI. El 409 por el reemplazo del export en una sección con plantilla publicada (J-16) lo fija la spec 002 para la ruta 9 del corte 2 de la spec 001, y su texto es «La sección tiene una plantilla de proyectos publicada. Su reemplazo todavía no está disponible.» (propuesta, spec 002).
+
+### 11.3 `GET /api/cargas/{carga_id}`: bloque `proyectos` (propuesta, spec 002)
+
+La constancia de la carga suma el campo `proyectos`. Es igual al cuerpo del 201 de la subida cuando la sección tiene una plantilla (J-14), y es un bloque vacío cuando no la tiene.
+
+```jsonc
+// Campo nuevo en la respuesta 200 de la carga 7 sin plantilla (propuesta, spec 002)
+"proyectos": { "estado": "SIN_PLANTILLA", "estudiantes_en_export": 11, "estudiantes_con_proyecto": 0 }
+```
+
+`estado` vale SIN_PLANTILLA, PUBLICADA o RECHAZADA. Una carga de un curso de carrera trae `proyectos` en `null` (propuesta). Las reglas de acceso son las de la ruta 6 (403 para el profesor ajeno y 200 para el coordinador).
+
+### 11.4 `GET /api/secciones`: campos nuevos (propuesta, spec 002)
+
+Cada sección suma estos campos sin quitar ninguno de la sección 5.
+
+| Campo | Valores | Uso en el Front |
+|---|---|---|
+| `tipo_curso` | `CARRERA`, `CAPSTONE` o `null` cuando la sección no tiene plan de medición | P3 muestra la zona de la plantilla solo si vale `CAPSTONE` |
+| `proyectos_estado` | `NO_APLICA`, `SIN_EXPORT`, `PENDIENTE` o `PUBLICADA` | P2 arma la línea de proyectos y P3 habilita o desactiva la zona |
+| `carga_proyecto_id` | entero o `null` | Enlace al bloque de proyectos en P4 |
+| `estudiantes_con_proyecto` | entero o `null` | «9 de 11 con proyecto» en P2 |
+| `estudiantes_en_export` | entero o `null` | El denominador de la línea de P2 |
+
+Una sección con export y con subidas solo RECHAZADA sale `PENDIENTE`. Una sección de carrera, o una sin plan de medición, sale `NO_APLICA` con los tres campos de conteo en `null`.
+
+### 11.5 `GET /api/cargas/{carga_id}/r17.xlsx`: hoja por tipo de curso (propuesta, spec 002)
+
+La ruta 7 conserva su forma y sus cabeceras, y la API elige la hoja por el tipo de curso. Una sección de carrera sigue saliendo con «Cursos de Carrera». Una sección Capstone sale con «Cursos Capstone» y la hoja «Constancia», con una fila por medición y los seis datos de proyecto de la subida publicada, sin fórmulas, incluidos los conteos y la fecha. El campo Profesor de la cabecera y la columna PROFESOR salen vacíos, y la constancia muestra el correo de quien sube (valor provisional de D-17). La hoja «Cursos Capstone» está decidida el 2026-10-30 (D-25). El instrumento impreso y los detalles del mapa de celdas son provisionales hasta cerrar la parte abierta de D-25.
+
+- Sin plantilla publicada, o con estudiantes sin fila, responde 200 con una franja bajo el título que dice «SIN DATOS DE PROYECTO» o «SIN DATOS DE PROYECTO PARA 2 DE 11 ESTUDIANTES» (propuesta, D-24). El nombre del archivo suma `_SIN_PROYECTOS` solo cuando no hay plantilla.
+- La hoja «Constancia» suma la huella de la plantilla y la línea «10 de 11 estudiantes con datos de proyecto».
+- Una sección que supera las 224 filas de la hoja (de la 49 a la 272, una por medición) responde 422 con «La sección supera las filas de la plantilla del R-17.» (propuesta, spec 002), como en la ruta 7.
+
+### 11.6 Lo que esta sección no cubre
+
+1. **Reglas `BR-PROYECTOS-NN`.** Faltan hasta que exista la spec viva `proyectos-capstone` del Back.
+2. **Una ruta para reemplazar la plantilla** (D-27), una para el R-18 (D-15) y una para consultar la tabla maestra de Capstone.
+3. **Los esquemas Pydantic exactos** del bloque `proyectos`, que se fijan con el código.
+4. **Los textos de los mensajes por fila** que ningún escenario fija (CODIGO_FUERA_DEL_EXPORT, CODIGO_DUPLICADO, TEXTO_DEMASIADO_LARGO y los de estructura), que la spec 002 cierra al aprobarse.

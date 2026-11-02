@@ -14,8 +14,11 @@ Un ADR se escribe aquí cuando la decisión (a) es difícil de revertir, (b) con
 | [ADR-004](ADR-004-sesion-propia-mismo-origen.md) | La sesión es propia, viaja en una cookie HttpOnly y el Front y la API comparten origen | J-03 (depende de J-02) | US-05, US-06, US-20 |
 | [ADR-005](ADR-005-r17-desde-la-vista.md) | El R-17 se genera desde `v_r17_por_pi` con valores calculados, sin fórmulas ni personas | D-08 y D-12 quedan abiertas | US-15, US-16 |
 | [ADR-006](ADR-006-historias-gherkin-auditadas.md) | Ninguna historia entra a la spec sin Gherkin en español y sin pasar la auditoría de refutación | J-09 (dónde corre la prueba de humo) | Todas |
+| [ADR-007](ADR-007-plantilla-proyectos-segunda-subida.md) | La plantilla de proyectos de Capstone es una segunda subida de la sección, sin pantalla nueva (spec 002) | D-26, J-11 y J-14 de la spec 002 | US-03 a US-05, US-18, US-21 y US-23 de la spec 002 |
 
 La autoridad final está en las migraciones de la base y en la spec aprobada. Si un ADR contradice a una de las dos, el ADR está mal y se corrige con un ADR nuevo que lo reemplaza.
+
+ADR-007 pertenece a la spec 002 (Capstone) y nace con la misma marca «Propuesta, pendiente de Jefferson», que pasa a «Aceptada y vigente» con la fusión del PR `docs/002-capstone`.
 
 ## Cómo se lee un ADR de este proyecto
 
