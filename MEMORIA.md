@@ -12,10 +12,10 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-10-30
+- **Fecha**: 2026-11-02
 - **Rama de trabajo**: `feat/001-mvp-carga-r17`, rebasada sobre `develop`, empujada y con su PR #3 a `develop` (sin fusionar), y `docs/002-capstone` con el PR #4, apilado sobre ella
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: el contrato del R-17 con `X-Content-Type-Options: nosniff`, igual que la API del PR #3 del Back
+- **Último cambio**: la CI con `npm ci --ignore-scripts`, por la nota C de seguridad que SonarQube Cloud da al PR #3, después del contrato del R-17 con `X-Content-Type-Options: nosniff`
 - **En curso**: la revisión de los PR #3 y #4, T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
 - **Siguiente paso**: T062 para Jefferson y, con su permiso, Neon y Vercel (fase 7)
 - **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 10:26 (Lima) · feat/001-mvp-carga-r17 · CI del Front con npm ci --ignore-scripts por SonarQube Cloud
+- Quién: Jefferson aprueba en el chat («Sí, corrígelo») corregir la nota C de seguridad que SonarQube Cloud da al PR #3. Claude Code, sin subagentes, confirma el hallazgo, hace el cambio y escribe esta entrada.
+- Qué cambió: `.github/workflows/ci.yml` (`npm ci --ignore-scripts`, con el comentario que explica por qué) y `CHANGELOG.md`.
+- Por qué: la anotación del check de SonarQube Cloud en el PR #3 apunta a la línea 29 de `.github/workflows/ci.yml`, el `npm ci` que corre sin `--ignore-scripts`. Es el mismo caso que el `--no-build` de uv en el Back.
+- Lo que debe hacer, cómo se probó: en un worktree limpio, `npm ci --ignore-scripts` instala 122 paquetes, `npm test` da 76 pruebas aprobadas en 8 archivos, `npm run build` compila y `bash scripts/preflight.sh` sale sin fallas.
+- Lo que no debe hacer, cómo se probó: ningún paquete corre scripts de instalación en la CI. En `package-lock.json` solo `fsevents` declara uno (`hasInstallScript`), y ese paquete se instala únicamente en macOS, así que la CI de Linux no pierde nada.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR #3 del Front.
+- Pendiente y siguiente paso: el análisis nuevo de SonarQube Cloud debe confirmar que la nota de seguridad del PR #3 vuelve a A. Siguen T062, la decisión sobre el 403 frente al 404, la enmienda de la constitución del Back (Playwright para Node), Neon y Vercel.
 
 ### 2026-10-30 14:52 (Lima) · feat/001-mvp-carga-r17 · Contrato del R-17 con X-Content-Type-Options: nosniff
 - Quién: Jefferson aprueba en el chat («Sí, corrígelos») los dos arreglos de SonarQube Cloud del PR #3 del Back. Claude Code actualiza el contrato y escribe esta entrada. En el flujo de agentes del Back, el revisor de seguridad (modelo principal) revisa la prosa nueva del contrato y el verificador (Sonnet) corre Vitest y la revisión previa.
