@@ -26,7 +26,10 @@ jobs:
           node-version: "24"
           cache: npm
       - name: Instalación de dependencias con package-lock.json
-        run: npm ci
+        # --ignore-scripts no deja que ningún paquete corra sus scripts de instalación (hallazgo de
+        # seguridad de SonarQube Cloud en esta línea). En package-lock.json solo fsevents declara uno, y
+        # ese paquete solo se instala en macOS, así que la CI de Linux no pierde nada.
+        run: npm ci --ignore-scripts
       - name: Pruebas del Front (Vitest y Testing Library)
         run: npm test
       - name: Compilación del Front (TypeScript y Vite)
