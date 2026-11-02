@@ -6,11 +6,13 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Cambiado
 
+- ADR-001, ADR-002 (ahora `ADR-002-neon-us-east-1-datos-inventados.md`), el contrato, la arquitectura y `entornos-y-despliegue.md` con Neon en us-east-1 y PostgreSQL 18 (J-17), la protección de despliegues del Back y el traslado de `bd/` hecho.
 - ADR-006 y arquitectura del Front con Playwright para Node (`e2e/humo.spec.ts`) como prueba de humo.
 - Documentación del Front con las pantallas P1 a P4, el enlace al contrato y el estado del 2026-10-30 en el contrato, el índice de funcionalidades y `docs/README.md` (T063).
 
 ### Agregado
 
+- `vercel.json` con la región iad1, junto a Neon en us-east-1 (J-17), y la reescritura de `/api/:path*` hacia el Back de Production desde el dominio de Production y hacia el alias de `develop` del Back desde cualquier otro dominio, con su prueba (T072).
 - Ramas `main` y `develop` con la configuración de IQBF: `develop` por defecto, PR obligatorio, checks `pruebas` y `flujo`, sin empujes forzados ni borrado (`docs/devops.md`).
 - CI con la revisión previa `scripts/preflight.sh` (datos inventados, secretos y memoria) y `release.yml`, que crea el tag y el Release desde este archivo.
 - `MEMORIA.md` como memoria de trabajo, `AGENTS.md` con las reglas para personas y agentes, y el hook `pre-commit`.

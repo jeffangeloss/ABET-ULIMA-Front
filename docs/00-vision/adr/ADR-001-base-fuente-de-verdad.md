@@ -4,17 +4,17 @@
 |---|---|
 | **Estado** | Propuesta, pendiente de Jefferson |
 | **Fecha** | 2026-10-28 |
-| **Ámbito** | `db/migration/` del Back (hoy `bd/db/migration/` de `ABET_ULIMA`), `db/plataforma/neon/`, `db/datos/`, `abet_carga/`, `app/`, `src/servicios/api.ts` del Front |
+| **Ámbito** | `db/migration/` del Back, `db/plataforma/neon/`, `db/datos/`, `abet_carga/`, `app/`, `src/servicios/api.ts` del Front |
 
 ## Decisión
 
-La base PostgreSQL 16 del esquema `abet` es la única fuente de verdad del sistema. Las mediciones, el estado de cada carga, sus rechazos y los números del R-17 se leen de la base, nunca de un archivo, de un caché ni de una copia en el navegador. El esquema existe solo como código SQL versionado con Flyway, con las migraciones V1_01 a V1_08 y las vistas repetibles `R__vista_r17_por_pi` y `R__vista_tabla_maestra_pi`, que el MVP usa sin cambios.
+La base PostgreSQL 18 del esquema `abet` es la única fuente de verdad del sistema. Las mediciones, el estado de cada carga, sus rechazos y los números del R-17 se leen de la base, nunca de un archivo, de un caché ni de una copia en el navegador. El esquema existe solo como código SQL versionado con Flyway, con las migraciones V1_01 a V1_08 y las vistas repetibles `R__vista_r17_por_pi` y `R__vista_tabla_maestra_pi`, que el MVP usa sin cambios.
 
 La razón es que el R-17 es evidencia ante ABET. Si un número del R-17 no se puede reconstruir desde la base con una consulta, nadie puede defenderlo. El diseño previo de la base ya pone en restricciones e índices únicos parciales las reglas que un programa puede olvidar. Las restricciones `ck_carga_filas` (aceptadas más rechazadas igual a leídas), `ck_carga_conciliada` (una carga publicada lee todas las filas del archivo) y `ck_medicion_nivel` (nivel de 1 a 4) conviven con los índices únicos parciales `uq_carga_publicada_por_seccion` (una sola carga publicada por sección) y `uq_carga_archivo_util` (un mismo archivo publicado en una sola carga). El programa valida antes para dar un mensaje legible, y la base detiene lo que el programa deje pasar.
 
 Lo nuevo del MVP también entra como migración. V1_09__crear_acceso.sql crea el esquema `acceso` (usuarios autorizados, credenciales, sesiones, intentos fallidos de ingreso, docentes por sección y códigos de acceso), agrega `abet.carga.subida_por` y `abet.rechazo_fila.pi_id` y amplía `ck_rechazo_fila_motivo` con COLUMNA_CODIGO_AUSENTE, PI_REPETIDO, PERIODO_NO_COINCIDE y SECCION_SIN_DECLARAR. El esquema `acceso` va aparte de `abet` porque la consulta de control Q04 rechaza cualquier columna de contacto dentro de `abet`.
 
-El traslado de `bd/` al Back ocurre después del primer `flyway migrate` en Neon y de integrar la rama `preparacion-neon`, con su historia (git subtree), y antes de escribir V1_09. Después, el repositorio `ABET_ULIMA` queda archivado en solo lectura.
+El traslado de `bd/` al Back se hace con su historia (git subtree) desde `main` de `ABET_ULIMA` (dc2b098), antes del primer `flyway migrate` en Neon y de V1_09, y la rama `preparacion-neon` entra después con `git subtree pull` (decisión J-06 del Back). Después, el repositorio `ABET_ULIMA` queda archivado en solo lectura.
 
 ## Invariantes
 
@@ -89,6 +89,5 @@ bash db/pruebas/correr_pruebas.sh
 
 ## Lo que todavía NO está
 
-1. **V1_09__crear_acceso.sql.** Está diseñada y no escrita.
-2. **El traslado de `bd/`.** Espera el primer `flyway migrate` en Neon.
-3. **El caso 60,0 / 60,0 / 70,0 en `pruebas.sql`.** El export con el 5 en la fila 3 todavía no tiene su prueba en la base, y por ahora lo cubren los escenarios de `carga.feature` y `r17_constancia.feature`.
+1. **El archivo de `ABET_ULIMA`.** El traslado de `bd/` al Back está hecho con su historia (T022 y T023), y falta archivar el repositorio en solo lectura.
+2. **El caso 60,0 / 60,0 / 70,0 en `pruebas.sql`.** El export con el 5 en la fila 3 todavía no tiene su prueba en la base, y por ahora lo cubren los escenarios de `carga.feature` y `r17_constancia.feature`.

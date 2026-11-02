@@ -1,14 +1,14 @@
-# ADR-002: La base vive en Neon en São Paulo y solo admite códigos inventados hasta la autorización
+# ADR-002: La base vive en Neon en us-east-1 y solo admite códigos inventados hasta la autorización
 
 | | |
 |---|---|
-| **Estado** | Propuesta, pendiente de Jefferson (decisión J-02) |
+| **Estado** | Propuesta, pendiente de Jefferson (decisión J-02), con la región y la versión corregidas el 2026-11-02 por la decisión J-17 del Back |
 | **Fecha** | 2026-10-28 |
-| **Ámbito** | Proyecto de Neon en `aws-sa-east-1`, `db/plataforma/neon/guardia_datos_inventados.sql`, `db/plataforma/neon/crear_rol_app.sql`, `db/datos/periodo_2026_2_inventado.sql`, variable `GUARDIA_DATOS_INVENTADOS` del Back, `scripts/preflight.sh` de los dos repositorios |
+| **Ámbito** | Proyecto de Neon ABET-ULIMA en us-east-1, `db/plataforma/neon/guardia_datos_inventados.sql`, `db/plataforma/neon/crear_rol_app.sql`, `db/datos/periodo_2026_2_inventado.sql`, variable `GUARDIA_DATOS_INVENTADOS` del Back, `scripts/preflight.sh` de los dos repositorios |
 
 ## Decisión
 
-La base del piloto vive en Neon, con PostgreSQL 16 en la región `aws-sa-east-1` (São Paulo), sin pasar por el área de informática de la universidad. Jefferson crea el proyecto y aplica las migraciones con Flyway por la conexión directa (sin «-pooler»), y la API se conecta por la cadena con pooler (el agrupador de conexiones de Neon).
+La base del piloto vive en Neon, en el proyecto ABET-ULIMA que Jefferson crea con la integración Neon × Vercel, con PostgreSQL 18.6 en la región us-east-1 (Virginia), sin pasar por el área de informática de la universidad (decisión J-17 del Back). Las funciones de Vercel corren en `iad1`, en la misma zona. Jefferson aplica las migraciones con Flyway por la conexión directa (sin «-pooler»), y la API se conecta por la cadena con pooler (el agrupador de conexiones de Neon).
 
 Mientras la universidad no autorice el tratamiento de datos reales fuera del Perú (decisión D-10, Ley 29733 y DS 016-2024-JUS), el sistema solo admite códigos de estudiante inventados, de 99000000 a 99999999. La regla vive en tres lugares, porque cada uno cubre un hueco distinto.
 
@@ -30,7 +30,7 @@ La aplicación entra a Neon con un solo rol, `abet_app` (decisión J-02), con pr
 
 **Una base en la infraestructura de la universidad.** Se descarta para el MVP porque exige al área de informática, cuyo plazo no controla el proyecto. Queda como camino para datos reales si la universidad lo pide.
 
-**Neon en una región de Estados Unidos.** Se descarta porque São Paulo deja la base en la misma región que la función de Vercel (`gru1`) y más cerca del Perú.
+**Neon en São Paulo (`aws-sa-east-1`) con PostgreSQL 16.** Es la propuesta inicial, por cercanía al Perú y con la función de Vercel en `gru1`. Se descarta por J-17, porque Jefferson ya tiene el proyecto ABET-ULIMA en us-east-1, nacido de la integración con Vercel, y la función pasa a `iad1`, junto a la base. La región para datos reales la decide la universidad.
 
 **Guardia solo en el programa.** Se descarta porque un error de código o una llamada directa con psql escribiría códigos reales sin que la base proteste.
 
@@ -38,7 +38,7 @@ La aplicación entra a Neon con un solo rol, `abet_app` (decisión J-02), con pr
 
 - La guardia evita guardar un código real, pero no evita que el archivo llegue a la función de Vercel. Por eso la pantalla P3 lleva el rótulo «Solo exports con códigos inventados (99000000 a 99999999)» y las cuentas del piloto son de personas que conocen la regla.
 - Una carga rechazada por la guardia no deja rastro en la base. El registro de la aplicación guarda solo la huella SHA-256 y la hora.
-- Pasar a datos reales exige retirar el CHECK con un script revisado, cambiar la variable y mover el cómputo a Cloud Run en `southamerica-east1` (`05-operacion/entornos-y-despliegue.md`).
+- Pasar a datos reales exige retirar el CHECK con un script revisado, cambiar la variable, llevar la base a la región que decida la universidad y mover el cómputo a Cloud Run en `southamerica-east1` (`05-operacion/entornos-y-despliegue.md`).
 
 ## Criterios de aceptación
 
@@ -80,7 +80,6 @@ bash scripts/probar_preflight.sh
 
 ## Lo que todavía NO está
 
-1. **El proyecto de Neon.** Lo crea Jefferson, y los scripts `crear_rol_app.sql` y `guardia_datos_inventados.sql` están diseñados y no escritos.
-2. **La decisión J-02.** El valor recomendado es un solo rol de aplicación, y Jefferson todavía no lo confirma.
-3. **Una lectura de la columna Username en el navegador antes de enviar.** La crítica de arquitectura la propone para que el archivo real no salga del equipo, y ninguna historia del MVP la pide.
-4. **El acuerdo de tratamiento de datos (data processing agreement, DPA) escrito de Neon y Databricks.** Hace falta antes de cargar datos reales.
+1. **La decisión J-02.** El valor recomendado es un solo rol de aplicación, y Jefferson todavía no lo confirma.
+2. **Una lectura de la columna Username en el navegador antes de enviar.** La crítica de arquitectura la propone para que el archivo real no salga del equipo, y ninguna historia del MVP la pide.
+3. **El acuerdo de tratamiento de datos (data processing agreement, DPA) escrito de Neon y Databricks.** Hace falta antes de cargar datos reales.

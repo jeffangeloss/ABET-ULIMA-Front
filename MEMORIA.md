@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-02
-- **Rama de trabajo**: `develop`, que recibe el corte 1 desde el PR #3 con rebase, y `docs/002-capstone` con el PR #4, que espera la aprobación de la spec 002
+- **Rama de trabajo**: `feat/001-despliegue-vercel`, con su PR a `develop` (T072 y los documentos de J-17), y la rama del mismo nombre en el Back (T071); `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: SonarQube Cloud aprueba el PR #3 con `npm ci --ignore-scripts`, y Jefferson aprueba fusionar el corte 1 en `develop`
-- **En curso**: T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
-- **Siguiente paso**: T062 para Jefferson, la aprobación de la spec 002 (PR #4) y, con su permiso, Neon y Vercel (fase 7)
-- **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, PR #3 y #4)
+- **Último cambio**: `vercel.json` del Front con la región iad1 y la reescritura de `/api` hacia el Back de cada entorno, con su prueba, y los documentos con Neon en us-east-1 y PostgreSQL 18 (J-17)
+- **En curso**: la fase 7 en Vercel (T070 a T079) y T062
+- **Siguiente paso**: Jefferson crea los dos proyectos de Vercel (T070), desactiva la protección de despliegues del Back y pega sus variables (T073); después, T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
+- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-despliegue-vercel` y el PR #4)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 17:49 (Lima) · feat/001-despliegue-vercel · vercel.json del Front con la reescritura de /api por entorno (T072) y documentos de J-17
+- Quién: Jefferson aprueba en el chat seguir con el despliegue en Vercel («Sí, sigamos»), con las funciones en iad1 y los documentos del Front al día. Claude Code, sin subagentes, escribe primero la prueba, hace el cambio y escribe esta entrada.
+- Qué cambió: `vercel.json` y `tests/vercel.test.ts` (nuevos), `docs/05-operacion/entornos-y-despliegue.md`, ADR-001, ADR-002 (ahora `ADR-002-neon-us-east-1-datos-inventados.md`) y su índice, `docs/03-api/contrato.md`, `docs/01-arquitectura/frontend.md` y `docs/README.md`.
+- Por qué: T072 de la spec 001 del Back y J-17. La vista previa del Front necesita una API que no escriba en la base del piloto, y los documentos todavía decían São Paulo, `gru1` y PostgreSQL 16.
+- Lo que debe hacer, cómo se probó: las cinco pruebas de `tests/vercel.test.ts` fallan sin `vercel.json` y pasan con él. Comprueban la región iad1, la regla del dominio de Production en primer lugar y el alias de `develop` del Back para cualquier otro dominio. `npm test`, `npm run build` y `scripts/probar_preflight.sh` pasan.
+- Lo que no debe hacer, cómo se probó: ninguna regla sin el dominio de Production llega al Back de Production. Con el destino de la segunda regla cambiado a mano por el Back de Production, dos de las cinco pruebas fallan. El archivo no trae la regla de `index.html`, porque el Front no cambia de ruta.
+- Correcciones: la guía de Vercel dice que un proyecto nuevo toma `main` como Production cuando existe, y no la rama predeterminada de GitHub, así que el paso 1 de `entornos-y-despliegue.md` pide confirmarla en Settings, Environments, Production.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR.
+- Pendiente y siguiente paso: T070 y T073 de Jefferson, con la protección del Back desactivada y sin conectar al Back la base de la integración. Los dominios de la reescritura se confirman cuando Vercel cree los proyectos.
 
 ### 2026-11-02 15:09 (Lima) · feat/001-mvp-carga-r17 · Corte 1 aprobado para develop
 - Quién: Jefferson aprueba en el chat («Sí, fusiónalo») fusionar el corte 1 en `develop`. Claude Code, sin subagentes, comprueba los checks y escribe esta entrada.

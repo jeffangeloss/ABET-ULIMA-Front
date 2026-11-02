@@ -35,7 +35,7 @@ Los datos de todos los ejemplos son inventados. La sección 410 de la asignatura
 
 ### 05 · Operación
 
-- [`entornos-y-despliegue.md`](05-operacion/entornos-y-despliegue.md) describe los entornos local, Preview (vista previa) y Production (producción) de Vercel, los dos proyectos de Vercel en São Paulo, las ramas de Neon y las variables que pega Jefferson.
+- [`entornos-y-despliegue.md`](05-operacion/entornos-y-despliegue.md) describe los entornos local, Preview (vista previa) y Production (producción) de Vercel, los dos proyectos de Vercel en `iad1`, junto a Neon, las ramas de Neon y las variables que pega Jefferson.
 - [`devops.md`](devops.md) fija las ramas, las versiones y los controles de cada cambio.
 
 ### Flujo de specs (`docs/specs/`)

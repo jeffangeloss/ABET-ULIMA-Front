@@ -130,7 +130,7 @@ Vitest con Testing Library (`npm test`) cubre cada pantalla en lo que debe mostr
 
 ## 7. Lo que todavía NO está
 
-1. **Despliegue.** No existe `vercel.json`, así que la reescritura de `/api/:path*` hacia el Back solo funciona en local con el proxy de Vite. La prueba de humo con Playwright para Node existe (`e2e/humo.spec.ts`), pero no corre en la CI y exige una API recién arrancada con `bash ../back/scripts/api_local.sh --sin-https`, Vite en el puerto 5173 y la variable `ABET_CLAVES_ARCHIVO`, porque la carga de la sección 410 se hace una sola vez. Su corrida contra Preview llega con el despliegue.
+1. **Despliegue.** `vercel.json` ya reescribe `/api/:path*` hacia el Back de cada entorno (T072), pero los proyectos de Vercel todavía no existen, así que la reescritura solo se prueba en local con el proxy de Vite. La prueba de humo con Playwright para Node existe (`e2e/humo.spec.ts`), pero no corre en la CI y exige una API recién arrancada con `bash ../back/scripts/api_local.sh --sin-https`, Vite en el puerto 5173 y la variable `ABET_CLAVES_ARCHIVO`, porque la carga de la sección 410 se hace una sola vez. Su corrida contra Preview llega con T075.
 2. **Diseño visual.** No hay prototipo en Figma ni guía de estilo, y las pantallas parten de componentes simples de Tailwind.
 3. **P5, el modo reemplazo de P3 y US-21.** Pertenecen al corte 2.
 4. **Pruebas de accesibilidad automáticas.** Las pantallas llevan etiquetas, roles, foco y textos en español, y las pruebas lo comprueban, pero ninguna herramienta como axe revisa el contraste ni el orden del foco, y conviene sumarla antes del primer profesor externo.
