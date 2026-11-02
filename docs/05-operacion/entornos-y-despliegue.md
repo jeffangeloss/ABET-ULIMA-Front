@@ -39,7 +39,7 @@ El `vercel.json` del Front reescribe toda ruta `/api/:path*` hacia el Back del m
     {
       "source": "/api/:path*",
       "has": [{ "type": "host", "value": "abet-ulima-front.vercel.app" }],
-      "destination": "https://abet-ulima-back.vercel.app/api/:path*"
+      "destination": "https://abet-ulima-back-gray.vercel.app/api/:path*"
     },
     {
       "source": "/api/:path*",
@@ -49,7 +49,7 @@ El `vercel.json` del Front reescribe toda ruta `/api/:path*` hacia el Back del m
 }
 ```
 
-La primera regla atiende solo al dominio de Production del Front y lleva la petición al dominio de Production del Back. La segunda atiende cualquier otro dominio, como la vista previa de `develop` o la de un PR, y la lleva al alias de la rama `develop` del Back, que Vercel nombra `<proyecto>-git-<rama>-<equipo>.vercel.app`. De este modo, una vista previa del Front nunca escribe en la base del piloto, y `tests/vercel.test.ts` lo comprueba. Si Vercel da a un proyecto otro dominio porque su nombre ya está tomado, con un sufijo como `-one`, el dominio se corrige aquí y en esa prueba antes del primer despliegue.
+La primera regla atiende solo al dominio de Production del Front y lleva la petición al dominio de Production del Back. La segunda atiende cualquier otro dominio, como la vista previa de `develop` o la de un PR, y la lleva al alias de la rama `develop` del Back, que Vercel nombra `<proyecto>-git-<rama>-<equipo>.vercel.app`. De este modo, una vista previa del Front nunca escribe en la base del piloto, y `tests/vercel.test.ts` lo comprueba. Vercel da al Back el dominio `abet-ulima-back-gray.vercel.app`, porque `abet-ulima-back.vercel.app` ya es de otro proyecto. Una regla hacia ese dominio ajeno le mandaría la cookie de sesión y las contraseñas del ingreso, así que la prueba comprueba también que ninguna regla lo use. La URL propia de un despliegue de Production, con su sufijo aleatorio, cae en la segunda regla, y solo la ve Jefferson, porque la protección de Vercel la cubre.
 
 El archivo no lleva la regla que devuelve `index.html` en cualquier otra ruta, porque las pantallas del Front cambian por estado y no por ruta, así que una recarga siempre pide `/`. Si un enrutador llega con el corte 2, la regla entra con él.
 
@@ -94,7 +94,7 @@ Flyway entra por la conexión directa, sin «-pooler», con las variables `NEON_
 
 ## 5. Cómo se despliega
 
-1. Jefferson crea los dos proyectos de Vercel, enlaza cada uno a su repositorio, confirma `main` como rama de Production en Settings, Environments, Production (Vercel elige `main` cuando existe, antes que la rama predeterminada de GitHub, que aquí es `develop`), desactiva el entrenamiento de IA, desactiva la protección de despliegues del Back (sección 2.4) y pega las variables de la sección 3, sin conectar al Back la base de Neon de la integración (sección 4).
+1. Jefferson crea los dos proyectos de Vercel, enlaza cada uno a su repositorio, confirma `main` como rama de Production en Settings, Environments, Production, Branch Tracking, desactiva el entrenamiento de IA, desactiva la protección de despliegues del Back (sección 2.4) y pega las variables de la sección 3, sin conectar al Back la base de Neon de la integración (sección 4). Vercel fija `main` porque existe, pero construye el despliegue de Production de la importación desde `develop`, la rama predeterminada de GitHub. Ese despliegue no se vuelve a desplegar, y Production llega desde `main` con la versión 0.1.0 (T076).
 2. El proyecto de Neon ABET-ULIMA ya tiene en sus dos ramas las migraciones de Flyway, los scripts de plataforma y los datos inventados (T027).
 3. Un PR a `develop` despliega Preview en cada repositorio. Si la versión del Front depende de un cambio de la API, se publica antes la del Back (`docs/devops.md`).
 4. La prueba de humo (recorrido mínimo de punta a punta que confirma que el sistema desplegado responde, US-17) corre contra Preview desde `develop`, sobre una base cuya sección 410 no tiene cargas. Ingresa con un usuario de prueba, sube el export con el 5 en la fila 3, ve «11 filas leídas, 10 aceptadas y 1 rechazada» y descarga el R-17 con 60,0 / 60,0 / 70,0. Es el valor provisional de J-09 («La prueba de humo corre en la CI o contra la vista previa»).
@@ -114,7 +114,7 @@ El piloto en Vercel Hobby vale solo con datos inventados. Para datos reales, el 
 1. **Los proyectos de Vercel.** No existen todavía (T070). El proyecto de Neon ya existe y el código del corte 1 está en `develop`.
 2. **La decisión J-07.** Jefferson todavía no acepta desplegar en Hobby antes de la respuesta de soporte sobre el uso no comercial.
 3. **La decisión J-09.** El valor provisional de esta página (prueba de humo contra Preview, nunca en Production) espera su confirmación.
-4. **Los dominios de la reescritura.** Los de la sección 2.1 se confirman cuando Vercel cree los proyectos, porque un nombre tomado cambia el dominio.
+4. **El alias de `develop` del Back.** Ya existe (`abet-ulima-back-git-develop-jeffangeloss-projects.vercel.app`) y apunta al despliegue de la importación, sin variables, hasta el primer despliegue de Preview de `develop`. Los dominios de Production de la sección 2.1 ya están confirmados (`abet-ulima-front.vercel.app` y `abet-ulima-back-gray.vercel.app`).
 5. **La protección de despliegues.** La protección desactivada en el Back (sección 2.4) se prueba con el primer despliegue de Preview.
 6. **La prueba de la cookie a través de la reescritura.** Pide 15 minutos con el primer despliegue.
 7. **El respaldo diario de Neon.** `respaldo_neon.yml` del Back corre solo a pedido y pasa a diario cuando Jefferson cargue sus cinco secretos en GitHub.

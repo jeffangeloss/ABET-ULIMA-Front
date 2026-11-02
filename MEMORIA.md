@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-02
 - **Rama de trabajo**: `feat/001-despliegue-vercel`, con su PR a `develop` (T072 y los documentos de J-17), y la rama del mismo nombre en el Back (T071); `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: `vercel.json` del Front con la región iad1 y la reescritura de `/api` hacia el Back de cada entorno, con su prueba, y los documentos con Neon en us-east-1 y PostgreSQL 18 (J-17)
+- **Último cambio**: la reescritura de Production apunta al dominio real del Back, `abet-ulima-back-gray.vercel.app`, y el paso 1 del despliegue explica que el despliegue de la importación sale de `develop`, aunque la rama de Production de los dos proyectos es `main`
 - **En curso**: la fase 7 en Vercel (T070 a T079) y T062
-- **Siguiente paso**: Jefferson crea los dos proyectos de Vercel (T070), desactiva la protección de despliegues del Back y pega sus variables (T073); después, T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
+- **Siguiente paso**: Jefferson desactiva Vercel Authentication en el Back y rehace la `DATABASE_URL` de Preview como una sola variable (T070 y T073); después, con su permiso, se empujan las dos ramas, y siguen T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-despliegue-vercel` y el PR #4)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 18:50 (Lima) · feat/001-despliegue-vercel · Dominio real del Back en la reescritura de Production y rama de Production observada en Vercel
+- Quién: Jefferson crea los dos proyectos de Vercel y pega las variables del Back. Claude Code, sin subagentes, revisa con la CLI y la API de Vercel los dominios, los nombres de las variables, la rama de Production, la protección y los despliegues, corrige la prueba, el archivo y los documentos, y escribe esta entrada.
+- Qué cambió: `vercel.json` y `tests/vercel.test.ts` (destino `abet-ulima-back-gray.vercel.app` y una prueba nueva), y `docs/05-operacion/entornos-y-despliegue.md` (bloque y texto de la sección 2.1, paso 1 de la sección 5 y punto 4 de la sección 7).
+- Por qué: Vercel da al Back el dominio `abet-ulima-back-gray.vercel.app`, porque `abet-ulima-back.vercel.app` ya es de otro proyecto, que hoy responde 404 DEPLOYMENT_NOT_FOUND. Con el destino anterior, la reescritura de Production mandaría la cookie de sesión y las contraseñas del ingreso a ese dominio ajeno. Además, `vercel ls --meta githubCommitRef=develop` muestra que el despliegue de Production de la importación sale de `develop`, aunque la API de Vercel da `main` como rama de Production de los dos proyectos (`link.productionBranch`).
+- Lo que debe hacer, cómo se probó: con el destino anterior, dos de las seis pruebas de `tests/vercel.test.ts` fallan, y con `abet-ulima-back-gray.vercel.app` pasan las seis. `npm test`, `npm run build` y `scripts/probar_preflight.sh` pasan.
+- Lo que no debe hacer, cómo se probó: ninguna regla manda una petición a `https://abet-ulima-back.vercel.app/` (prueba nueva), y ninguna regla sin el dominio de Production llega al Back de Production.
+- Correcciones: la rama de Production de los dos proyectos es `main`, como dice la entrada anterior, y lo que sale de `develop` es solo el despliegue de Production de la importación, que Vercel construye desde la rama predeterminada de GitHub. El paso 1 pide confirmar `main` y no volver a desplegar ese despliegue.
+- Cómo se reporta: esta entrada y el PR.
+- Pendiente y siguiente paso: Jefferson desactiva Vercel Authentication en el Back y rehace la `DATABASE_URL` de Preview. El alias de `develop` del Back ya existe en el despliegue de la importación.
 
 ### 2026-11-02 17:49 (Lima) · feat/001-despliegue-vercel · vercel.json del Front con la reescritura de /api por entorno (T072) y documentos de J-17
 - Quién: Jefferson aprueba en el chat seguir con el despliegue en Vercel («Sí, sigamos»), con las funciones en iad1 y los documentos del Front al día. Claude Code, sin subagentes, escribe primero la prueba, hace el cambio y escribe esta entrada.

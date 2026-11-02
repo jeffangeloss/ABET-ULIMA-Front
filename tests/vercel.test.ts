@@ -13,7 +13,10 @@ const configuracion = JSON.parse(texto) as { regions?: string[]; rewrites?: Rees
 const reescrituras = configuracion.rewrites ?? [];
 
 const FRONT_PRODUCTION = "abet-ulima-front.vercel.app";
-const BACK_PRODUCTION = "https://abet-ulima-back.vercel.app/api/:path*";
+// Vercel da al Back el dominio con el sufijo «-gray», porque abet-ulima-back.vercel.app ya es de otro
+// proyecto, y la reescritura nunca debe mandar la sesión a un dominio ajeno.
+const BACK_PRODUCTION = "https://abet-ulima-back-gray.vercel.app/api/:path*";
+const DOMINIO_AJENO = "https://abet-ulima-back.vercel.app";
 const BACK_DEVELOP = "https://abet-ulima-back-git-develop-jeffangeloss-projects.vercel.app/api/:path*";
 
 describe("vercel.json del Front", () => {
@@ -38,6 +41,12 @@ describe("vercel.json del Front", () => {
     expect(sinCondicion.length).toBeGreaterThan(0);
     for (const regla of sinCondicion) {
       expect(regla.destination).not.toBe(BACK_PRODUCTION);
+    }
+  });
+
+  it("no manda ninguna petición al dominio sin sufijo, que es de otro proyecto", () => {
+    for (const regla of reescrituras) {
+      expect(regla.destination.startsWith(`${DOMINIO_AJENO}/`)).toBe(false);
     }
   });
 
