@@ -12,14 +12,14 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-10-30
-- **Rama de trabajo**: `docs/002-capstone` (spec 002, apilada sobre `feat/001-mvp-carga-r17`, solo en local); el corte 1 sigue en `feat/001-mvp-carga-r17`, solo en local y sobre `docs/plan-mvp` (PR #2), hasta que Jefferson fusione los PR #1 y #2 y autorice el empuje
+- **Fecha**: 2026-11-02
+- **Rama de trabajo**: `docs/002-capstone`, con el PR #4 a `develop` (documentación de la spec 002, sin fusionar), rebasada sobre el corte 1 que el PR #3 lleva a `develop`
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: D-25 decidida el 2026-10-30, el R-17 Capstone usa la hoja «Cursos Capstone» (en local, rama `docs/002-capstone`), pendiente de aprobación
-- **En curso**: el corte 1 en el Back (la demo de la carga con el R-17 y los escenarios del profesor con varias secciones)
-- **Siguiente paso**: Jefferson aprueba la spec 002 del Back; hasta entonces las secciones de Capstone de estos documentos son propuesta, salvo D-14. El corte 1 sigue como antes D-25 queda abierta solo en el instrumento impreso y el mapa de celdas.
-- **Bloqueos**: la API del Back todavía no existe; SonarQube Cloud y Snyk esperan que Jefferson importe los repos en sus consolas (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base)
+- **Último cambio**: la rama se rebasa sobre el corte 1, para que el PR #4 muestre solo la documentación de la spec 002
+- **En curso**: la revisión de la spec 002 por Jefferson
+- **Siguiente paso**: Jefferson aprueba la spec 002 y ADR-007 y responde las decisiones abiertas de la spec 002 del Back; sin esa aprobación no se implementa nada de Capstone. Del corte 1 siguen T062, la decisión sobre el 403 frente al 404, Neon y Vercel
+- **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, PR #3 y #4)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 15:16 (Lima) · docs/002-capstone · La rama se rebasa sobre el corte 1 para el PR #4
+- Quién: Jefferson aprueba en el chat («Sí, fusiónalo») fusionar el corte 1 y poner al día los PR #4. Claude Code, sin subagentes, rebasa esta rama sobre `feat/001-mvp-carga-r17` (34d4743), resuelve los conflictos y escribe esta entrada.
+- Qué cambió: los cuatro commits de la spec 002 se reaplican sobre el corte 1. En cada parada, `CHANGELOG.md` junta las líneas de los dos lados y `MEMORIA.md` junta las entradas, ordenadas por fecha. Los documentos de la spec 002 (ADR-007, `frontend.md`, `contrato.md` y `feature-index.md`) se reaplican sin conflictos.
+- Por qué: que el PR #4 muestre solo la documentación de la spec 002 sobre el corte 1.
+- Lo que debe hacer, cómo se probó: cada línea que la spec 002 agregaba a ADR-007, al índice de ADR, a `frontend.md`, a `contrato.md`, a `feature-index.md` y al CHANGELOG sigue en el árbol (70, 3, 109, 137, 7 y 1 líneas, sin ninguna faltante), y no queda ningún marcador de conflicto.
+- Lo que no debe hacer, cómo se probó: frente a 34d4743, `git diff --stat` solo toca esos seis documentos y `MEMORIA.md`, así que el código y las pruebas del corte 1 no cambian.
+- Correcciones: el «Punto actual» que dejaba el último commit reaplicado describía la rama solo en local y los PR #1 y #2 sin fusionar, y ahora describe el estado del 2026-11-02.
+- Cómo se reporta: esta entrada y el PR #4 del Front.
+- Pendiente y siguiente paso: cuando el PR #3 entre a `develop` con rebase, esta rama se rebasa sobre el `develop` nuevo, que reescribe los SHA del corte 1, y se empuja con `--force-with-lease`. Después, Jefferson aprueba la spec 002.
 
 ### 2026-11-02 15:09 (Lima) · feat/001-mvp-carga-r17 · Corte 1 aprobado para develop
 - Quién: Jefferson aprueba en el chat («Sí, fusiónalo») fusionar el corte 1 en `develop`. Claude Code, sin subagentes, comprueba los checks y escribe esta entrada.
