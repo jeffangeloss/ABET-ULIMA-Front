@@ -6,6 +6,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Cambiado
 
+- La prueba de humo de Playwright corre también contra una vista previa de Vercel (T075), con `docente411` en el caso del 403, la clave de omisión de la protección solo en las peticiones del navegador y los resultados en la carpeta de `DIR_RESULTADOS`.
 - ADR-001, ADR-002 (ahora `ADR-002-neon-us-east-1-datos-inventados.md`), el contrato, la arquitectura y `entornos-y-despliegue.md` con Neon en us-east-1 y PostgreSQL 18 (J-17), la protección de despliegues del Back y el traslado de `bd/` hecho.
 - ADR-006 y arquitectura del Front con Playwright para Node (`e2e/humo.spec.ts`) como prueba de humo.
 - Documentación del Front con las pantallas P1 a P4, el enlace al contrato y el estado del 2026-10-30 en el contrato, el índice de funcionalidades y `docs/README.md` (T063).
