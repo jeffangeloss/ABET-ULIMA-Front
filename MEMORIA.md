@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-02
-- **Rama de trabajo**: `feat/001-despliegue-vercel`, con el PR #7 a `develop` (T072 y los documentos de J-17), y la rama del mismo nombre en el Back con el PR #12 (T071, T070 y T073); `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
+- **Rama de trabajo**: `feat/001-humo-preview`, con la prueba de humo contra la vista previa (T075), y la rama del mismo nombre en el Back con su registro; `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: `entornos-y-despliegue.md` describe la marca de entorno de cada rama de Neon (T077 del Back), que la API compara con `VERCEL_ENV` al arrancar
-- **En curso**: la fase 7 en Vercel (T070 a T079) y T062
-- **Siguiente paso**: marcar las dos ramas de Neon, fusionar los PR #7 y #12 del Back y comprobar la vista previa de `develop`; después, T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
+- **Último cambio**: `e2e/humo.spec.ts` corre contra la vista previa de `develop` y pasa (2 passed, T075)
+- **En curso**: la fase 7 en Vercel (T074, T076 y T079) y T062
+- **Siguiente paso**: la versión 0.1.0 de `develop` a `main`, primero en el Back y después en el Front (T076), y la auditoría de la fase (T079)
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-despliegue-vercel` y el PR #4)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-humo-preview` y el PR #4)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 21:30 (Lima) · feat/001-humo-preview · Prueba de humo contra la vista previa de develop (T075)
+- Quién: Jefferson crea la clave de omisión del proyecto del Front, asigna las contraseñas y corre la prueba en su terminal. Claude Code adapta la prueba y escribe esta entrada. Una revisión con dos revisores y un refutador por hallazgo confirma cuatro hallazgos, corregidos antes de la corrida.
+- Qué cambió: `playwright.config.ts` (`DIR_RESULTADOS`), `e2e/humo.spec.ts` (modo de vista previa con docente411 y la clave de omisión por `context.route`), `scripts/e2e.sh` (exige la clave con una URL https), `docs/05-operacion/entornos-y-despliegue.md`, `docs/01-arquitectura/frontend.md`, `CHANGELOG.md` y esta memoria.
+- Por qué: T075 de la spec 001 del Back. La vista previa del Front está protegida, Neon no tiene a docente.varias y la prueba solo apuntaba al Front local.
+- Lo que debe hacer, cómo se probó: Playwright da 2 passed contra `https://abet-ulima-front-git-develop-jeffangeloss-projects.vercel.app`. En local, `npx playwright test --list` muestra los mismos dos casos que antes, con docente.varias.
+- Lo que no debe hacer, cómo se probó: la clave de omisión no va en `extraHTTPHeaders`, cuyo registro de llamadas la mostraría al fallar una petición de `page.request`. Los resultados no quedan en `test-results`, porque el error-context.md de un fallo copia el valor del campo de contraseña. Sin la clave, `scripts/e2e.sh` se detiene con una URL https.
+- Correcciones: los cuatro hallazgos de la revisión (la contraseña en error-context.md, la clave en el registro de llamadas, un fallo silencioso al leer la clave y la corrida que no se puede repetir sin restablecer `develop`).
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR.
+- Pendiente y siguiente paso: la prueba todavía no corre en la CI. Sigue la versión 0.1.0 (T076).
 
 ### 2026-11-02 19:36 (Lima) · feat/001-despliegue-vercel · Marca de entorno de cada rama de Neon en el documento de despliegue
 - Quién: Jefferson aprueba en el chat agregar la marca antes de fusionar («Sí, agrégala»). Claude Code implementa la marca en el Back (T077), actualiza este documento y escribe esta entrada.

@@ -14,6 +14,15 @@ const ARCHIVO_CLAVES = process.env.ABET_CLAVES_ARCHIVO ?? "";
 const EXPORT_CON_ERROR =
   process.env.EXPORT_CON_ERROR ?? path.resolve(AQUI, "../../back/tests/datos_inventados/export_inventado_410_con_error.xlsx");
 const CAPTURAS = process.env.DIR_CAPTURAS ?? "";
+// Contra una vista previa de Vercel (URL_FRONT con https, T075), la base de Neon no tiene a docente.varias, así que el
+// caso del 403 lo hace docente411, que tampoco tiene la 410 a su cargo.
+const VISTA_PREVIA = (process.env.URL_FRONT ?? "").startsWith("https://");
+// La clave de omisión de la protección de Vercel va solo en las peticiones del navegador, por context.route, que el
+// registro de llamadas de page.request no muestra. Su respuesta deja la cookie de omisión, que también usa page.request.
+const OMISION = process.env.VERCEL_AUTOMATION_BYPASS_SECRET ?? "";
+const AJENO = VISTA_PREVIA
+  ? { correo: "docente411@example.invalid", secciones: 1, captura: "P2_mis_secciones_docente411.png" }
+  : { correo: "docente.varias@example.invalid", secciones: 3, captura: "P2_mis_secciones_docente_varias.png" };
 
 function clave(correo: string): string {
   const linea = readFileSync(ARCHIVO_CLAVES, "utf8")
@@ -40,6 +49,16 @@ async function ingresar(page: Page, correo: string) {
 }
 
 test.describe.configure({ mode: "serial" });
+
+test.beforeEach(async ({ context }) => {
+  if (!VISTA_PREVIA || !OMISION) return;
+  const origen = new URL(process.env.URL_FRONT ?? "").origin;
+  await context.route(`${origen}/**`, (ruta) =>
+    ruta.continue({
+      headers: { ...ruta.request().headers(), "x-vercel-protection-bypass": OMISION, "x-vercel-set-bypass-cookie": "true" },
+    }),
+  );
+});
 
 let seccion410 = "";
 
@@ -89,10 +108,10 @@ test("docente410 recorre P1, P2, P3 y P4", async ({ page }) => {
   expect(readFileSync(ruta).subarray(0, 2).toString()).toBe("PK");
 });
 
-test("docente.varias ve sus tres secciones y recibe 403 en la 410", async ({ page }) => {
-  await ingresar(page, "docente.varias@example.invalid");
-  await expect(page.getByRole("listitem").filter({ hasText: "Subir export" })).toHaveCount(3);
-  await capturar(page, "P2_mis_secciones_docente_varias.png");
+test(`${AJENO.correo} ve solo sus secciones y recibe 403 en la 410`, async ({ page }) => {
+  await ingresar(page, AJENO.correo);
+  await expect(page.getByRole("listitem").filter({ hasText: "Subir export" })).toHaveCount(AJENO.secciones);
+  await capturar(page, AJENO.captura);
 
   expect(seccion410).not.toBe("");
   const r = await page.request.post(`/api/secciones/${seccion410}/cargas`, {
