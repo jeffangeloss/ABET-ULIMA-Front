@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-02
-- **Rama de trabajo**: `feat/001-despliegue-vercel`, con su PR a `develop` (T072 y los documentos de J-17), y la rama del mismo nombre en el Back (T071); `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
+- **Rama de trabajo**: `feat/001-despliegue-vercel`, con el PR #7 a `develop` (T072 y los documentos de J-17), y la rama del mismo nombre en el Back con el PR #12 (T071, T070 y T073); `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: la reescritura de Production apunta al dominio real del Back, `abet-ulima-back-gray.vercel.app`, y el paso 1 del despliegue explica que el despliegue de la importación sale de `develop`, aunque la rama de Production de los dos proyectos es `main`
+- **Último cambio**: los documentos recogen la revisión de los PR #7 y #12 del Back, con los proyectos de Vercel creados, la protección del Back apagada, sus vistas previas solo desde `develop` y la vista previa comprobada contra la rama `develop` de Neon
 - **En curso**: la fase 7 en Vercel (T070 a T079) y T062
-- **Siguiente paso**: Jefferson desactiva Vercel Authentication en el Back y rehace la `DATABASE_URL` de Preview como una sola variable (T070 y T073); después, con su permiso, se empujan las dos ramas, y siguen T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
+- **Siguiente paso**: la fusión de los PR #7 y #12 del Back, la marca de entorno en cada rama de Neon (propuesta), T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-despliegue-vercel` y el PR #4)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 19:25 (Lima) · feat/001-despliegue-vercel · Documentos con la revisión de los PR de despliegue
+- Quién: Jefferson aprueba empujar las dos ramas («Sí, al terminar»). Una revisión con tres revisores (seguridad con el modelo de la sesión y esfuerzo alto; configuración y documentos con Sonnet y esfuerzo medio) y un refutador por hallazgo de severidad media o alta confirma cinco hallazgos sin refutar ninguno. Claude Code corrige los del Front y escribe esta entrada.
+- Qué cambió: `docs/05-operacion/entornos-y-despliegue.md` (estado y secciones 2.1, 2.2, 2.4, 4, 5 y 7), `docs/01-arquitectura/frontend.md` (punto 1 de la sección 7) y esta memoria.
+- Por qué: el documento decía que los proyectos de Vercel no existen, que apagar la protección abre solo la API de `develop` y que `tests/vercel.test.ts` comprueba que una vista previa nunca escribe en la base del piloto, cuando esa prueba solo cubre la reescritura.
+- Lo que debe hacer, cómo se probó: `npm test`, `npm run build` y `scripts/preflight.sh` pasan. La comprobación de Preview que describe la sección 4 corre el 2026-11-02 y deja una sesión de `abet_app` con actividad nueva en la rama `develop` de Neon y ninguna en la principal.
+- Lo que no debe hacer, cómo se probó: el documento ya no afirma que la prueba del Front cubre la base, y explica por qué no se vuelve a desplegar el despliegue de la importación y por qué un dominio nuevo de Production se suma a la primera regla.
+- Correcciones: la memoria del Front dejaba como pendiente lo que el Back ya registra como hecho, y la sigla IA aparecía sin glosa.
+- Cómo se reporta: esta entrada y el PR #7.
+- Pendiente y siguiente paso: la decisión de Jefferson sobre la marca de entorno en Neon, la fusión de los dos PR, T074 y T075.
 
 ### 2026-11-02 18:50 (Lima) · feat/001-despliegue-vercel · Dominio real del Back en la reescritura de Production y rama de Production observada en Vercel
 - Quién: Jefferson crea los dos proyectos de Vercel y pega las variables del Back. Claude Code, sin subagentes, revisa con la CLI y la API de Vercel los dominios, los nombres de las variables, la rama de Production, la protección y los despliegues, corrige la prueba, el archivo y los documentos, y escribe esta entrada.
