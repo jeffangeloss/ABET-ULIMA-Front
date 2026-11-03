@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-02
 - **Rama de trabajo**: `feat/001-despliegue-vercel`, con el PR #7 a `develop` (T072 y los documentos de J-17), y la rama del mismo nombre en el Back con el PR #12 (T071, T070 y T073); `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: los documentos recogen la revisión de los PR #7 y #12 del Back, con los proyectos de Vercel creados, la protección del Back apagada, sus vistas previas solo desde `develop` y la vista previa comprobada contra la rama `develop` de Neon
+- **Último cambio**: `entornos-y-despliegue.md` describe la marca de entorno de cada rama de Neon (T077 del Back), que la API compara con `VERCEL_ENV` al arrancar
 - **En curso**: la fase 7 en Vercel (T070 a T079) y T062
-- **Siguiente paso**: la fusión de los PR #7 y #12 del Back, la marca de entorno en cada rama de Neon (propuesta), T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
+- **Siguiente paso**: marcar las dos ramas de Neon, fusionar los PR #7 y #12 del Back y comprobar la vista previa de `develop`; después, T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-despliegue-vercel` y el PR #4)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 19:36 (Lima) · feat/001-despliegue-vercel · Marca de entorno de cada rama de Neon en el documento de despliegue
+- Quién: Jefferson aprueba en el chat agregar la marca antes de fusionar («Sí, agrégala»). Claude Code implementa la marca en el Back (T077), actualiza este documento y escribe esta entrada.
+- Qué cambió: `docs/05-operacion/entornos-y-despliegue.md` (un párrafo nuevo en la sección 4, el paso 4 de la sección 5 y el punto 9 de la sección 7, que se quita), `docs/03-api/contrato.md` (la parada del arranque por la marca y por `VERCEL_ENV`) y esta memoria.
+- Por qué: la marca ya existe en el Back, así que deja de ser una propuesta, y el procedimiento de la prueba de humo debe volver a marcar `develop` después de restablecerla.
+- Lo que debe hacer, cómo se probó: `npm test`, `npm run build` y `scripts/preflight.sh` pasan. Las pruebas de la marca viven en el Back (`tests/test_api_sesion.py` y `db/pruebas/correr_pruebas.sh`).
+- Lo que no debe hacer, cómo se probó: el documento no promete que la marca reemplaza la comprobación de la sección 4, que sigue igual, y avisa que una rama recién creada o restablecida desde la principal lleva la marca production hasta volver a marcarla.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR #7.
+- Pendiente y siguiente paso: marcar las dos ramas de Neon, fusionar los dos PR y comprobar la vista previa de `develop`.
 
 ### 2026-11-02 19:25 (Lima) · feat/001-despliegue-vercel · Documentos con la revisión de los PR de despliegue
 - Quién: Jefferson aprueba empujar las dos ramas («Sí, al terminar»). Una revisión con tres revisores (seguridad con el modelo de la sesión y esfuerzo alto; configuración y documentos con Sonnet y esfuerzo medio) y un refutador por hallazgo de severidad media o alta confirma cinco hallazgos sin refutar ninguno. Claude Code corrige los del Front y escribe esta entrada.
