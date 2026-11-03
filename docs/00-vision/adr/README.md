@@ -9,7 +9,7 @@ Un ADR se escribe aquí cuando la decisión (a) es difícil de revertir, (b) con
 | ADR | Decisión | Decisión abierta que cierra | Historias que la exigen |
 |---|---|---|---|
 | [ADR-001](ADR-001-base-fuente-de-verdad.md) | La base de datos es la única fuente de verdad y su esquema solo cambia por migraciones de Flyway | J-06 (traslado de `bd/` al Back) | US-01, US-07, US-15 |
-| [ADR-002](ADR-002-neon-sao-paulo-datos-inventados.md) | La base vive en Neon en São Paulo, la aplicación entra con un solo rol y solo admite códigos inventados hasta la autorización | J-02 (un solo rol `abet_app`); D-10 sigue en espera de la universidad | US-01, US-02, US-03, US-08 |
+| [ADR-002](ADR-002-neon-us-east-1-datos-inventados.md) | La base vive en Neon en us-east-1, la aplicación entra con un solo rol y solo admite códigos inventados hasta la autorización | J-02 (un solo rol `abet_app`); D-10 sigue en espera de la universidad | US-01, US-02, US-03, US-08 |
 | [ADR-003](ADR-003-backend-python-fastapi.md) | El Back es Python 3.12 con FastAPI y la biblioteca `abet_carga` | J-01 | US-07 a US-16 |
 | [ADR-004](ADR-004-sesion-propia-mismo-origen.md) | La sesión es propia, viaja en una cookie HttpOnly y el Front y la API comparten origen | J-03 (depende de J-02) | US-05, US-06, US-20 |
 | [ADR-005](ADR-005-r17-desde-la-vista.md) | El R-17 se genera desde `v_r17_por_pi` con valores calculados, sin fórmulas ni personas | D-08 y D-12 quedan abiertas | US-15, US-16 |
@@ -42,7 +42,7 @@ grep -n "Esperado" docs/00-vision/adr/ADR-*.md
 
 ## Deudas registradas en estos ADR
 
-- ADR-001. El traslado de `bd/` al Back con su historia todavía no ocurre, y hasta entonces las migraciones viven en el repositorio `ABET_ULIMA`.
+- ADR-001. El traslado de `bd/` al Back está hecho con su historia (T022 y T023), y falta archivar `ABET_ULIMA` en solo lectura.
 - ADR-002. La guardia evita guardar un código real, pero no evita que el archivo llegue a la función de Vercel.
 - ADR-003. Falta la prueba de que la función de Python arranca a tiempo en Vercel sin pandas.
 - ADR-004. Falta probar que la reescritura de rutas de Vercel conserva la cookie de primera parte.

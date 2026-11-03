@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-02
-- **Rama de trabajo**: `develop`, que recibe el corte 1 desde el PR #3 con rebase, y `docs/002-capstone` con el PR #4, que espera la aprobación de la spec 002
+- **Rama de trabajo**: `feat/001-despliegue-vercel`, con el PR #7 a `develop` (T072 y los documentos de J-17), y la rama del mismo nombre en el Back con el PR #12 (T071, T070 y T073); `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: SonarQube Cloud aprueba el PR #3 con `npm ci --ignore-scripts`, y Jefferson aprueba fusionar el corte 1 en `develop`
-- **En curso**: T062 (la verificación a mano de Jefferson) y la decisión sobre el 403 frente al 404
-- **Siguiente paso**: T062 para Jefferson, la aprobación de la spec 002 (PR #4) y, con su permiso, Neon y Vercel (fase 7)
-- **Bloqueos**: el proyecto de Neon y el de Vercel todavía no existen; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, PR #3 y #4)
+- **Último cambio**: `entornos-y-despliegue.md` describe la marca de entorno de cada rama de Neon (T077 del Back), que la API compara con `VERCEL_ENV` al arrancar
+- **En curso**: la fase 7 en Vercel (T070 a T079) y T062
+- **Siguiente paso**: marcar las dos ramas de Neon, fusionar los PR #7 y #12 del Back y comprobar la vista previa de `develop`; después, T074, la prueba de humo contra Preview (T075) y la versión 0.1.0 (T076)
+- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-despliegue-vercel` y el PR #4)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,46 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-02 19:36 (Lima) · feat/001-despliegue-vercel · Marca de entorno de cada rama de Neon en el documento de despliegue
+- Quién: Jefferson aprueba en el chat agregar la marca antes de fusionar («Sí, agrégala»). Claude Code implementa la marca en el Back (T077), actualiza este documento y escribe esta entrada.
+- Qué cambió: `docs/05-operacion/entornos-y-despliegue.md` (un párrafo nuevo en la sección 4, el paso 4 de la sección 5 y el punto 9 de la sección 7, que se quita), `docs/03-api/contrato.md` (la parada del arranque por la marca y por `VERCEL_ENV`) y esta memoria.
+- Por qué: la marca ya existe en el Back, así que deja de ser una propuesta, y el procedimiento de la prueba de humo debe volver a marcar `develop` después de restablecerla.
+- Lo que debe hacer, cómo se probó: `npm test`, `npm run build` y `scripts/preflight.sh` pasan. Las pruebas de la marca viven en el Back (`tests/test_api_sesion.py` y `db/pruebas/correr_pruebas.sh`).
+- Lo que no debe hacer, cómo se probó: el documento no promete que la marca reemplaza la comprobación de la sección 4, que sigue igual, y avisa que una rama recién creada o restablecida desde la principal lleva la marca production hasta volver a marcarla.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR #7.
+- Pendiente y siguiente paso: marcar las dos ramas de Neon, fusionar los dos PR y comprobar la vista previa de `develop`.
+
+### 2026-11-02 19:25 (Lima) · feat/001-despliegue-vercel · Documentos con la revisión de los PR de despliegue
+- Quién: Jefferson aprueba empujar las dos ramas («Sí, al terminar»). Una revisión con tres revisores (seguridad con el modelo de la sesión y esfuerzo alto; configuración y documentos con Sonnet y esfuerzo medio) y un refutador por hallazgo de severidad media o alta confirma cinco hallazgos sin refutar ninguno. Claude Code corrige los del Front y escribe esta entrada.
+- Qué cambió: `docs/05-operacion/entornos-y-despliegue.md` (estado y secciones 2.1, 2.2, 2.4, 4, 5 y 7), `docs/01-arquitectura/frontend.md` (punto 1 de la sección 7) y esta memoria.
+- Por qué: el documento decía que los proyectos de Vercel no existen, que apagar la protección abre solo la API de `develop` y que `tests/vercel.test.ts` comprueba que una vista previa nunca escribe en la base del piloto, cuando esa prueba solo cubre la reescritura.
+- Lo que debe hacer, cómo se probó: `npm test`, `npm run build` y `scripts/preflight.sh` pasan. La comprobación de Preview que describe la sección 4 corre el 2026-11-02 y deja una sesión de `abet_app` con actividad nueva en la rama `develop` de Neon y ninguna en la principal.
+- Lo que no debe hacer, cómo se probó: el documento ya no afirma que la prueba del Front cubre la base, y explica por qué no se vuelve a desplegar el despliegue de la importación y por qué un dominio nuevo de Production se suma a la primera regla.
+- Correcciones: la memoria del Front dejaba como pendiente lo que el Back ya registra como hecho, y la sigla IA aparecía sin glosa.
+- Cómo se reporta: esta entrada y el PR #7.
+- Pendiente y siguiente paso: la decisión de Jefferson sobre la marca de entorno en Neon, la fusión de los dos PR, T074 y T075.
+
+### 2026-11-02 18:50 (Lima) · feat/001-despliegue-vercel · Dominio real del Back en la reescritura de Production y rama de Production observada en Vercel
+- Quién: Jefferson crea los dos proyectos de Vercel y pega las variables del Back. Claude Code, sin subagentes, revisa con la CLI y la API de Vercel los dominios, los nombres de las variables, la rama de Production, la protección y los despliegues, corrige la prueba, el archivo y los documentos, y escribe esta entrada.
+- Qué cambió: `vercel.json` y `tests/vercel.test.ts` (destino `abet-ulima-back-gray.vercel.app` y una prueba nueva), y `docs/05-operacion/entornos-y-despliegue.md` (bloque y texto de la sección 2.1, paso 1 de la sección 5 y punto 4 de la sección 7).
+- Por qué: Vercel da al Back el dominio `abet-ulima-back-gray.vercel.app`, porque `abet-ulima-back.vercel.app` ya es de otro proyecto, que hoy responde 404 DEPLOYMENT_NOT_FOUND. Con el destino anterior, la reescritura de Production mandaría la cookie de sesión y las contraseñas del ingreso a ese dominio ajeno. Además, `vercel ls --meta githubCommitRef=develop` muestra que el despliegue de Production de la importación sale de `develop`, aunque la API de Vercel da `main` como rama de Production de los dos proyectos (`link.productionBranch`).
+- Lo que debe hacer, cómo se probó: con el destino anterior, dos de las seis pruebas de `tests/vercel.test.ts` fallan, y con `abet-ulima-back-gray.vercel.app` pasan las seis. `npm test`, `npm run build` y `scripts/probar_preflight.sh` pasan.
+- Lo que no debe hacer, cómo se probó: ninguna regla manda una petición a `https://abet-ulima-back.vercel.app/` (prueba nueva), y ninguna regla sin el dominio de Production llega al Back de Production.
+- Correcciones: la rama de Production de los dos proyectos es `main`, como dice la entrada anterior, y lo que sale de `develop` es solo el despliegue de Production de la importación, que Vercel construye desde la rama predeterminada de GitHub. El paso 1 pide confirmar `main` y no volver a desplegar ese despliegue.
+- Cómo se reporta: esta entrada y el PR.
+- Pendiente y siguiente paso: Jefferson desactiva Vercel Authentication en el Back y rehace la `DATABASE_URL` de Preview. El alias de `develop` del Back ya existe en el despliegue de la importación.
+
+### 2026-11-02 17:49 (Lima) · feat/001-despliegue-vercel · vercel.json del Front con la reescritura de /api por entorno (T072) y documentos de J-17
+- Quién: Jefferson aprueba en el chat seguir con el despliegue en Vercel («Sí, sigamos»), con las funciones en iad1 y los documentos del Front al día. Claude Code, sin subagentes, escribe primero la prueba, hace el cambio y escribe esta entrada.
+- Qué cambió: `vercel.json` y `tests/vercel.test.ts` (nuevos), `docs/05-operacion/entornos-y-despliegue.md`, ADR-001, ADR-002 (ahora `ADR-002-neon-us-east-1-datos-inventados.md`) y su índice, `docs/03-api/contrato.md`, `docs/01-arquitectura/frontend.md` y `docs/README.md`.
+- Por qué: T072 de la spec 001 del Back y J-17. La vista previa del Front necesita una API que no escriba en la base del piloto, y los documentos todavía decían São Paulo, `gru1` y PostgreSQL 16.
+- Lo que debe hacer, cómo se probó: las cinco pruebas de `tests/vercel.test.ts` fallan sin `vercel.json` y pasan con él. Comprueban la región iad1, la regla del dominio de Production en primer lugar y el alias de `develop` del Back para cualquier otro dominio. `npm test`, `npm run build` y `scripts/probar_preflight.sh` pasan.
+- Lo que no debe hacer, cómo se probó: ninguna regla sin el dominio de Production llega al Back de Production. Con el destino de la segunda regla cambiado a mano por el Back de Production, dos de las cinco pruebas fallan. El archivo no trae la regla de `index.html`, porque el Front no cambia de ruta.
+- Correcciones: la guía de Vercel dice que un proyecto nuevo toma `main` como Production cuando existe, y no la rama predeterminada de GitHub, así que el paso 1 de `entornos-y-despliegue.md` pide confirmarla en Settings, Environments, Production.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR.
+- Pendiente y siguiente paso: T070 y T073 de Jefferson, con la protección del Back desactivada y sin conectar al Back la base de la integración. Los dominios de la reescritura se confirman cuando Vercel cree los proyectos.
 
 ### 2026-11-02 15:09 (Lima) · feat/001-mvp-carga-r17 · Corte 1 aprobado para develop
 - Quién: Jefferson aprueba en el chat («Sí, fusiónalo») fusionar el corte 1 en `develop`. Claude Code, sin subagentes, comprueba los checks y escribe esta entrada.

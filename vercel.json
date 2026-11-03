@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "regions": ["iad1"],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "has": [{ "type": "host", "value": "abet-ulima-front.vercel.app" }],
+      "destination": "https://abet-ulima-back-gray.vercel.app/api/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://abet-ulima-back-git-develop-jeffangeloss-projects.vercel.app/api/:path*"
+    }
+  ]
+}
