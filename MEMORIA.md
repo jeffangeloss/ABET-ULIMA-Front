@@ -12,14 +12,14 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-02
-- **Rama de trabajo**: `feat/001-humo-preview`, con la prueba de humo contra la vista previa (T075), y la rama del mismo nombre en el Back con su registro; `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
+- **Fecha**: 2026-11-09
+- **Rama de trabajo**: `feat/003-exports-blackboard`, con P3, P4, el contrato y la prueba de humo de los exports de texto de la spec 003 del Back; `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: `e2e/humo.spec.ts` corre contra la vista previa de `develop` y pasa (2 passed, T075)
-- **En curso**: la fase 7 en Vercel (T074, T076 y T079) y T062
-- **Siguiente paso**: la versión 0.1.0 de `develop` a `main`, primero en el Back y después en el Front (T076), y la auditoría de la fase (T079)
+- **Último cambio**: P3 admite `.xlsx`, `.csv` y `.xls`, P4 muestra «Sin hoja (export de texto)» y el contrato documenta los tres formatos, `hoja` nula y SIN_CALIFICACIONES (spec 003, US-27 a US-36)
+- **En curso**: la implementación de la spec 003 en el Back (lector de texto, validación y V1_10) y su prueba en la vista previa de `develop` (T076)
+- **Siguiente paso**: con el permiso de Jefferson, el PR de esta rama a `develop`, y la prueba de `e2e/humo_csv.spec.ts` contra la vista previa después de restablecer y migrar la rama `develop` de Neon
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/001-humo-preview` y el PR #4)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/003-exports-blackboard` y la spec 003)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,26 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-09 11:26 (Lima) · feat/003-exports-blackboard · Ayudas comunes de las pruebas de humo
+- Quién: Claude Code, a partir del análisis de SonarQube Cloud del PR jeffangeloss/ABET-ULIMA-Front#10.
+- Qué cambió: `e2e/comun.ts` (nuevo) reúne la lectura de la contraseña, las capturas, el ingreso, la clave de omisión de Vercel y la ruta de los exports inventados, y `e2e/humo.spec.ts` y `e2e/humo_csv.spec.ts` la importan en lugar de repetirla.
+- Por qué: la puerta de calidad de SonarQube Cloud del PR falla con 8,6 % de duplicación en el código nuevo (el máximo es 3 %), por las ayudas que `humo_csv.spec.ts` copiaba de `humo.spec.ts`.
+- Lo que debe hacer, cómo se probó: `npx playwright test --list` lista los cuatro recorridos de los dos archivos; `npm test` sigue con 9 archivos y 85 pruebas aprobadas y `npm run build` compila.
+- Lo que no debe hacer, cómo se probó: los recorridos no cambian sus pasos ni sus comprobaciones, y las contraseñas siguen leyéndose solo de `ABET_CLAVES_ARCHIVO`. `tsc` no revisa `e2e/` porque el proyecto no instala los tipos de Node, igual que antes del cambio.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR #10.
+- Pendiente y siguiente paso: la corrida de `e2e/humo_csv.spec.ts` contra la vista previa de `develop` (T076 de la spec 003).
+
+### 2026-11-09 10:40 (Lima) · feat/003-exports-blackboard · P3 y P4 con los exports de texto de Blackboard (spec 003)
+- Quién: Claude Code reparte el trabajo y revisa el resultado; un subagente con Sonnet y esfuerzo medio cambia el contrato, P3, P4 y sus pruebas y escribe `e2e/humo_csv.spec.ts`, y Claude Code suma a esa prueba el `.xls` de la 411 con docente411, corrige una coma del contrato y vuelve a correr las pruebas y la compilación antes de aceptarlo.
+- Qué cambió: `docs/03-api/contrato.md` (campo `archivo` con `.xlsx`, `.csv` o `.xls`, orden del trabajo, texto dañado y tope de 5 000 filas, «3.00» vale 3, SIN_CALIFICACIONES, sección sin declarar con el texto nuevo, `hoja` texto o nula y tabla de 422), `docs/specs/api-contracts.md`, `docs/01-arquitectura/frontend.md`, `src/pantallas/SubirExport.tsx` (`accept`, etiqueta y aviso), `src/pantallas/ResultadoCarga.tsx` y `src/servicios/tipos.ts` (`hoja: string | null`), sus pruebas y `e2e/humo_csv.spec.ts`.
+- Por qué: spec 003 del Back, aprobada por Jefferson el 2026-11-09, historias US-27, US-28, US-33 y US-34, con T011, T040, T041 y T042.
+- Lo que debe hacer, cómo se probó: `npm test` da 9 archivos y 85 pruebas aprobadas (19 fallaban antes del cambio), `npm run build` compila sin errores y `npx playwright test --list e2e/humo_csv.spec.ts` lista los dos recorridos, el `.csv` de la 410 y el `.xls` de la 411.
+- Lo que no debe hacer, cómo se probó: P3 no revisa el tipo ni la extensión; la prueba con `export_410.pdf` y `applyAccept: false` comprueba que el archivo se envía una vez tal cual y que el 422 muestra el `detail` de la API. La prueba de humo lee las contraseñas solo de `ABET_CLAVES_ARCHIVO` y deja sus resultados en `DIR_RESULTADOS`.
+- Correcciones: faltaba la coma antes de «un PI repetido» en la lista de rechazos por estructura del contrato. La comprobación de la sección 10 del contrato, corrida contra la rama del Back, encuentra que el escenario de periodo de la spec 003 usa un texto literal que el contrato no escribía, y el contrato lo suma; queda solo la diferencia que ya traía `develop` con el mensaje de la marca de entorno de T077.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR de la rama.
+- Pendiente y siguiente paso: la prueba de humo de los exports de texto no corrió todavía, porque necesita la API de la rama del Back; corre contra la vista previa de `develop` en T076.
 
 ### 2026-11-02 21:30 (Lima) · feat/001-humo-preview · Prueba de humo contra la vista previa de develop (T075)
 - Quién: Jefferson crea la clave de omisión del proyecto del Front, asigna las contraseñas y corre la prueba en su terminal. Claude Code adapta la prueba y escribe esta entrada. Una revisión con dos revisores y un refutador por hallazgo confirma cuatro hallazgos, corregidos antes de la corrida.

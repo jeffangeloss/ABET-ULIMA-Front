@@ -23,8 +23,8 @@ Este archivo es el índice corto del contrato de la API, que sigue el estilo de 
 | GET | `/api/sesion` | Sí | Usuario actual | US-05 | BR-ACCESO-06 | 1 |
 | DELETE | `/api/sesion` | Opcional (propuesta) | Cerrar sesión | US-05 | BR-ACCESO-06 | 1 |
 | GET | `/api/secciones?periodo=2026-2` | Sí | Secciones al alcance del usuario, cada una con su campo `estado` | US-06 | BR-PERIODO-01, BR-PERIODO-04 y BR-ACCESO-07 | 1 |
-| POST | `/api/secciones/{seccion_id}/cargas` | Sí | Subir el export y cargarlo en una transacción (solo el profesor asignado en el corte 1) | US-07 a US-14, US-21 | BR-CARGA-01 a BR-CARGA-17, BR-CARGA-18 (corte 2), BR-PERIODO-02 y BR-ACCESO-08 | 1 |
-| GET | `/api/cargas/{carga_id}` | Sí | Constancia de una carga | US-16, US-19 | BR-R17-10 y BR-ACCESO-08 | 1 |
+| POST | `/api/secciones/{seccion_id}/cargas` | Sí | Subir el export (.xlsx, .csv o .xls) y cargarlo en una transacción (solo el profesor asignado en el corte 1) | US-07 a US-14, US-21, US-27 a US-32 y US-36 (spec 003) | BR-CARGA-01 a BR-CARGA-17, BR-CARGA-18 (corte 2), BR-PERIODO-02 y BR-ACCESO-08 | 1 |
+| GET | `/api/cargas/{carga_id}` | Sí | Constancia de una carga, con `hoja` nula en un export de texto | US-16, US-19, US-34 (spec 003) | BR-R17-10 y BR-ACCESO-08 | 1 |
 | GET | `/api/cargas/{carga_id}/r17.xlsx` | Sí | R-17 con la hoja «Constancia», solo de cargas en estado PUBLICADA | US-15, US-16 | BR-R17-01 a BR-R17-09 y BR-ACCESO-08 | 1 |
 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | Cargas al alcance del usuario | US-19 | BR-CARGA-20 | 2 |
 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | Reemplazar la carga publicada (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 | 2 |
@@ -41,7 +41,7 @@ Las reglas que no pertenecen a una sola ruta viven en las mismas specs vivas. BR
 
 ## Pruebas
 
-Los escenarios de aceptación de estas rutas viven en `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back, y sus pasos en `tests/aceptacion/pasos/`, que los leen desde esa carpeta. La prueba de humo (recorrido mínimo de punta a punta que confirma que el sistema desplegado responde) con Playwright recorre `POST /api/sesion`, `GET /api/secciones`, `POST /api/secciones/{seccion_id}/cargas` y `GET /api/cargas/{carga_id}/r17.xlsx` con el export que trae el 5 en la fila 3, contra el entorno Preview (vista previa) de Vercel y nunca en Production (producción), como valor provisional de J-09. La sección 10 de `docs/03-api/contrato.md` comprueba en los dos sentidos que los mensajes literales del contrato y los de los escenarios coinciden.
+Los escenarios de aceptación de estas rutas viven en `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back y, para los exports .csv y .xls y la constancia sin hoja, en `specs/003-exports-blackboard/aceptacion/exports_blackboard.feature`, y sus pasos en `tests/aceptacion/pasos/`, que los leen desde esa carpeta. La prueba de humo (recorrido mínimo de punta a punta que confirma que el sistema desplegado responde) con Playwright recorre `POST /api/sesion`, `GET /api/secciones`, `POST /api/secciones/{seccion_id}/cargas` y `GET /api/cargas/{carga_id}/r17.xlsx` con el export que trae el 5 en la fila 3, contra el entorno Preview (vista previa) de Vercel y nunca en Production (producción), como valor provisional de J-09. La sección 10 de `docs/03-api/contrato.md` comprueba en los dos sentidos que los mensajes literales del contrato y los de los escenarios de las specs 001 y 003 coinciden.
 
 ## Lo que todavía NO está
 

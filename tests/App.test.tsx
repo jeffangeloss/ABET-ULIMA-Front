@@ -60,7 +60,7 @@ describe("App", () => {
     const fila = (await screen.findAllByRole("listitem"))[0];
     await u.click(within(fila).getByRole("button", { name: "Subir export" }));
     await u.upload(
-      await screen.findByLabelText("Export de Blackboard (.xlsx, hasta 1 MB)"),
+      await screen.findByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)"),
       new File(["x"], "export_inventado_412.xlsx"),
     );
     await u.click(screen.getByRole("button", { name: "Subir" }));

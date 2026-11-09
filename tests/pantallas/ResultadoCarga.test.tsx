@@ -65,6 +65,20 @@ describe("P4 Resultado de la carga", () => {
     expect(constancia).toHaveTextContent("28/10/2026 10:15");
   });
 
+  it("un export de texto trae la hoja nula y la constancia dice «Sin hoja (export de texto)»", () => {
+    montar({ ...constanciaConError, nombre_archivo: "gc_SINTETICO_20262_450002_410_fullgc_2026-11-04-14-35-59.csv", hoja: null });
+    const constancia = screen.getByRole("region", { name: "Constancia" });
+    expect(constancia).toHaveTextContent("Sin hoja (export de texto)");
+    expect(constancia).not.toHaveTextContent("null");
+  });
+
+  it("un .xlsx sigue mostrando el nombre de su hoja y no el texto de export sin hoja", () => {
+    montar(constanciaConError);
+    const constancia = screen.getByRole("region", { name: "Constancia" });
+    expect(constancia).toHaveTextContent("gc_SINTETICO_20262_450002_410_f");
+    expect(constancia).not.toHaveTextContent("Sin hoja");
+  });
+
   it("una carga RECHAZADA por estructura muestra el motivo y no ofrece el R-17", () => {
     montar(constanciaSinColumna);
     expect(screen.getByText("Rechazada")).toBeInTheDocument();

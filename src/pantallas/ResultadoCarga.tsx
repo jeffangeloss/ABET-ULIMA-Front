@@ -67,7 +67,7 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver }: Props) 
               <dt className="font-medium">Archivo</dt>
               <dd>{constancia.nombre_archivo}</dd>
               <dt className="font-medium">Hoja</dt>
-              <dd>{constancia.hoja}</dd>
+              <dd>{constancia.hoja ?? "Sin hoja (export de texto)"}</dd>
               <dt className="font-medium">Huella SHA-256</dt>
               <dd className="break-all">{constancia.sha256}</dd>
               <dt className="font-medium">Conjunto de reglas</dt>
