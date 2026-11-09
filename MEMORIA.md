@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-09
-- **Rama de trabajo**: `feat/003-exports-blackboard`, con P3, P4, el contrato y la prueba de humo de los exports de texto de la spec 003 del Back; `docs/002-capstone` con el PR #4 espera la aprobación de la spec 002
+- **Rama de trabajo**: `develop`, con la spec 003 fusionada (PR #10, c2f3523) y su registro de la prueba en la vista previa en `docs/003-vista-previa`
 - **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: P3 admite `.xlsx`, `.csv` y `.xls`, P4 muestra «Sin hoja (export de texto)» y el contrato documenta los tres formatos, `hoja` nula y SIN_CALIFICACIONES (spec 003, US-27 a US-36)
-- **En curso**: la implementación de la spec 003 en el Back (lector de texto, validación y V1_10) y su prueba en la vista previa de `develop` (T076)
-- **Siguiente paso**: con el permiso de Jefferson, el PR de esta rama a `develop`, y la prueba de `e2e/humo_csv.spec.ts` contra la vista previa después de restablecer y migrar la rama `develop` de Neon
+- **Último cambio**: `e2e/humo_csv.spec.ts` pasa contra la vista previa de `develop` (2 passed), con el `.csv` inventado en la 410 y el `.xls` inventado en la 411 (T076 de la spec 003 del Back)
+- **En curso**: nada de la spec 003
+- **Siguiente paso**: la versión 0.1.0 de `develop` a `main`, primero en el Back y después en el Front (T076 de la spec 001), después de V1_10 en la rama principal de Neon (T077 de la spec 003)
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la rama `feat/003-exports-blackboard` y la spec 003)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la spec 003 fusionada en `develop`, e56fb8a)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-09 11:49 (Lima) · docs/003-vista-previa · Prueba de humo de los exports de texto en la vista previa (T076 de la spec 003)
+- Quién: Jefferson corre `ABET_SIS_MED/herramientas_neon/humo_preview.sh` en su terminal, que asigna las contraseñas de docente410 y docente411 en la rama `develop` de Neon y corre la prueba. Claude Code prepara la vista previa, comprueba el resultado en Neon y escribe esta entrada.
+- Qué cambió: solo esta memoria.
+- Por qué: T042 y T076 de la spec 003 del Back, la prueba de cierre de P3 y P4 con los exports de texto.
+- Lo que debe hacer, cómo se probó: `npx playwright test e2e/humo_csv.spec.ts` contra `abet-ulima-front-git-develop-jeffangeloss-projects.vercel.app` da 2 passed; P4 muestra «Publicada», 11 de 11 filas aceptadas, los 5 avisos y «Sin hoja (export de texto)» para el `.csv` de la 410 y el `.xls` de la 411, y Neon `develop` confirma las dos cargas con 63,6 / 63,6 / 72,7 %.
+- Lo que no debe hacer, cómo se probó: las contraseñas viajan solo por `ABET_CLAVES_ARCHIVO`, un archivo temporal con permisos 600 que el guion borra; los resultados de Playwright van a una carpeta temporal y las capturas, solo con datos inventados, quedan fuera del repositorio en `ABET_SIS_MED/demo_spec003/capturas/`.
+- Correcciones: ninguna en este repositorio.
+- Cómo se reporta: esta entrada y el PR de esta rama.
+- Pendiente y siguiente paso: la versión 0.1.0 hacia `main` cuando la rama principal de Neon tenga V1_10.
 
 ### 2026-11-09 11:26 (Lima) · feat/003-exports-blackboard · Ayudas comunes de las pruebas de humo
 - Quién: Claude Code, a partir del análisis de SonarQube Cloud del PR jeffangeloss/ABET-ULIMA-Front#10.
