@@ -37,6 +37,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-09 11:26 (Lima) · feat/003-exports-blackboard · Ayudas comunes de las pruebas de humo
+- Quién: Claude Code, a partir del análisis de SonarQube Cloud del PR jeffangeloss/ABET-ULIMA-Front#10.
+- Qué cambió: `e2e/comun.ts` (nuevo) reúne la lectura de la contraseña, las capturas, el ingreso, la clave de omisión de Vercel y la ruta de los exports inventados, y `e2e/humo.spec.ts` y `e2e/humo_csv.spec.ts` la importan en lugar de repetirla.
+- Por qué: la puerta de calidad de SonarQube Cloud del PR falla con 8,6 % de duplicación en el código nuevo (el máximo es 3 %), por las ayudas que `humo_csv.spec.ts` copiaba de `humo.spec.ts`.
+- Lo que debe hacer, cómo se probó: `npx playwright test --list` lista los cuatro recorridos de los dos archivos; `npm test` sigue con 9 archivos y 85 pruebas aprobadas y `npm run build` compila.
+- Lo que no debe hacer, cómo se probó: los recorridos no cambian sus pasos ni sus comprobaciones, y las contraseñas siguen leyéndose solo de `ABET_CLAVES_ARCHIVO`. `tsc` no revisa `e2e/` porque el proyecto no instala los tipos de Node, igual que antes del cambio.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR #10.
+- Pendiente y siguiente paso: la corrida de `e2e/humo_csv.spec.ts` contra la vista previa de `develop` (T076 de la spec 003).
+
 ### 2026-11-09 10:40 (Lima) · feat/003-exports-blackboard · P3 y P4 con los exports de texto de Blackboard (spec 003)
 - Quién: Claude Code reparte el trabajo y revisa el resultado; un subagente con Sonnet y esfuerzo medio cambia el contrato, P3, P4 y sus pruebas y escribe `e2e/humo_csv.spec.ts`, y Claude Code suma a esa prueba el `.xls` de la 411 con docente411, corrige una coma del contrato y vuelve a correr las pruebas y la compilación antes de aceptarlo.
 - Qué cambió: `docs/03-api/contrato.md` (campo `archivo` con `.xlsx`, `.csv` o `.xls`, orden del trabajo, texto dañado y tope de 5 000 filas, «3.00» vale 3, SIN_CALIFICACIONES, sección sin declarar con el texto nuevo, `hoja` texto o nula y tabla de 422), `docs/specs/api-contracts.md`, `docs/01-arquitectura/frontend.md`, `src/pantallas/SubirExport.tsx` (`accept`, etiqueta y aviso), `src/pantallas/ResultadoCarga.tsx` y `src/servicios/tipos.ts` (`hoja: string | null`), sus pruebas y `e2e/humo_csv.spec.ts`.
