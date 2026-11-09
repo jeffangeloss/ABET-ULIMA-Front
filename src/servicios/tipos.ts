@@ -50,7 +50,8 @@ export interface Constancia {
   estado: EstadoCarga;
   seccion: { seccion_id: number; asignatura: string; numero: string; periodo: string };
   nombre_archivo: string;
-  hoja: string;
+  /** Nula en un export de texto (.csv o .xls), que no tiene hoja (spec 003, US-34). */
+  hoja: string | null;
   sha256: string;
   filas_de_datos: number;
   filas_leidas: number;

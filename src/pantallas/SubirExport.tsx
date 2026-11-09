@@ -28,7 +28,7 @@ export function SubirExport({ seccion, alResultado, alVerResultado, alVolver }: 
     setError(null);
     setYaCargada(null);
     if (!archivo) {
-      setError("Elija el archivo .xlsx del export.");
+      setError("Elija el archivo del export (.xlsx, .csv o .xls).");
       return;
     }
     setEnviando(true);
@@ -50,10 +50,10 @@ export function SubirExport({ seccion, alResultado, alVerResultado, alVolver }: 
       <p className="mb-4 font-medium">{etiquetaSeccion(seccion)}</p>
       <form onSubmit={enviar} className="max-w-md space-y-4">
         <div>
-          <label htmlFor="archivo" className="text-sm font-medium">Export de Blackboard (.xlsx, hasta 1 MB)</label>
+          <label htmlFor="archivo" className="text-sm font-medium">Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)</label>
           {/* El control nativo pinta su botón en el idioma del navegador, así que queda oculto a la
               vista, con su etiqueta y su foco, y el botón visible es propio y en español. */}
-          <input id="archivo" ref={campo} type="file" accept=".xlsx" className="peer sr-only"
+          <input id="archivo" ref={campo} type="file" accept=".xlsx,.csv,.xls" className="peer sr-only"
             onChange={(e) => setArchivo(e.target.files?.[0] ?? null)} />
           <div className="mt-1 flex flex-wrap items-center gap-3 rounded peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-sky-600">
             <button type="button" tabIndex={-1} aria-hidden="true" className={botonSecundario}

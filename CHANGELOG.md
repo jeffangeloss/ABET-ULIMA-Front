@@ -6,6 +6,9 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Cambiado
 
+- P3 admite los tres formatos del export de Blackboard, `.xlsx`, `.csv` y `.xls`, en su selector, su etiqueta y su aviso, sin revisar el tipo, y P4 muestra «Sin hoja (export de texto)» cuando la constancia trae `hoja` nula (spec 003 del Back, US-33 y US-34).
+- El contrato documenta los tres formatos, el texto dañado, el tope de 5 000 filas, el nivel «3.00», SIN_CALIFICACIONES, el texto nuevo de la sección sin declarar y `hoja` nula (spec 003, T011).
+- Prueba de humo `e2e/humo_csv.spec.ts`, que sube el `.csv` inventado de la 410 y el `.xls` inventado de la 411 (spec 003, T042).
 - La prueba de humo de Playwright corre también contra una vista previa de Vercel (T075), con `docente411` en el caso del 403, la clave de omisión de la protección solo en las peticiones del navegador y los resultados en la carpeta de `DIR_RESULTADOS`.
 - ADR-001, ADR-002 (ahora `ADR-002-neon-us-east-1-datos-inventados.md`), el contrato, la arquitectura y `entornos-y-despliegue.md` con Neon en us-east-1 y PostgreSQL 18 (J-17), la protección de despliegues del Back y el traslado de `bd/` hecho.
 - ADR-006 y arquitectura del Front con Playwright para Node (`e2e/humo.spec.ts`) como prueba de humo.

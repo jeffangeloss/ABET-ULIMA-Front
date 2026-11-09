@@ -19,18 +19,18 @@ function montar() {
 
 async function subir() {
   const u = userEvent.setup();
-  await u.upload(screen.getByLabelText("Export de Blackboard (.xlsx, hasta 1 MB)"), archivo());
+  await u.upload(screen.getByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)"), archivo());
   await u.click(screen.getByRole("button", { name: "Subir" }));
 }
 
 describe("P3 Subir export", () => {
-  it("muestra la sección elegida fija, el campo .xlsx, el botón Subir y el rótulo del piloto", () => {
+  it("muestra la sección elegida fija, el campo de .xlsx, .csv y .xls, el botón Subir y el rótulo del piloto", () => {
     montar();
     expect(screen.getByRole("heading", { level: 1, name: "Subir export" })).toHaveFocus();
     expect(screen.getByText("450010 Gestión Ambiental, sección 412, 2026-2")).toBeInTheDocument();
-    const campo = screen.getByLabelText("Export de Blackboard (.xlsx, hasta 1 MB)");
+    const campo = screen.getByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)");
     expect(campo).toHaveAttribute("type", "file");
-    expect(campo).toHaveAttribute("accept", ".xlsx");
+    expect(campo).toHaveAttribute("accept", ".xlsx,.csv,.xls");
     expect(screen.getByRole("button", { name: "Subir" })).toBeEnabled();
     expect(screen.getByText("Solo exports con códigos inventados (99000000 a 99999999)")).toBeInTheDocument();
     expect(screen.queryByRole("combobox")).toBeNull();
@@ -69,7 +69,7 @@ describe("P3 Subir export", () => {
     [409, "La sección 410 ya tiene una carga publicada. No se cargó el archivo."],
     [409, "Este archivo ya está publicado en otra sección. No se cargó."],
     [422, "El piloto solo admite códigos inventados, de 99000000 a 99999999. Revise la fila 4. No se guardó nada."],
-    [422, "El archivo no indica su sección. Sube el export de Blackboard sin cambiar el nombre de su hoja."],
+    [422, "El archivo no indica su sección. Suba el export de Blackboard sin cambiar el nombre del archivo ni el de su hoja."],
     [422, "El archivo está protegido con contraseña. Guárdelo sin contraseña y súbalo."],
     [500, "La carga no se completó y no se guardó ningún dato. Intente de nuevo."],
   ])("el %i se queda en P3 con el detail tal como llega: %s", async (status, detail) => {
@@ -79,6 +79,21 @@ describe("P3 Subir export", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(detail);
     expect(p.alResultado).not.toHaveBeenCalled();
     expect(screen.getByRole("button", { name: "Subir" })).toBeEnabled();
+  });
+
+  it("envía tal cual un archivo de otro tipo, sin aviso propio, y muestra el detail del 422", async () => {
+    const detail = "Solo se admiten exports de Blackboard en formato .xlsx, .csv o .xls.";
+    const { llamadas, falso } = simularApi({ [RUTA]: json(422, { detail }) });
+    const p = montar();
+    const u = userEvent.setup({ applyAccept: false });
+    const pdf = new File(["contenido inventado"], "export_410.pdf", { type: "application/pdf" });
+    await u.upload(screen.getByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)"), pdf);
+    expect(screen.queryByRole("alert")).toBeNull();
+    await u.click(screen.getByRole("button", { name: "Subir" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(detail);
+    expect(falso).toHaveBeenCalledTimes(1);
+    expect(((llamadas[0].init?.body as FormData).get("archivo") as File).name).toBe("export_410.pdf");
+    expect(p.alResultado).not.toHaveBeenCalled();
   });
 
   it("un 413 de Vercel muestra el máximo de 1 MB", async () => {
@@ -92,7 +107,7 @@ describe("P3 Subir export", () => {
     const { falso } = simularApi({});
     montar();
     await userEvent.click(screen.getByRole("button", { name: "Subir" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("Elija el archivo .xlsx del export.");
+    expect(await screen.findByRole("alert")).toHaveTextContent("Elija el archivo del export (.xlsx, .csv o .xls).");
     expect(falso).not.toHaveBeenCalled();
   });
 
@@ -116,7 +131,7 @@ describe("P3 Subir export", () => {
 
   it("el control de archivo es propio y en español, con el nombre del archivo elegido", async () => {
     montar();
-    const campo = screen.getByLabelText("Export de Blackboard (.xlsx, hasta 1 MB)");
+    const campo = screen.getByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)");
     expect(campo).toHaveClass("sr-only");
     expect(screen.getByText("Ningún archivo elegido")).toBeInTheDocument();
     const abrir = vi.spyOn(campo as HTMLInputElement, "click");
@@ -132,7 +147,7 @@ describe("P3 Subir export", () => {
     const elegir = screen.getByText("Elegir archivo");
     expect(elegir).toHaveAttribute("tabindex", "-1");
     expect(elegir).toHaveAttribute("aria-hidden", "true");
-    expect(screen.getAllByLabelText("Export de Blackboard (.xlsx, hasta 1 MB)")).toHaveLength(1);
+    expect(screen.getAllByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)")).toHaveLength(1);
   });
 
   it("no muestra vista previa, ruta local ni códigos de estudiantes, y vuelve a P2", async () => {
