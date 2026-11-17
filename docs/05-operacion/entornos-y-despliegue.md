@@ -55,7 +55,7 @@ El archivo no lleva la regla que devuelve `index.html` en cualquier otra ruta, p
 
 ### 2.2 Entrenamiento de inteligencia artificial (IA) desactivado
 
-En el plan Hobby, los términos de Vercel le permiten usar el contenido del cliente para entrenar sus modelos, salvo que se desactive en la configuración del equipo. Jefferson lo desactiva en `jeffangeloss-projects` antes del primer despliegue. Con datos reales, esa sola condición deja fuera al plan Hobby.
+En el plan Hobby, los términos de Vercel le permiten usar el contenido del cliente para entrenar sus modelos, salvo que se desactive en la configuración del equipo. Jefferson debe desactivarlo en `jeffangeloss-projects`, y el 2026-11-17 sigue encendido (sección 7). Con datos reales, esa sola condición deja fuera al plan Hobby.
 
 ### 2.3 Uso no comercial
 
@@ -102,7 +102,7 @@ Flyway entra por la conexión directa, sin «-pooler», con las variables `NEON_
 2. El proyecto de Neon ABET-ULIMA ya tiene en sus dos ramas las migraciones de Flyway, los scripts de plataforma y los datos inventados (T027).
 3. Un PR a `develop` despliega Preview en cada repositorio. Si la versión del Front depende de un cambio de la API, se publica antes la del Back (`docs/devops.md`).
 4. La prueba de humo (recorrido mínimo de punta a punta que confirma que el sistema desplegado responde, US-17) corre contra Preview desde `develop`, sobre una base cuya sección 410 no tiene cargas. Si para eso se restablece la rama `develop` desde la principal, se vuelve a marcar con `preview` (sección 4). La primera corrida contra Preview pasa el 2026-11-02 (T075). Ingresa con un usuario de prueba, sube el export con el 5 en la fila 3, ve «11 filas leídas, 10 aceptadas y 1 rechazada» y descarga el R-17 con 60,0 / 60,0 / 70,0. Es el valor provisional de J-09 («La prueba de humo corre en la CI o contra la vista previa»).
-5. El PR de versión de `develop` a `main` despliega Production solo después de que la prueba de humo pasa en Preview. La prueba de humo no corre en Production, porque dejaría allí una carga publicada que nadie puede borrar. En Production, sobre la rama principal de Neon, se comprueban solo los criterios de `despliegue.feature` que no escriben cargas, que son la región, la reescritura, la cookie, el pooler y la guardia.
+5. El PR de versión de `develop` a `main` despliega Production solo después de que la prueba de humo pasa en Preview. La prueba de humo no corre en Production, porque dejaría allí una carga publicada que nadie puede borrar. En Production, sobre la rama principal de Neon, se comprueban solo los criterios de `despliegue.feature` que no escriben cargas, que son la región, la reescritura, la cookie, el pooler y la guardia. La versión 0.1.0 llega a Production el 2026-11-17, y ese día pasan la región, la reescritura, la cookie y el pooler. La guardia queda pendiente, porque comprobarla exige subir un export (sección «Despliegue» de `specs/001-mvp-carga-r17/audit.md` del Back).
 
 ## 6. Camino a datos reales
 
@@ -115,8 +115,8 @@ El piloto en Vercel Hobby vale solo con datos inventados. Para datos reales, el 
 
 ## 7. Lo que todavía NO está
 
-1. **El cierre de T070.** Los dos proyectos de Vercel existen desde el 2026-11-02, con `main` como rama de Production, las variables del Back y Vercel Authentication apagada en el Back. Falta que Jefferson confirme el entrenamiento de IA apagado.
-2. **La decisión J-07.** Jefferson todavía no acepta desplegar en Hobby antes de la respuesta de soporte sobre el uso no comercial.
+1. **El cierre de T070.** Los dos proyectos de Vercel existen desde el 2026-11-02, con `main` como rama de Production, las variables del Back y Vercel Authentication apagada en el Back. El entrenamiento de IA sigue encendido, porque el 2026-11-17 la API de Vercel da en el equipo `dataSharingConsent` con `consent: granted` y `via: tos`, el valor por omisión de Hobby desde los [términos de servicio de marzo de 2026](https://vercel.com/changelog/updates-to-terms-of-service-march-2026). Lo apaga Jefferson en Team Settings, Data Preferences.
+2. **La decisión J-07.** La versión 0.1.0 corre en Vercel Hobby desde el 2026-11-17, y la consulta a soporte sobre el uso no comercial todavía no consta (T070 del Back).
 3. **La decisión J-09.** El valor provisional de esta página (prueba de humo contra Preview, nunca en Production) espera su confirmación.
 4. **El respaldo diario de Neon.** `respaldo_neon.yml` del Back corre solo a pedido y pasa a diario cuando Jefferson cargue sus cinco secretos en GitHub.
 5. **El correo saliente del corte 2** (US-20, decisión J-04), con dominio propio y Resend en el piloto o Amazon SES en `sa-east-1` para datos reales.

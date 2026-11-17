@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-17
-- **Rama de trabajo**: `chore/version-0.1.0`, que sale de `develop` (f1c469f) con la versión 0.1.0
-- **Versión publicada**: ninguna todavía; la 0.1.0 está en preparación (`VERSION` = 0.1.0)
-- **Último cambio**: `VERSION` en 0.1.0 y la sección [0.1.0] del CHANGELOG (T076 de la spec 001 del Back)
-- **En curso**: la versión 0.1.0, que llega a `main` después de la del Back
-- **Siguiente paso**: el PR «Versión 0.1.0» de `develop` a `main` del Front, una vez que el Back sirva la 0.1.0 en Production; después, la reescritura de `/api` en Production y el ingreso sin cargas (T079 de la spec 001 del Back)
-- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); los PR de Dependabot esperan a que salga la versión, por decisión de Jefferson del 2026-11-17
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la versión 0.1.0 en `chore/version-0.1.0` y V1_10 en la rama principal de Neon)
+- **Rama de trabajo**: `docs/001-version-0.1.0`, que sale de `develop` (35a4266) con el registro de la versión en Production
+- **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
+- **Último cambio**: Production del Front sale de `main` con la versión 0.1.0, y su reescritura lleva `/api` al Back de Production (T076 y T079 de la spec 001 del Back)
+- **En curso**: nada de la versión 0.1.0
+- **Siguiente paso**: los PR de Dependabot, que esperaban a la versión, y lo pendiente de US-17 en `audit.md` del Back
+- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-17 17:45 (Lima) · docs/001-version-0.1.0 · Versión 0.1.0 en Production (T076 y T079 de la spec 001 del Back)
+- Quién: Jefferson autoriza en el chat empujar y fusionar cada PR con la CI en verde, y corre `ABET_SIS_MED/herramientas_neon/comprobar_version.sh`, que le pide las contraseñas. Claude Code fusiona el PR de versión, comprueba Production y escribe esta entrada. El subagente revisor del registro del Back (Sonnet, esfuerzo medio) revisa también este cambio en solo lectura y marca la sección 2.2 de `entornos-y-despliegue.md`, que daba el entrenamiento de IA por desactivado, y la fuente de los términos de marzo de 2026, y las dos se corrigen.
+- Qué cambió: `main` recibe la versión 0.1.0 (PR #14, 0d693b9), `release.yml` crea el tag `v0.1.0` y su Release, y Production del Front sale de `main`. En este repositorio, `docs/05-operacion/entornos-y-despliegue.md` registra la versión en Production, J-07 en Hobby y el entrenamiento de IA del equipo, que sigue encendido.
+- Por qué: T076 y T079 de la spec 001 del Back.
+- Lo que debe hacer, cómo se probó: el despliegue de Production `dpl_EjScFgZmaZ8AugUs458zYHfeA92v` sale de `main` en iad1 con el alias `abet-ulima-front.vercel.app`. `GET /` responde 200 sin la protección de Vercel, y `GET /api/sesion` sin cookie da por la reescritura el 401 en JSON del Back, que antes de la versión era 404. `produccion.spec.ts` da 3 passed, con el ingreso de docente410 en P1 y la cookie `abet_sesion` guardada solo para `abet-ulima-front.vercel.app`, HttpOnly, Secure y SameSite=Lax.
+- Lo que no debe hacer, cómo se probó: la respuesta de `/api/sesion` no trae `Access-Control-Allow-Origin`, localStorage y sessionStorage no tienen ningún valor, `document.cookie` no muestra `abet_sesion` y ninguna prueba sube un export en Production.
+- Correcciones: la sección 7 decía que Jefferson aún no aceptaba desplegar en Hobby, y ahora registra la versión 0.1.0 en Hobby con la consulta a soporte todavía pendiente.
+- Cómo se reporta: esta entrada, el CHANGELOG, el PR de esta rama y `audit.md` del Back.
+- Pendiente y siguiente paso: los PR de Dependabot (#5, #6, #9 y #12) y el entrenamiento de IA del equipo de Vercel (T070 del Back).
 
 ### 2026-11-17 17:25 (Lima) · chore/version-0.1.0 · Versión 0.1.0 del Front (T076 de la spec 001 del Back)
 - Quién: Claude Code prepara la versión por el encargo de la sesión principal de Jefferson del 2026-11-17. Jefferson decide en el chat no fusionar los PR de Dependabot antes de la versión y autoriza empujar y fusionar cada PR con la CI en verde.
