@@ -12,6 +12,9 @@
 #   4. Ningún secreto con valor (cadena de conexión con clave, tokens, llaves privadas).
 #   5. Todo commit y todo PR que cambia archivos actualiza MEMORIA.md.
 #   6. Aviso, sin fallar, si un PR cambia código o configuración y no toca CHANGELOG.md.
+#   7. Nada de src/ usa el almacenamiento del navegador (localStorage, sessionStorage) ni llama a una
+#      URL que no sea /api: sin URL absoluta, sin fetch ni XMLHttpRequest fuera de
+#      src/servicios/api.ts y sin ruta literal que no empiece con /api (T045).
 #
 # Los mensajes nombran el archivo y la regla, nunca el contenido encontrado, para no copiar un
 # secreto ni un dato personal en los registros de la CI.
@@ -100,6 +103,26 @@ for p in "${PATRONES[@]}"; do
 $(git grep -nIE ${GREP_ORIGEN[@]+"${GREP_ORIGEN[@]}"} -e "$p" -- . ':!scripts/preflight.sh' ':!scripts/probar_preflight.sh' 2>/dev/null | cut -d: -f1,2 || true)
 EOF
 done
+
+# 7. Front: sin almacenamiento del navegador y con /api como único destino HTTP (T045). La sesión
+#    viaja en la cookie abet_sesion y la pantalla de ingreso no guarda nada (ADR-004). Solo se revisa
+#    src/, porque las pruebas de tests/ comprueban justamente que el almacenamiento quede vacío.
+#    Los comentarios de src/ no nombran estas APIs, para que la regla pueda ser literal.
+revisar_src() {
+  local patron="$1" motivo="$2"; shift 2
+  while IFS= read -r hallazgo; do
+    [ -z "$hallazgo" ] && continue
+    falla "$hallazgo: $motivo (regla 7)"
+  done <<EOF2
+$(git grep -nIE ${GREP_ORIGEN[@]+"${GREP_ORIGEN[@]}"} -e "$patron" -- src/ "$@" 2>/dev/null | cut -d: -f1,2 || true)
+EOF2
+}
+revisar_src 'localStorage|sessionStorage|indexedDB' 'usa el almacenamiento del navegador'
+revisar_src 'https?://|wss?://' 'llama o nombra una URL absoluta'
+revisar_src 'XMLHttpRequest|sendBeacon|EventSource|WebSocket|axios' 'usa una puerta HTTP distinta de api.ts'
+revisar_src '(^|[^A-Za-z_.])fetch[[:space:]]*\(' 'llama a fetch fuera de src/servicios/api.ts' ':!src/servicios/api.ts'
+# Ruta literal entre comillas que no empieza con /api (cualquier carácter tras la barra salvo «a», o «a» sin «pi»).
+revisar_src "[\"'\`]/([^a]|a([^p]|p[^i]))" 'tiene una ruta literal que no es /api' ':!src/**/*.css'
 
 # 5 y 6. MEMORIA.md en cada cambio y aviso de CHANGELOG.md.
 revisar_memoria() {
