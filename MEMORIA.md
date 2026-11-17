@@ -12,14 +12,14 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-09
-- **Rama de trabajo**: `develop`, con la spec 003 fusionada (PR #10, c2f3523) y su registro de la prueba en la vista previa en `docs/003-vista-previa`
-- **Versión publicada**: ninguna (`VERSION` = 0.0.0)
-- **Último cambio**: `e2e/humo_csv.spec.ts` pasa contra la vista previa de `develop` (2 passed), con el `.csv` inventado en la 410 y el `.xls` inventado en la 411 (T076 de la spec 003 del Back)
-- **En curso**: nada de la spec 003
-- **Siguiente paso**: la versión 0.1.0 de `develop` a `main`, primero en el Back y después en el Front (T076 de la spec 001), después de V1_10 en la rama principal de Neon (T077 de la spec 003)
-- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la spec 003 fusionada en `develop`, e56fb8a)
+- **Fecha**: 2026-11-17
+- **Rama de trabajo**: `chore/version-0.1.0`, que sale de `develop` (f1c469f) con la versión 0.1.0
+- **Versión publicada**: ninguna todavía; la 0.1.0 está en preparación (`VERSION` = 0.1.0)
+- **Último cambio**: `VERSION` en 0.1.0 y la sección [0.1.0] del CHANGELOG (T076 de la spec 001 del Back)
+- **En curso**: la versión 0.1.0, que llega a `main` después de la del Back
+- **Siguiente paso**: el PR «Versión 0.1.0» de `develop` a `main` del Front, una vez que el Back sirva la 0.1.0 en Production; después, la reescritura de `/api` en Production y el ingreso sin cargas (T079 de la spec 001 del Back)
+- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); los PR de Dependabot esperan a que salga la versión, por decisión de Jefferson del 2026-11-17
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la versión 0.1.0 en `chore/version-0.1.0` y V1_10 en la rama principal de Neon)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-17 17:25 (Lima) · chore/version-0.1.0 · Versión 0.1.0 del Front (T076 de la spec 001 del Back)
+- Quién: Claude Code prepara la versión por el encargo de la sesión principal de Jefferson del 2026-11-17. Jefferson decide en el chat no fusionar los PR de Dependabot antes de la versión y autoriza empujar y fusionar cada PR con la CI en verde.
+- Qué cambió: `VERSION` pasa a 0.1.0, la versión que ya declaran `package.json` y `package-lock.json`, y la sección «Sin publicar» del `CHANGELOG.md` pasa a `[0.1.0] - 2026-11-17`, con otra vacía encima.
+- Por qué: T076 de la spec 001 del Back, que publica la versión primero en el Back y después en el Front, con V1_10 ya en la rama principal de Neon (T077 de la spec 003).
+- Lo que debe hacer, cómo se probó: `npm test` da 9 archivos y 85 pruebas aprobadas, `npm run build` compila sin errores, `scripts/preflight.sh` termina sin fallas y el `awk` de `release.yml` extrae la sección [0.1.0].
+- Lo que no debe hacer, cómo se probó: ningún archivo de `src/` ni `vercel.json` cambia, así que Production recibe desde `main` el mismo código que pasa la prueba de la vista previa del 2026-11-09. Los cuatro PR de Dependabot (#5, #6, #9 y #12) quedan abiertos.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, el CHANGELOG, el PR de esta rama y el PR «Versión 0.1.0».
+- Pendiente y siguiente paso: el PR «Versión 0.1.0» de `develop` a `main` después del Back, y la comprobación de la reescritura de `/api` y del ingreso en Production sin cargas (T079 de la spec 001 del Back).
 
 ### 2026-11-09 11:49 (Lima) · docs/003-vista-previa · Prueba de humo de los exports de texto en la vista previa (T076 de la spec 003)
 - Quién: Jefferson corre `ABET_SIS_MED/herramientas_neon/humo_preview.sh` en su terminal, que asigna las contraseñas de docente410 y docente411 en la rama `develop` de Neon y corre la prueba. Claude Code prepara la vista previa, comprueba el resultado en Neon y escribe esta entrada.

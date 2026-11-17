@@ -4,8 +4,11 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+## [0.1.0] - 2026-11-17
+
 ### Cambiado
 
+- `VERSION` pasa a 0.1.0, la versión que ya declaran `package.json` y `package-lock.json` (T076 de la spec 001 del Back).
 - P3 admite los tres formatos del export de Blackboard, `.xlsx`, `.csv` y `.xls`, en su selector, su etiqueta y su aviso, sin revisar el tipo, y P4 muestra «Sin hoja (export de texto)» cuando la constancia trae `hoja` nula (spec 003 del Back, US-33 y US-34).
 - El contrato documenta los tres formatos, el texto dañado, el tope de 5 000 filas, el nivel «3.00», SIN_CALIFICACIONES, el texto nuevo de la sección sin declarar y `hoja` nula (spec 003, T011).
 - Prueba de humo `e2e/humo_csv.spec.ts`, que sube el `.csv` inventado de la 410 y el `.xls` inventado de la 411 (spec 003, T042).
