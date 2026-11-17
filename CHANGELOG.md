@@ -4,6 +4,10 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+### Cambiado
+
+- `docs/05-operacion/entornos-y-despliegue.md` registra la versión 0.1.0 en Production, la decisión J-07 en Hobby y el entrenamiento de IA del equipo de Vercel, que sigue encendido (T079 y T070 de la spec 001 del Back).
+
 ## [0.1.0] - 2026-11-17
 
 ### Cambiado
