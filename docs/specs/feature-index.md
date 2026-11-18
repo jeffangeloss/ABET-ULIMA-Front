@@ -10,7 +10,7 @@ Cada feature es la carpeta de su spec viva en `specs/features/` de ABET-ULIMA-Ba
 | periodo | BR-PERIODO-01 a BR-PERIODO-04 | P2 Mis secciones (`MisSecciones.tsx`) | en revisión (contrato escrito para US-03 y el listado de US-06) | `specs/features/periodo/periodo.spec.md` |
 | carga-export | BR-CARGA-01 a BR-CARGA-20 | P3 Subir export (`SubirExport.tsx`), P4 Resultado de la carga (`ResultadoCarga.tsx`) y P5 Cargas (`Cargas.tsx`) | en revisión (contrato escrito para US-07 a US-14; US-18, US-19 y US-21 del corte 2 en BR-CARGA-18 a BR-CARGA-20, que completa T080) | `specs/features/carga-export/carga-export.spec.md` |
 | r17 | BR-R17-01 a BR-R17-10 | P4 Resultado de la carga (`ResultadoCarga.tsx`) | en revisión (contrato escrito para US-15 y US-16) | `specs/features/r17/r17.spec.md` |
-| resultados (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, con BR-ACCESO-10 en `acceso` | P6 Mis logros por SO (`MisLogros.tsx`) | contrato listo (reglas y ruta 12 escritas con T010 a T012 en `feat/004-reportes-docente`) | `specs/features/resultados/resultados.spec.md` |
+| resultados (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, con BR-ACCESO-10 en `acceso` | P6 Mis logros por SO (`MisLogros.tsx`) | contrato listo (código y pruebas de la ruta 12 y de P6 en `feat/004-reportes-docente`, a la espera de la fusión en `develop`) | `specs/features/resultados/resultados.spec.md` |
 
 US-01, US-02 y US-17 son de plataforma (migración en Neon, rol `abet_app` y despliegue en Vercel), no abren una spec viva y se verifican en `specs/001-mvp-carga-r17/audit.md`. No tienen pantalla, aunque la prueba de humo de US-17 recorre P1 a P4.
 

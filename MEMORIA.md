@@ -15,11 +15,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-18
 - **Rama de trabajo**: `feat/004-reportes-docente`, que sale de `develop` (e88d6f2, con la documentación de la spec 004 fusionada por el PR #18), con la construcción de la pantalla P6 de la spec 004 del Back
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: el contrato definitivo de la ruta 12 `GET /api/resultados` (T011 de la spec 004), en la sección 12 y la 3.4 de `docs/03-api/contrato.md`, en `docs/specs/api-contracts.md`, en la sección 9 de `docs/01-arquitectura/frontend.md`, en `docs/specs/feature-index.md` y en ADR-008
-- **En curso**: P6 «Mis logros por SO», sus enlaces en la cabecera y en P4 y sus pruebas de Vitest primero (T040 a T042), y la prueba de humo con P6 (T043). En `feat/004-reportes-docente` del Back avanzan la ruta 12 y la guardia de sesión por router. Los escenarios pendientes de US-17 siguen en `audit.md` del Back
-- **Siguiente paso**: la fase 4 de la spec 004 en esta rama y el cierre con `audit.md` del Back (T060). Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
+- **Último cambio**: P6 «Mis logros por SO» (`src/pantallas/MisLogros.tsx`), su enlace en la cabecera y en P4, `obtenerResultados` y la prueba de humo de P6 (T040 a T043 de la spec 004), sobre el contrato definitivo de la ruta 12 (T011, a5d678c)
+- **En curso**: el cierre de la spec 004 con `audit.md` del Back (T060). La ruta 12 y la guardia de sesión por router ya están en `feat/004-reportes-docente` del Back (0db6ee3). Los escenarios pendientes de US-17 siguen en `audit.md` del Back
+- **Siguiente paso**: el permiso de Jefferson para empujar esta rama y la del Back y abrir sus PR (T070), y después de las dos fusiones el humo de P6 contra la vista previa de `develop` (T071). Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back); empujar la rama y abrir su PR esperan el permiso de Jefferson (T070 de la spec 004)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, la spec 004 fusionada en `develop` con su PR #27 y su construcción en `feat/004-reportes-docente`, que ya trae la fase 1 en 55a66b6)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, la spec 004 fusionada en `develop` con su PR #27 y su construcción en `feat/004-reportes-docente`, que trae la fase 1 en 55a66b6 y la ruta 12 en 0db6ee3)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 15:50 (Lima) · feat/004-reportes-docente · P6 Mis logros por SO y su prueba de humo
+- Quién: Claude Code, sin subagentes, escribe primero las pruebas de Vitest y del humo con `superpowers:test-driven-development` y después la pantalla. Los nombres de las pruebas son los que anotan los pasos `@delegado_a_vitest` del Back (0db6ee3).
+- Qué cambió: `src/pantallas/MisLogros.tsx` (P6) muestra las secciones por asignatura, con su estado, su marca provisional y el R-17 de cada sección publicada, y un grupo por SO con una fila por PI y sección, su barra de HTML con `aria-hidden`, la línea de la meta y el reparto por nivel. `App.tsx` suma la vista `logros` y el enlace de la cabecera, «Ver mis logros por SO» o «Ver los logros por SO de la carrera», y `ResultadoCarga.tsx` el mismo enlace en una carga PUBLICADA. `api.ts` suma `obtenerResultados`, `tipos.ts` sus tipos y `formato.ts` las cifras con coma decimal. Las pruebas suman `tests/pantallas/MisLogros.test.tsx` y casos en `App.test.tsx`, `api.test.ts` y `formato.test.ts`, y `e2e/humo.spec.ts` dos casos de P6 con un lector mínimo del R-17 en `e2e/comun.ts`. `frontend.md` y `feature-index.md` quedan al día.
+- Por qué: US-37 a US-44 de la spec 004, FR-011 a FR-016 y FR-021, BR-RESULTADOS-11 y T040 a T043.
+- Lo que debe hacer, cómo se probó: `npm test` da 11 archivos y 164 pruebas aprobadas, y `npm run build` termina sin errores. Con `bash scripts/api_local.sh --sin-https` del Back y Vite, `npx playwright test e2e/humo.spec.ts` da 5 passed. P6 de docente410 escribe en cada PI el porcentaje de la celda E del bloque II del R-17 de la misma carga, la meta de la celda G y el estado de la celda H.
+- Lo que no debe hacer, cómo se probó: las pruebas comprueban que P6 no dibuja una barra para un PI sin calificaciones ni escribe «0 %», no ofrece «Subir export», no muestra correos, no ordena por resultado, no compara cifras (con un `en_meta` contrario a las cifras escribe el de la API), no escribe en `localStorage` ni en `sessionStorage`, y que P4 de una carga que no está publicada no ofrece el enlace ni muestra porcentajes. En el humo, docente.varias, el profesor ajeno de la corrida local, no ve la 410 en su P6 ni en `GET /api/resultados`.
+- Correcciones: la barra de niveles usaba rojo y verde, que con un nivel esperado 2 sugeriría lo contrario de la regla, y pasa a una escala azul con el contraste de 4,5 a 1 para su texto blanco que comprueba la prueba. El `tsc` del build también revisa las pruebas, y la ayuda `abrir()` de `MisLogros.test.tsx` declara su usuario como `Usuario`.
+- Cómo se reporta: esta entrada, `CHANGELOG.md`, `audit.md` de la spec 004 del Back y el PR de esta rama, que se abre con el permiso de Jefferson.
+- Pendiente y siguiente paso: T060 en el Back, el permiso de Jefferson para empujar y abrir los PR (T070) y el humo de P6 contra la vista previa de `develop` después de las dos fusiones (T071).
 
 ### 2026-11-18 15:45 (Lima) · feat/004-reportes-docente · Contrato definitivo de la ruta 12 de la spec 004
 - Quién: la sesión principal encarga la construcción de la spec 004, que Jefferson aprueba en el chat el 2026-11-18 («Sí, apruébala»). Claude Code, sin subagentes, escribe T011 con la skill `specs-back-front` desde su paso 6 y aplica a la prosa la skill `redaccion-ieee-q1`.

@@ -1,5 +1,5 @@
 // Respuestas del contrato (docs/03-api/contrato.md) con datos inventados. Viven solo aquí, nunca en src/.
-import type { CargaResumida, Constancia, Seccion } from "../src/servicios/tipos";
+import type { CargaResumida, Constancia, Indicador, Resultados, Seccion, SeccionConLogros } from "../src/servicios/tipos";
 
 export const SHA = "a".repeat(64);
 
@@ -238,3 +238,117 @@ export const cargasConCamposDeMas = cargasDe410.map((c) => ({
   valor_leido: "5",
   ruta_local: "C:\\Users\\docente\\Descargas\\export.xlsx",
 }));
+
+// Spec 004, respuestas de GET /api/resultados (contrato, sección 12) con las cifras de la tabla de spec.md del Back.
+export const SO_2 = { numero: 2, descripcion: "Habilidad para aplicar diseños de ingeniería para producir soluciones." };
+export const SO_5 = { numero: 5, descripcion: "Habilidad para trabajar efectivamente en un equipo." };
+const PENDIENTES_BORRADOR = ["TRATO_SIN_EVIDENCIA", "CORTE_ROJO", "CONVERSION_NIVEL_0_1"];
+
+/** Indicador sin estudiantes sin evidencia, con el nivel esperado 3 y la meta 80,0 de R-2026-BORRADOR. */
+export function indicador(so: number, pi: string, reparto: [number, number, number, number], pct: number,
+                          enMeta: boolean, cambios: Partial<Indicador> = {}): Indicador {
+  const calificados = reparto[0] + reparto[1] + reparto[2] + reparto[3];
+  return {
+    so, pi, instrumento: "Trabajo Integrador", nivel_esperado: 3, estudiantes_por_nivel: reparto,
+    logrados: reparto[2] + reparto[3], calificados, sin_evidencia: 0, total: calificados,
+    pct_sobre_calificados: pct, pct_sobre_total: pct, meta_pct: 80.0, en_meta: enMeta, ...cambios,
+  };
+}
+
+export function seccionConCarga(seccionId: number, codigo: string, nombre: string, numero: string, cargaId: number,
+                                indicadores: Indicador[], cambios: Partial<SeccionConLogros> = {}): SeccionConLogros {
+  return {
+    seccion_id: seccionId, asignatura: { codigo, nombre }, numero, estado: "PUBLICADA", carga_id: cargaId,
+    pi: indicadores.map((i) => i.pi), conjunto_reglas: "R-2026-BORRADOR", conjunto_reglas_estado: "BORRADOR",
+    parametros_pendientes: PENDIENTES_BORRADOR, provisional: true, indicadores, ...cambios,
+  };
+}
+
+export function seccionSinCargaDeLogros(seccionId: number, codigo: string, nombre: string, numero: string,
+                                        pi: string[]): SeccionConLogros {
+  return {
+    seccion_id: seccionId, asignatura: { codigo, nombre }, numero, estado: "SIN_CARGA", carga_id: null, pi,
+    conjunto_reglas: null, conjunto_reglas_estado: null, parametros_pendientes: null, provisional: null, indicadores: [],
+  };
+}
+
+const SOSTENIBLE = "Principios de Ingeniería Sostenible";
+const RESIDUOS = "Gestión Sostenible de Residuos";
+
+// Las tres cargas de docente.varias@example.invalid (escenario «El profesor de varias secciones ve sus logros agrupados por SO»).
+export const resultadosDeVarias: Resultados = {
+  periodo: "2026-2",
+  so: [SO_2, SO_5],
+  secciones: [
+    seccionConCarga(3, "450002", SOSTENIBLE, "412", 9, [
+      indicador(5, "5.1", [1, 1, 5, 4], 81.8, true),
+      indicador(5, "5.2", [2, 3, 4, 2], 54.5, false),
+      indicador(5, "5.3", [0, 1, 4, 6], 90.9, true),
+    ]),
+    seccionConCarga(4, "450010", RESIDUOS, "410", 10, [
+      indicador(2, "2.1", [1, 2, 4, 4], 72.7, false),
+      indicador(2, "2.2", [2, 4, 3, 2], 45.5, false),
+      indicador(5, "5.1", [3, 4, 3, 1], 36.4, false),
+    ]),
+    seccionConCarga(5, "450010", RESIDUOS, "412", 11, [
+      indicador(2, "2.1", [0, 1, 5, 5], 90.9, true),
+      indicador(2, "2.2", [1, 3, 5, 2], 63.6, false),
+      indicador(5, "5.1", [2, 3, 3, 3], 54.5, false),
+    ]),
+  ],
+};
+
+// La 412 de 450002 publicada y las dos de 450010 sin carga (escenario «P6 ofrece el R-17 de cada sección publicada»).
+export const resultadosConUnaPublicada: Resultados = {
+  periodo: "2026-2",
+  so: [SO_2, SO_5],
+  secciones: [
+    resultadosDeVarias.secciones[0],
+    seccionSinCargaDeLogros(4, "450010", RESIDUOS, "410", ["2.1", "2.2", "5.1"]),
+    seccionSinCargaDeLogros(5, "450010", RESIDUOS, "412", ["2.1", "2.2", "5.1"]),
+  ],
+};
+
+// La 410 del export correcto (escenario «El reparto por nivel suma los calificados»).
+export const resultados410: Resultados = {
+  periodo: "2026-2",
+  so: [SO_5],
+  secciones: [
+    seccionConCarga(1, "450002", SOSTENIBLE, "410", 7, [
+      indicador(5, "5.1", [1, 3, 4, 3], 63.6, false),
+      indicador(5, "5.2", [1, 3, 4, 3], 63.6, false),
+      indicador(5, "5.3", [1, 2, 5, 3], 72.7, false),
+    ]),
+  ],
+};
+
+// Lo que no se mide: la 410 con el 5.3 sin calificaciones y el 5.2 con un estudiante sin evidencia, y una sección sin carga.
+export const resultadosSinMedir: Resultados = {
+  periodo: "2026-2",
+  so: [SO_2, SO_5],
+  secciones: [
+    seccionConCarga(1, "450002", SOSTENIBLE, "410", 7, [
+      indicador(5, "5.1", [1, 3, 4, 3], 63.6, false),
+      indicador(5, "5.2", [1, 3, 3, 3], 60.0, false, { sin_evidencia: 1, total: 11, pct_sobre_total: 54.5 }),
+      indicador(5, "5.3", [0, 0, 0, 0], 0, false, {
+        logrados: 0, sin_evidencia: 11, total: 11, pct_sobre_calificados: null, pct_sobre_total: 0.0, en_meta: null,
+      }),
+    ]),
+    seccionSinCargaDeLogros(4, "450010", RESIDUOS, "410", ["2.1", "2.2", "5.1"]),
+  ],
+};
+
+// El coordinador con las cinco secciones. La 411 trae el mejor logro y aun así va después de la 410.
+export const resultadosDelCoordinador: Resultados = {
+  periodo: "2026-2",
+  so: [SO_2, SO_5],
+  secciones: [
+    resultados410.secciones[0],
+    seccionConCarga(2, "450002", SOSTENIBLE, "411", 8, [
+      indicador(5, "5.1", [0, 0, 5, 6], 100.0, true),
+      indicador(5, "5.2", [0, 0, 5, 6], 100.0, true),
+      indicador(5, "5.3", [0, 0, 5, 6], 100.0, true),
+    ]),
+    ...resultadosDeVarias.secciones,
+  ],
+};

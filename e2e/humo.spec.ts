@@ -1,7 +1,16 @@
 import { expect, test } from "@playwright/test";
 import { mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { ARCHIVO_CLAVES, VISTA_PREVIA, capturar, exportInventado, ingresar, omitirProteccion } from "./comun";
+import {
+  ARCHIVO_CLAVES,
+  VISTA_PREVIA,
+  capturar,
+  celdasDelLibro,
+  exportInventado,
+  ingresar,
+  omitirProteccion,
+  porcentajeDeP6,
+} from "./comun";
 
 // Prueba de humo de P1 a P4 con la API real sobre un clúster desechable (api_local.sh) o contra la vista previa de
 // develop. Las contraseñas se leen de ABET_CLAVES_ARCHIVO (e2e/comun.ts). Datos inventados. Necesita una API recién
@@ -128,4 +137,61 @@ test("docente410 reemplaza en P5 la carga con error por el export correcto", asy
   await expect(seccion.getByText(/^Vigente, reemplaza a la carga \d+$/)).toBeVisible();
   await expect(seccion.getByText(/^Reemplazada por la carga \d+$/)).toBeVisible();
   await capturar(page, "P5_cargas_reemplazo.png");
+});
+
+// Spec 004 (T043). P6 muestra las cifras del R-17 de la carga vigente de la 410, la del reemplazo del test anterior, y el
+// profesor ajeno no ve la 410 en su P6. En la vista previa el ajeno es docente411, porque docente.varias no existe en Neon.
+const BLOQUE_II = [24, 25, 26];
+const LOGRADO = "¡Felicidades! Logró alcanzar el indicador. Lo animamos a seguir mejorando con nuevas iniciativas.";
+
+test("docente410 ve en P6 las cifras del R-17 de su carga de la 410", async ({ page }) => {
+  await ingresar(page, "docente410@example.invalid");
+  await page.getByRole("banner").getByRole("button", { name: "Ver mis logros por SO" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Mis logros por SO" })).toBeVisible();
+  const secciones = page.getByRole("region", { name: "Secciones" });
+  const enlace = secciones.getByRole("link", { name: "Descargar R-17 de la sección 410 de 450002" });
+  await expect(enlace).toBeVisible();
+  const destino = (await enlace.getAttribute("href")) ?? "";
+  expect(destino).toMatch(/^\/api\/cargas\/\d+\/r17\.xlsx$/);
+  await expect(secciones).toContainText("Resultados provisionales.");
+
+  // El R-17 de esa misma carga, con el bloque II en B24:H26 de la hoja «Cursos de Carrera».
+  const libro = await page.request.get(destino);
+  expect(libro.status()).toBe(200);
+  const celdas = celdasDelLibro(
+    Buffer.from(await libro.body()),
+    "Cursos de Carrera",
+    BLOQUE_II.flatMap((f) => [`B${f}`, `E${f}`, `G${f}`, `H${f}`]),
+  );
+  const so5 = page.getByRole("region", { name: "SO 5" });
+  for (const fila of BLOQUE_II) {
+    const pi = celdas[`B${fila}`];
+    expect(pi, `B${fila}`).toMatch(/^5\.\d+$/);
+    const logro = Math.round(1000 * Number(celdas[`E${fila}`])) / 10;
+    const metaDelLibro = Math.round(1000 * Number(celdas[`G${fila}`])) / 10;
+    const estado = celdas[`H${fila}`] === LOGRADO ? "En la meta" : "Debajo de la meta";
+    const enP6 = so5.getByRole("listitem").filter({ hasText: `${pi} · Sección 410 de 450002 · ` });
+    await expect(enP6).toHaveCount(1);
+    await expect(enP6.locator("p").first()).toHaveText(
+      new RegExp(`^${pi!.replace(".", "\\.")} · Sección 410 de 450002 · ${porcentajeDeP6(logro)} \\(\\d+ de \\d+\\) · ${estado}$`),
+    );
+    await expect(enP6).toContainText(`Meta ${metaDelLibro.toFixed(0)} %`);
+  }
+  await capturar(page, "P6_mis_logros_docente410.png");
+});
+
+test(`${AJENO.correo} no ve la 410 en su P6`, async ({ page }) => {
+  await ingresar(page, AJENO.correo);
+  await page.getByRole("banner").getByRole("button", { name: "Ver mis logros por SO" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Mis logros por SO" })).toBeVisible();
+  const secciones = page.getByRole("region", { name: "Secciones" });
+  await expect(secciones).toBeVisible();
+  await expect(secciones.getByRole("listitem")).toHaveCount(AJENO.secciones);
+  await expect(page.getByRole("main")).not.toContainText("Sección 410 de 450002");
+  const respuesta = await page.request.get("/api/resultados");
+  expect(respuesta.status()).toBe(200);
+  const cuerpo = (await respuesta.json()) as { secciones: { seccion_id: number; numero: string; asignatura: { codigo: string } }[] };
+  expect(cuerpo.secciones.map((s) => String(s.seccion_id))).not.toContain(seccion410);
+  expect(cuerpo.secciones.some((s) => s.numero === "410" && s.asignatura.codigo === "450002")).toBe(false);
+  await capturar(page, AJENO.captura.replace("P2_mis_secciones", "P6_mis_logros"));
 });

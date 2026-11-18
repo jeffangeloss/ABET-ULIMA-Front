@@ -1,6 +1,6 @@
 # Frontend
 
-> **Estado 2026-11-17.** El corte 1 del MVP está construido en `src/` (tareas T040 a T045 del plan, fase 4) con las pantallas P1 a P4. La tarea T085 del corte 2 suma P5, el modo reemplazo de P3 y la confirmación de la sección (US-18, US-19 y US-21), sobre la sección 7 del contrato, y la prueba de humo del reemplazo pasa en local contra el Back del corte 2 desde el 2026-11-18, a la espera de su corrida contra la vista previa de `develop`. El código de acceso por correo de P1 (US-20) sigue pendiente. Este documento describe lo construido. Si el código y el contrato discrepan, manda el contrato (`03-api/contrato.md`), y este documento se corrige en el mismo PR.
+> **Estado 2026-11-18.** La spec 004 suma P6 «Mis logros por SO» (sección 9), con su enlace en la cabecera y en P4, y su prueba de humo pasa en local contra el Back de `feat/004-reportes-docente`, a la espera de su corrida contra la vista previa de `develop` (T071 del Back). **Estado 2026-11-17.** El corte 1 del MVP está construido en `src/` (tareas T040 a T045 del plan, fase 4) con las pantallas P1 a P4. La tarea T085 del corte 2 suma P5, el modo reemplazo de P3 y la confirmación de la sección (US-18, US-19 y US-21), sobre la sección 7 del contrato, y la prueba de humo del reemplazo pasa en local contra el Back del corte 2 desde el 2026-11-18, a la espera de su corrida contra la vista previa de `develop`. El código de acceso por correo de P1 (US-20) sigue pendiente. Este documento describe lo construido. Si el código y el contrato discrepan, manda el contrato (`03-api/contrato.md`), y este documento se corrige en el mismo PR.
 
 El Front es React con Vite, TypeScript y Tailwind, la misma pila de IQBF-ULIMA_Front. No toca datos personales ni la base, así que su elección no cambia el riesgo del sistema. Su regla central viene de `AGENTS.md`, regla 3. Cada pantalla nombra las historias que la justifican, y lo que ninguna historia pide no se muestra.
 
@@ -16,13 +16,14 @@ src/
   App.tsx                  sesión actual y pantalla visible
   servicios/api.ts         la única puerta HTTP
   servicios/tipos.ts       tipos de las respuestas del contrato
-  servicios/formato.ts     hora de Lima, rótulo de la sección y conteo de filas de P4 y P5
+  servicios/formato.ts     hora de Lima, rótulo de la sección, conteo de filas de P4 y P5 y cifras de P6
   pantallas/
     Ingreso.tsx            P1 (con AvisoSesion.tsx para el aviso de sesión vencida)
     MisSecciones.tsx       P2
     SubirExport.tsx        P3
     ResultadoCarga.tsx     P4
     Cargas.tsx             P5 (corte 2)
+    MisLogros.tsx          P6 (spec 004)
   componentes/
     Mensaje.tsx            error, aviso o confirmación con el texto de la API
     TablaRechazos.tsx      fila, PI y el mensaje del rechazo
@@ -38,7 +39,7 @@ Los comandos de `package.json` son `npm run dev` (Vite con el proxy de `/api`), 
 
 ## 2. `servicios/api.ts`, la única puerta
 
-Ningún componente llama a `fetch` directamente. `api.ts` expone una función por ruta del contrato (`iniciarSesion`, `sesionActual`, `cerrarSesion`, `listarSecciones`, `subirExport`, `obtenerCarga`, `listarCargas` y `urlR17`) y convierte cada error en un `ErrorApi` con el código HTTP y el `detail` de la API. Un `detail` que no sea texto, como la lista que FastAPI responde por omisión, se reemplaza por «La petición no tiene la forma esperada.». Desde el corte 2, `ErrorApi` trae además `requiereConfirmacion`, verdadero solo si el cuerpo trae `requiere_confirmacion` igual a `true`, y `cargaPublicada`, el número de `carga_publicada` o `null` (contrato, sección 3.1). Así P3 ofrece el paso siguiente sin leer el texto del `detail`. Los tipos de esas respuestas viven en `servicios/tipos.ts`, donde `Constancia` suma `reemplaza_carga_id` y `reemplazada_por` y `CargaResumida` describe cada elemento de `GET /api/cargas`.
+Ningún componente llama a `fetch` directamente. `api.ts` expone una función por ruta del contrato (`iniciarSesion`, `sesionActual`, `cerrarSesion`, `listarSecciones`, `subirExport`, `obtenerCarga`, `listarCargas`, `obtenerResultados` y `urlR17`) y convierte cada error en un `ErrorApi` con el código HTTP y el `detail` de la API. Un `detail` que no sea texto, como la lista que FastAPI responde por omisión, se reemplaza por «La petición no tiene la forma esperada.». Desde el corte 2, `ErrorApi` trae además `requiereConfirmacion`, verdadero solo si el cuerpo trae `requiere_confirmacion` igual a `true`, y `cargaPublicada`, el número de `carga_publicada` o `null` (contrato, sección 3.1). Así P3 ofrece el paso siguiente sin leer el texto del `detail`. Los tipos de esas respuestas viven en `servicios/tipos.ts`, donde `Constancia` suma `reemplaza_carga_id` y `reemplazada_por` y `CargaResumida` describe cada elemento de `GET /api/cargas`.
 
 `subirExport(seccionId, archivo, opciones)` distingue el 200 (el mismo archivo ya está publicado en la sección) del 201 con el campo `yaCargada`. Con `opciones.reemplaza` agrega `?reemplaza={carga_id}` a la ruta, y con `opciones.confirmarSeccion` agrega al multipart el campo `confirmar_seccion` con el texto `true`. El campo `aviso` del 200 de un reemplazo sale de la constancia y llega aparte, en `aviso`, que vale `null` en las demás respuestas. `listarCargas(seccionId)` pide `GET /api/cargas`, o `GET /api/cargas?seccion_id={seccion_id}` cuando recibe la sección, y devuelve la lista en el orden de la API.
 
@@ -51,7 +52,7 @@ Ningún componente llama a `fetch` directamente. `api.ts` expone una función po
 
 ## 3. `App.tsx` y el estado
 
-`App.tsx` pide `GET /api/sesion` al arrancar. Sin sesión muestra P1, y con sesión muestra P2. La vista visible es una de cuatro, P2 (`secciones`), P3 (`subir`, con la sección y, en el modo reemplazo, el `reemplaza` que llega de P5), P4 (`resultado`) y P5 (`cargas`). El resto del estado vive en la pantalla que lo usa, sin un almacén global, porque el MVP tiene cinco pantallas y un solo flujo. Un 401 de cualquier ruta con sesión, distinta de `/api/sesion`, devuelve a P1 con el `detail` de la API, «La sesión venció. Ingrese otra vez.» (propuesta), que `api.ts` entrega a `App.tsx` por `alSesionVencida`. La cabecera de `App.tsx` muestra, con sesión, los botones «Mis secciones» y «Cargas» (propuesta), que abren P2 y P5, el correo del usuario y el botón «Salir» (propuesta), que llama a `DELETE /api/sesion` y vuelve a P1 aunque esa llamada falle. «Reemplazar carga» de P5 abre P3 en modo reemplazo con la sección y la carga de esa fila, y «Ver constancia» abre P4 con la carga.
+`App.tsx` pide `GET /api/sesion` al arrancar. Sin sesión muestra P1, y con sesión muestra P2. La vista visible es una de cinco, P2 (`secciones`), P3 (`subir`, con la sección y, en el modo reemplazo, el `reemplaza` que llega de P5), P4 (`resultado`), P5 (`cargas`) y, desde la spec 004, P6 (`logros`). El resto del estado vive en la pantalla que lo usa, sin un almacén global, porque el MVP tiene cinco pantallas y un solo flujo. Un 401 de cualquier ruta con sesión, distinta de `/api/sesion`, devuelve a P1 con el `detail` de la API, «La sesión venció. Ingrese otra vez.» (propuesta), que `api.ts` entrega a `App.tsx` por `alSesionVencida`. La cabecera de `App.tsx` muestra, con sesión, los botones «Mis secciones» y «Cargas» (propuesta), que abren P2 y P5, el enlace a P6, «Ver mis logros por SO» para el profesor y «Ver los logros por SO de la carrera» para el coordinador (propuestas), el correo del usuario y el botón «Salir» (propuesta), que llama a `DELETE /api/sesion` y vuelve a P1 aunque esa llamada falle. «Reemplazar carga» de P5 abre P3 en modo reemplazo con la sección y la carga de esa fila, y «Ver constancia» abre P4 con la carga.
 
 ## 4. Las pantallas
 
@@ -62,6 +63,7 @@ Ningún componente llama a `fetch` directamente. `api.ts` expone una función po
 | P3 Subir export | `pantallas/SubirExport.tsx` | US-07, US-08, US-09, US-11, US-12, US-13, US-18 y US-21 | `POST /api/secciones/{seccion_id}/cargas` (sección 6), con `?reemplaza={carga_id}` y `confirmar_seccion` (sección 7) | 1 y 2 |
 | P4 Resultado de la carga | `pantallas/ResultadoCarga.tsx` | US-07, US-10, US-12, US-13, US-14, US-15, US-16 y US-18 | `GET /api/cargas/{carga_id}` y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | 1 y 2 |
 | P5 Cargas | `pantallas/Cargas.tsx` | US-18, US-19 | `GET /api/secciones` (sección 5), `GET /api/cargas` (sección 7) y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | 2 |
+| P6 Mis logros por SO | `pantallas/MisLogros.tsx` | US-37 a US-44 de la spec 004 | `GET /api/resultados` (sección 12) y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | spec 004 |
 
 La sesión (`GET` y `DELETE /api/sesion`, sección 4 del contrato) la usan `App.tsx` y su botón «Salir». Las historias US-01 a US-04 (base, rol, periodo y usuarios) no tienen pantalla, porque en el MVP las ejecuta el administrador técnico con scripts. US-17 (despliegue) tampoco tiene pantalla propia, y su prueba de humo recorre P1, P2, P3 y P4 en el Front desplegado y, en el corte 2, el reemplazo desde P5.
 
@@ -147,7 +149,7 @@ Vitest con Testing Library (`npm test`) cubre cada pantalla en lo que debe mostr
 
 ## 9. Spec 004, logros por SO
 
-> **Estado 2026-11-18.** Forma definitiva de P6 de la spec 004 del Back (`specs/004-reportes-docente/`), que Jefferson aprueba en el chat el 2026-11-18 con J-21 a J-28, escrita antes de su código en la rama `feat/004-reportes-docente` (T011). La sección 8 queda para la spec 002 de Capstone, que espera su aprobación en la rama `docs/002-capstone`. Las secciones 1 a 7 describen lo construido antes de la spec 004, y esta sección describe P6 y sus enlaces.
+> **Estado 2026-11-18.** Forma definitiva de P6 de la spec 004 del Back (`specs/004-reportes-docente/`), que Jefferson aprueba en el chat el 2026-11-18 con J-21 a J-28, escrita antes de su código en la rama `feat/004-reportes-docente` (T011). La sección 8 queda para la spec 002 de Capstone, que espera su aprobación en la rama `docs/002-capstone`. P6 existe en `src/` desde el 2026-11-18, con sus pruebas, y las secciones 1 a 4 la nombran junto a las demás pantallas.
 
 ### 9.1 Qué cambia en `src/`
 
@@ -197,7 +199,7 @@ Vitest con Testing Library prueba en `tests/pantallas/MisLogros.test.tsx` cada e
 
 ### 9.4 Lo que todavía NO está
 
-1. **P6 y su código**, que llegan con la fase 4 de la spec 004.
+1. **La prueba de humo de P6 contra la vista previa de `develop`** (T071 del Back), que espera la fusión de los dos PR de `feat/004-reportes-docente`, porque la vista previa del Front reescribe `/api` hacia la de `develop` del Back.
 2. **Las decisiones de la carrera** D-32, D-33 y D-34, que fijan el consolidado, el agregado del curso y la descripción del instrumento.
 3. **Una revisión automática de accesibilidad**, como axe, que sigue fuera, como dice la sección 7.
 

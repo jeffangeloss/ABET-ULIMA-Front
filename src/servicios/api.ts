@@ -1,7 +1,7 @@
 // Única puerta HTTP del Front (docs/01-arquitectura/frontend.md, sección 2). Ningún componente
 // llama a fetch. La sesión viaja en la cookie abet_sesion, que el navegador manda solo porque el Front
 // y la API comparten origen (ADR-004), así que este archivo no lee ni guarda ningún token.
-import type { CargaResumida, Constancia, ResultadoSubida, Seccion, Usuario } from "./tipos";
+import type { CargaResumida, Constancia, ResultadoSubida, Resultados, Seccion, Usuario } from "./tipos";
 
 const MSG_NO_RESPONDE = "El servicio no respondió. Intente de nuevo.";
 const MSG_ENTORNO = "El entorno de pruebas no está disponible.";
@@ -141,6 +141,12 @@ export async function listarCargas(seccionId?: number): Promise<CargaResumida[]>
 
 export async function obtenerCarga(cargaId: number): Promise<Constancia> {
   return leer<Constancia>(await pedir(`/api/cargas/${cargaId}`));
+}
+
+/** Spec 004. Logros por SO de las secciones al alcance del usuario, sin identificadores (contrato, sección 12). */
+export async function obtenerResultados(periodo?: string): Promise<Resultados> {
+  const ruta = periodo ? `/api/resultados?periodo=${encodeURIComponent(periodo)}` : "/api/resultados";
+  return leer<Resultados>(await pedir(ruta));
 }
 
 /** Enlace normal de descarga, para que el navegador use el nombre de archivo que fija la API. */

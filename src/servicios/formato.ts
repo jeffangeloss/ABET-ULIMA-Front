@@ -30,3 +30,18 @@ export function resumenFilas(c: ConteoFilas): string {
   const rechazadas = c.filas_rechazadas === 1 ? "1 rechazada" : `${c.filas_rechazadas} rechazadas`;
   return `${leidas}, ${aceptadas} y ${rechazadas}`;
 }
+
+/** «81,8 %», el porcentaje de un decimal de la ruta 12 con coma decimal, sin redondear otra vez (spec 004). */
+export function porcentaje(valor: number): string {
+  return `${valor.toFixed(1).replace(".", ",")} %`;
+}
+
+/** «80 %» o «75,5 %», la meta sin decimal cuando es entera, como en el texto «Meta 80 %» de P6. */
+export function meta(valor: number): string {
+  return `${Number.isInteger(valor) ? String(valor) : valor.toFixed(1).replace(".", ",")} %`;
+}
+
+/** «9 de 11», cuántos estudiantes logran el nivel esperado de cuántos. */
+export function fraccion(logrados: number, de: number): string {
+  return `${logrados} de ${de}`;
+}
