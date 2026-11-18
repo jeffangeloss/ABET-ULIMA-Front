@@ -69,10 +69,40 @@ export interface Constancia {
   subida_por: string;
   iniciada_en: string;
   terminada_en: string;
+  /** Corte 2. La carga que esta reemplaza, o null sin reemplazo (BR-CARGA-19). */
+  reemplaza_carga_id: number | null;
+  /** Corte 2. La carga que reemplaza a esta, o null sin reemplazo (BR-CARGA-20). */
+  reemplazada_por: number | null;
 }
 
 export interface ResultadoSubida {
   /** Verdadero con el 200, cuando el mismo archivo ya estaba publicado en la sección. */
   yaCargada: boolean;
   constancia: Constancia;
+  /** Texto del 200 de un reemplazo con el mismo archivo de la carga publicada, o null. */
+  aviso: string | null;
+}
+
+/** Conteos de filas de una carga, comunes a la constancia y a la constancia resumida. */
+export interface ConteoFilas {
+  filas_leidas: number;
+  filas_aceptadas: number;
+  filas_rechazadas: number;
+}
+
+/** Corte 2. Elemento de GET /api/cargas (contrato, sección 7). */
+export interface CargaResumida extends ConteoFilas {
+  carga_id: number;
+  estado: EstadoCarga;
+  seccion: { seccion_id: number; asignatura: string; numero: string; periodo: string };
+  nombre_archivo: string;
+  /** Los primeros 12 caracteres de la huella SHA-256. */
+  sha256_corto: string;
+  /** Motivo del RECHAZA_CARGA de una carga RECHAZADA. P5 no lo muestra. */
+  motivo: string | null;
+  reemplaza_carga_id: number | null;
+  reemplazada_por: number | null;
+  subida_por: string | null;
+  iniciada_en: string;
+  terminada_en: string;
 }

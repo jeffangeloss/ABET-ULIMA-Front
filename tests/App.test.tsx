@@ -3,7 +3,15 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { App } from "../src/App";
 import { json, simularApi } from "./ayudas";
-import { constanciaConError, seccionPublicada, seccionSinCarga, usuarioProfesor } from "./respuestas";
+import {
+  cargasDe410,
+  constanciaConError,
+  constanciaReemplazada,
+  constanciaVigenteQueReemplaza,
+  seccionPublicada,
+  seccionSinCarga,
+  usuarioProfesor,
+} from "./respuestas";
 
 describe("App", () => {
   it("sin sesión muestra P1", async () => {
@@ -68,5 +76,86 @@ describe("App", () => {
     expect(screen.getByRole("region", { name: "Avisos" })).toBeInTheDocument();
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
+  });
+  it("sin sesión la cabecera no ofrece «Mis secciones» ni «Cargas»", async () => {
+    simularApi({ "GET /api/sesion": json(401, { detail: "La sesión venció. Ingrese otra vez." }) });
+    render(<App />);
+    await screen.findByRole("heading", { name: "Ingreso" });
+    expect(screen.queryByRole("button", { name: "Mis secciones" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Cargas" })).toBeNull();
+  });
+
+  it("con sesión la cabecera lleva de P2 a P5 y de vuelta", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/cargas": json(200, cargasDe410),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { level: 1, name: "Mis secciones" });
+    const cabecera = screen.getByRole("banner");
+    await u.click(within(cabecera).getByRole("button", { name: "Cargas" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Cargas" })).toBeInTheDocument();
+    expect(await screen.findByText("Carga 11")).toBeInTheDocument();
+    expect(llamadas.map((l) => l.clave)).toContain("GET /api/cargas");
+    await u.click(within(cabecera).getByRole("button", { name: "Mis secciones" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Mis secciones" })).toBeInTheDocument();
+  });
+
+  it("«Reemplazar carga» de P5 abre P3 en modo reemplazo y la primera subida manda reemplaza", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/cargas": json(200, cargasDe410),
+      "POST /api/secciones/1/cargas?reemplaza=11": json(201, { ...constanciaVigenteQueReemplaza, carga_id: 12, reemplaza_carga_id: 11 }),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { level: 1, name: "Mis secciones" });
+    await u.click(screen.getByRole("button", { name: "Cargas" }));
+    const li = (await screen.findByText("Carga 11")).closest("li") as HTMLElement;
+    await u.click(within(li).getByRole("button", { name: "Reemplazar carga" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Subir export" })).toBeInTheDocument();
+    expect(screen.getByText("Reemplaza a la carga 11, la publicada de esta sección.")).toBeInTheDocument();
+    expect(screen.getByText("450002 Principios de Ingeniería Sostenible, sección 410, 2026-2")).toBeInTheDocument();
+    await u.upload(
+      screen.getByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)"),
+      new File(["x"], "sintetico_20262_450002_410.xlsx"),
+    );
+    await u.click(screen.getByRole("button", { name: "Subir" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Resultado de la carga" })).toBeInTheDocument();
+    expect(llamadas.filter((l) => l.clave.startsWith("POST")).map((l) => l.clave)).toEqual([
+      "POST /api/secciones/1/cargas?reemplaza=11",
+    ]);
+  });
+
+  it("«Subir export» de P2 abre P3 sin modo reemplazo", async () => {
+    simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    const fila = (await screen.findAllByRole("listitem"))[0];
+    await u.click(within(fila).getByRole("button", { name: "Subir export" }));
+    await screen.findByRole("heading", { level: 1, name: "Subir export" });
+    expect(screen.queryByText(/Reemplaza a la carga/)).toBeNull();
+  });
+
+  it("«Ver constancia» de P5 abre P4 con la carga reemplazada y su sucesora", async () => {
+    simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/cargas": json(200, cargasDe410),
+      "GET /api/cargas/10": json(200, constanciaReemplazada),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { level: 1, name: "Mis secciones" });
+    await u.click(screen.getByRole("button", { name: "Cargas" }));
+    const li = (await screen.findByText("Carga 10")).closest("li") as HTMLElement;
+    await u.click(within(li).getByRole("button", { name: "Ver constancia" }));
+    expect(await screen.findByText("La carga 11 la reemplaza, así que esta carga no tiene R-17.")).toBeInTheDocument();
   });
 });

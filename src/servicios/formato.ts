@@ -1,4 +1,4 @@
-import type { Seccion } from "./tipos";
+import type { ConteoFilas, Seccion } from "./tipos";
 
 const FORMATO_LIMA = new Intl.DateTimeFormat("es-PE", {
   timeZone: "America/Lima",
@@ -21,4 +21,12 @@ export function horaDeLima(iso: string): string {
 /** «450002 Principios de Ingeniería Sostenible, sección 410, 2026-2». */
 export function etiquetaSeccion(s: Seccion): string {
   return `${s.asignatura.codigo} ${s.asignatura.nombre}, sección ${s.numero}, ${s.periodo}`;
+}
+
+/** «11 filas leídas, 10 aceptadas y 1 rechazada», la forma de P4 y P5. */
+export function resumenFilas(c: ConteoFilas): string {
+  const leidas = c.filas_leidas === 1 ? "1 fila leída" : `${c.filas_leidas} filas leídas`;
+  const aceptadas = c.filas_aceptadas === 1 ? "1 aceptada" : `${c.filas_aceptadas} aceptadas`;
+  const rechazadas = c.filas_rechazadas === 1 ? "1 rechazada" : `${c.filas_rechazadas} rechazadas`;
+  return `${leidas}, ${aceptadas} y ${rechazadas}`;
 }

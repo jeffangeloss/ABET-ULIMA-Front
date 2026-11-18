@@ -1,5 +1,5 @@
 // Respuestas del contrato (docs/03-api/contrato.md) con datos inventados. Viven solo aquí, nunca en src/.
-import type { Constancia, Seccion } from "../src/servicios/tipos";
+import type { CargaResumida, Constancia, Seccion } from "../src/servicios/tipos";
 
 export const SHA = "a".repeat(64);
 
@@ -56,6 +56,8 @@ const base = {
   subida_por: "docente410@example.invalid",
   iniciada_en: "2026-10-28T10:15:00-05:00",
   terminada_en: "2026-10-28T10:15:02-05:00",
+  reemplaza_carga_id: null,
+  reemplazada_por: null,
 };
 
 // Respuesta 201 con el 5 en la columna 5.2 de la fila 3.
@@ -160,3 +162,79 @@ export const constanciaSinFilasAceptadas: Constancia = {
   ],
   avisos: [],
 };
+
+// Corte 2. Constancias de un reemplazo en la 410, la 11 vigente que reemplaza a la 10.
+export const constanciaVigenteQueReemplaza: Constancia = {
+  ...constanciaLimpia,
+  carga_id: 11,
+  nombre_archivo: "sintetico_20262_450002_410.xlsx",
+  reemplaza_carga_id: 10,
+};
+
+export const constanciaReemplazada: Constancia = {
+  ...constanciaConError,
+  carga_id: 10,
+  estado: "REEMPLAZADA",
+  reemplazada_por: 11,
+};
+
+// Corte 2. GET /api/cargas, de la más reciente a la más antigua (contrato, sección 7).
+const seccion410 = { seccion_id: 1, asignatura: "450002", numero: "410", periodo: "2026-2" };
+
+export const cargaVigente410: CargaResumida = {
+  carga_id: 11,
+  estado: "PUBLICADA",
+  seccion: seccion410,
+  nombre_archivo: "sintetico_20262_450002_410.xlsx",
+  sha256_corto: "3f2a9c1b7d4e",
+  filas_leidas: 11,
+  filas_aceptadas: 11,
+  filas_rechazadas: 0,
+  motivo: null,
+  reemplaza_carga_id: 10,
+  reemplazada_por: null,
+  subida_por: "docente410@example.invalid",
+  iniciada_en: "2026-11-17T10:15:00.000000-05:00",
+  terminada_en: "2026-11-17T10:15:01.000000-05:00",
+};
+
+export const cargaReemplazada410: CargaResumida = {
+  ...cargaVigente410,
+  carga_id: 10,
+  estado: "REEMPLAZADA",
+  nombre_archivo: "export_inventado_410_con_error.xlsx",
+  sha256_corto: "b7c6d5e4f3a2",
+  filas_aceptadas: 10,
+  filas_rechazadas: 1,
+  reemplaza_carga_id: null,
+  reemplazada_por: 11,
+  iniciada_en: "2026-11-16T09:00:00.000000-05:00",
+  terminada_en: "2026-11-16T09:00:02.000000-05:00",
+};
+
+export const cargaRechazada410: CargaResumida = {
+  ...cargaVigente410,
+  carga_id: 9,
+  estado: "RECHAZADA",
+  nombre_archivo: "export_inventado_411.xlsx",
+  sha256_corto: "c1d2e3f4a5b6",
+  filas_leidas: 0,
+  filas_aceptadas: 0,
+  filas_rechazadas: 0,
+  motivo: "SECCION_NO_COINCIDE",
+  reemplaza_carga_id: null,
+  reemplazada_por: null,
+  iniciada_en: "2026-11-15T08:00:00.000000-05:00",
+  terminada_en: "2026-11-15T08:00:01.000000-05:00",
+};
+
+export const cargasDe410 = [cargaVigente410, cargaReemplazada410, cargaRechazada410];
+
+// La misma lista con campos que la API no manda, con un nombre, un valor leído y una ruta local inventados.
+export const cargasConCamposDeMas = cargasDe410.map((c) => ({
+  ...c,
+  nombre_estudiante: "Persona Inventada",
+  estudiantes: [{ codigo: "99000002", nombre: "Persona Inventada", valor_leido: "5" }],
+  valor_leido: "5",
+  ruta_local: "C:\\Users\\docente\\Descargas\\export.xlsx",
+}));

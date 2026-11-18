@@ -1,6 +1,6 @@
 # Contrato de la API
 
-> **Estado 2026-10-30.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
+> **Estado 2026-11-17.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. La sección 7 fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo de la carga publicada, la lista de cargas y la confirmación de la sección, escrita antes de su código en la rama `feat/001-corte-2`. El código de acceso por correo (ruta 10) sigue en espera de T018, el dominio y la cuenta de Resend de Jefferson. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
 
 Este documento describe todas las rutas de ABET-ULIMA-Back con su cuerpo, su respuesta y sus errores. El índice corto vive en `docs/specs/api-contracts.md`, y las reglas viven en las specs vivas del Back. Son BR-ACCESO-01 a BR-ACCESO-09 (`specs/features/acceso/acceso.spec.md`), BR-PERIODO-01 a BR-PERIODO-04 (`specs/features/periodo/periodo.spec.md`), BR-CARGA-01 a BR-CARGA-20 (`specs/features/carga-export/carga-export.spec.md`) y BR-R17-01 a BR-R17-10 (`specs/features/r17/r17.spec.md`). Los mensajes literales y la forma de las respuestas salen de los escenarios de `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back. Si un ejemplo de aquí y un escenario discrepan, gana el escenario. Lleva la marca «(propuesta)» lo que ningún escenario fija y también lo que un escenario usa sin que las decisiones de la spec lo fijen, como lo marcan los `.feature`. Los ejemplos usan solo datos inventados.
 
@@ -25,8 +25,8 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 | 5 | POST | `/api/secciones/{seccion_id}/cargas` | Sí | 201 o 200 | Sube el export (.xlsx, .csv o .xls), lo carga en una transacción y devuelve la constancia | US-07 a US-14, US-21, US-27 a US-32 y US-36 (spec 003) | BR-CARGA-01 a BR-CARGA-17, BR-CARGA-18 (corte 2), BR-PERIODO-02 y BR-ACCESO-08 | 1 |
 | 6 | GET | `/api/cargas/{carga_id}` | Sí | 200 | Devuelve la constancia de una carga, con `hoja` nula en un export de texto | US-16, US-19, US-34 (spec 003) | BR-R17-10 y BR-ACCESO-08 | 1 |
 | 7 | GET | `/api/cargas/{carga_id}/r17.xlsx` | Sí | 200 | Entrega el R-17 con la hoja «Constancia», solo de cargas en estado PUBLICADA | US-15, US-16 | BR-R17-01 a BR-R17-09 y BR-ACCESO-08 | 1 |
-| 8 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | 200 | Lista las cargas al alcance del usuario | US-19 | BR-CARGA-20 | 2 |
-| 9 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | 201 | Reemplaza la carga publicada en una transacción | US-18 | BR-CARGA-19 | 2 |
+| 8 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | 200 | Lista las cargas al alcance del usuario, con `seccion_id` opcional | US-19 | BR-CARGA-20 y BR-ACCESO-07 | 2 |
+| 9 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | 201 o 200 | Reemplaza la carga publicada en una transacción (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | 10 | POST | `/api/sesion/codigo` | No | 202 | Envía el código de acceso al correo, con la misma respuesta exista o no | US-20 | BR-ACCESO-09 | 2 |
 | 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (propuesta, sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-NN, BR-ACCESO-07 y BR-ACCESO-10 (propuesta) | spec 004 |
 
@@ -34,11 +34,13 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 
 ### 3.1 Forma del error
 
-Todo error de la API es un objeto JavaScript Object Notation (JSON) con un solo campo, en español y escrito para la persona que usa la pantalla. El Front lo muestra sin reescribirlo.
+Todo error de la API es un objeto JavaScript Object Notation (JSON) con el campo `detail`, en español y escrito para la persona que usa la pantalla. El Front lo muestra sin reescribirlo.
 
 ```jsonc
 { "detail": "La sección no está a su cargo." }
 ```
+
+Dos errores del corte 2 suman un segundo campo, que la pantalla usa para ofrecer el paso siguiente sin leer el texto del `detail` (propuesta). El 422 de un archivo que no declara su sección trae `"requiere_confirmacion": true`, y el 409 de una sección con otra carga publicada trae `"carga_publicada"` con el `carga_id` de esa carga, que el profesor ya ve en su sección (sección 6).
 
 Ningún `detail` lleva el valor leído de una celda, un código de estudiante, un nombre ni la ruta local del archivo. Los mensajes de interfaz pueden ir en pretérito («No se guardó nada.»), porque son textos para la pantalla y los escenarios los comparan tal cual.
 
@@ -148,17 +150,19 @@ Errores 401 y 422 con «El periodo no tiene la forma AAAA-C.» (propuesta), para
 
 #### `POST /api/secciones/{seccion_id}/cargas`: subir el export y cargarlo (BR-CARGA-01 a BR-CARGA-17, BR-CARGA-18 del corte 2, BR-PERIODO-02 y BR-ACCESO-08)
 
-Cuerpo multipart con el campo `archivo` (.xlsx, .csv o .xls de hasta 1 MB, y el contenido elige el lector, según la spec 003 del Back) y, en el corte 2, el campo opcional `confirmar_seccion` (US-21). La API guarda el nombre del archivo sin ruta en `abet.archivo_origen.nombre_archivo` y nunca guarda sus bytes. Ningún campo de la petición apaga la guardia de datos inventados.
+Cuerpo multipart con el campo `archivo` (.xlsx, .csv o .xls de hasta 1 MB, y el contenido elige el lector, según la spec 003 del Back) y, en el corte 2, el campo opcional `confirmar_seccion` (US-21), que solo admite el texto `true`. La API guarda el nombre del archivo sin ruta en `abet.archivo_origen.nombre_archivo` y nunca guarda sus bytes. Ningún campo de la petición apaga la guardia de datos inventados, y la API lee solo `archivo`, `confirmar_seccion` y el parámetro `reemplaza` de la ruta 9.
 
-En el corte 1 solo sube el profesor asignado a la sección en `acceso.docente_seccion`. El coordinador ve todas las secciones y descarga cualquier R-17, pero no sube, y recibe el mismo 403. En el corte 2 el coordinador puede reemplazar la carga de cualquier sección con la ruta 9.
+En el corte 1 y en el corte 2 solo sube el profesor asignado a la sección en `acceso.docente_seccion`. El coordinador ve todas las secciones y descarga cualquier R-17, pero no sube una carga nueva, y recibe el mismo 403. En el corte 2 el coordinador reemplaza la carga publicada de cualquier sección de la carrera con la ruta 9.
 
-El orden del trabajo es fijo (BR-CARGA-03). Primero comprueba la sesión, el alcance y el plan de la sección, después calcula la huella SHA-256 de todo cuerpo recibido y comprueba el tamaño, el tipo por la extensión y el contenido, la revisión del zip o la lectura del texto, lee la columna Username y aplica la guardia de datos inventados. Luego busca la huella en `abet.archivo_origen`, comprueba si la sección ya tiene otra carga publicada y si el archivo declara su sección, y solo entonces cuenta las filas, las valida en memoria y escribe el resultado en una transacción. Los 409 y los 422 de este orden se responden antes de escribir. La huella va antes del tope de 1 MB porque el cuerpo ya está en memoria y Vercel detiene todo cuerpo de más de 4,5 MB antes de que llegue a FastAPI, así que el registro de la aplicación guarda la huella de cada rechazo por tamaño, por archivo ilegible o por la guardia (BR-CARGA-08).
+El orden del trabajo es fijo (BR-CARGA-03). Primero comprueba la sesión, el alcance, la forma de la petición y el plan de la sección, después calcula la huella SHA-256 de todo cuerpo recibido y comprueba el tamaño, el tipo por la extensión y el contenido, la revisión del zip o la lectura del texto, lee la columna Username y aplica la guardia de datos inventados. Luego busca la huella en `abet.archivo_origen`, comprueba si la sección ya tiene otra carga publicada y si el archivo declara su sección, y solo entonces cuenta las filas, las valida en memoria y escribe el resultado en una transacción. Los 409 y los 422 de este orden se responden antes de escribir. La huella va antes del tope de 1 MB porque el cuerpo ya está en memoria y Vercel detiene todo cuerpo de más de 4,5 MB antes de que llegue a FastAPI, así que el registro de la aplicación guarda la huella de cada rechazo por tamaño, por archivo ilegible o por la guardia (BR-CARGA-08).
 
 ```jsonc
 // Respuesta 201 con el export que trae un 5 en la columna 5.2 de la fila 3
 {
   "carga_id": 7,
   "estado": "PUBLICADA",
+  "reemplaza_carga_id": null, // corte 2, la carga que esta reemplaza (ruta 9)
+  "reemplazada_por": null,    // corte 2, la carga que reemplaza a esta
   "seccion": { "seccion_id": 1, "asignatura": "450002", "numero": "410", "periodo": "2026-2" },
   "nombre_archivo": "export_inventado_410_con_error.xlsx",
   "hoja": "gc_SINTETICO_20262_450002_410_f", // null en un export de texto (.csv o .xls)
@@ -211,7 +215,7 @@ El orden del trabajo es fijo (BR-CARGA-03). Primero comprueba la sesión, el alc
 }
 ```
 
-La constancia es plana. `nombre_archivo`, `hoja`, `sha256` y `filas_de_datos` van en el primer nivel, con los mismos nombres de las columnas de `abet.archivo_origen`. `hoja` es texto o `null`, y va en `null` en un export de texto, que no tiene hoja, sin que la API la reemplace por ningún texto (spec 003, US-34 y BR-R17-10). P4 y la hoja «Constancia» del R-17 muestran en ese caso «Sin hoja (export de texto)», un texto de presentación que no se guarda en la base. `rechazos` trae cada RECHAZA_FILA con su `fila` y su `pi`, que va en `null` en un rechazo por código (CODIGO_VACIO, CODIGO_DUPLICADO o CODIGO_INVALIDO). También trae el RECHAZA_CARGA de una carga rechazada por estructura, sección o periodo, con `fila` en `null`. Su `pi` es el PI que falta en PI_DEL_PLAN_AUSENTE o el que se repite en PI_REPETIDO, que la base guarda en `abet.rechazo_fila.pi_id`, y va en `null` en los demás motivos (BR-R17-10). `avisos` trae cada AVISO, con `pi` en `null` cuando la columna no entra a `carga_columna`, como en COLUMNA_PI_FUERA_DEL_PLAN (BR-R17-10). Ningún rechazo trae un campo `valor` ni `valor_leido`. `mensaje` resume el motivo de una carga RECHAZADA y es `null` en una PUBLICADA (propuesta). El texto de cada aviso y el `mensaje` dentro de un rechazo RECHAZA_CARGA son (propuesta). `conjunto_reglas_estado` y `parametros_pendientes` traen el estado del conjunto de reglas y sus parámetros en PENDIENTE, los mismos que muestra la hoja «Constancia» (requisito funcional FR-021 de la spec 001), y sus dos nombres son (propuesta).
+La constancia es plana. `nombre_archivo`, `hoja`, `sha256` y `filas_de_datos` van en el primer nivel, con los mismos nombres de las columnas de `abet.archivo_origen`. `hoja` es texto o `null`, y va en `null` en un export de texto, que no tiene hoja, sin que la API la reemplace por ningún texto (spec 003, US-34 y BR-R17-10). P4 y la hoja «Constancia» del R-17 muestran en ese caso «Sin hoja (export de texto)», un texto de presentación que no se guarda en la base. `rechazos` trae cada RECHAZA_FILA con su `fila` y su `pi`, que va en `null` en un rechazo por código (CODIGO_VACIO, CODIGO_DUPLICADO o CODIGO_INVALIDO). También trae el RECHAZA_CARGA de una carga rechazada por estructura, sección o periodo, con `fila` en `null`. Su `pi` es el PI que falta en PI_DEL_PLAN_AUSENTE o el que se repite en PI_REPETIDO, que la base guarda en `abet.rechazo_fila.pi_id`, y va en `null` en los demás motivos (BR-R17-10). `avisos` trae cada AVISO, con `pi` en `null` cuando la columna no entra a `carga_columna`, como en COLUMNA_PI_FUERA_DEL_PLAN (BR-R17-10). Ningún rechazo trae un campo `valor` ni `valor_leido`. `mensaje` resume el motivo de una carga RECHAZADA y es `null` en una PUBLICADA (propuesta). El texto de cada aviso y el `mensaje` dentro de un rechazo RECHAZA_CARGA son (propuesta). `conjunto_reglas_estado` y `parametros_pendientes` traen el estado del conjunto de reglas y sus parámetros en PENDIENTE, los mismos que muestra la hoja «Constancia» (requisito funcional FR-021 de la spec 001), y sus dos nombres son (propuesta). Desde el corte 2, `reemplaza_carga_id` trae el `carga_id` de la carga que esta reemplaza, el mismo de `abet.carga.reemplaza_carga_id`, y `reemplazada_por` el de la carga que la reemplaza, y los dos son `null` cuando no hay reemplazo (BR-CARGA-19 y BR-CARGA-20, propuesta de los nombres).
 
 Reglas y por qué existen.
 
@@ -222,12 +226,12 @@ Reglas y por qué existen.
 - **Archivo ya cargado en esta sección (BR-CARGA-09).** Si la huella ya tiene una carga PUBLICADA en esta misma sección, responde 200 con la constancia existente, aunque el archivo llegue con otro nombre, y no escribe nada. `archivo_origen.nombre_archivo` conserva el primer nombre. La respalda `uq_archivo_origen_sha256`.
 - **Archivo publicado en otra sección (BR-CARGA-09).** Si la huella ya tiene una carga PUBLICADA en otra sección, responde 409 con «Este archivo ya está publicado en otra sección. No se cargó.», antes de escribir y sin ningún dato de esa sección, porque el índice único parcial `uq_carga_archivo_util` lo impediría.
 - **Archivo con cargas que no están publicadas (BR-CARGA-09).** Si la huella solo tiene cargas RECHAZADA o REEMPLAZADA, la carga nueva reutiliza ese `archivo_id`, lo que `uq_carga_archivo_util` permite porque solo limita las PUBLICADA.
-- **Sección con otra carga publicada (BR-CARGA-10).** Si la sección ya tiene una carga PUBLICADA de otro archivo, responde 409 con «La sección 410 ya tiene una carga publicada. No se cargó el archivo.» y no escribe nada. En el corte 2 la pantalla ofrece el reemplazo (ruta 9). La respalda el índice único parcial `uq_carga_publicada_por_seccion`.
+- **Sección con otra carga publicada (BR-CARGA-10).** Si la sección ya tiene una carga PUBLICADA de otro archivo, responde 409 con «La sección 410 ya tiene una carga publicada. No se cargó el archivo.» y no escribe nada. En el corte 2 el cuerpo suma `"carga_publicada"` con el `carga_id` de esa carga (propuesta), y P3 pregunta «La sección 410 ya tiene una carga publicada. ¿Desea reemplazarla?» antes de ofrecer la ruta 9. La respalda el índice único parcial `uq_carga_publicada_por_seccion`.
 - **Filas inválidas (BR-CARGA-15).** Un nivel -1, 0 o 5 rechaza la fila completa con NIVEL_FUERA_DE_ESCALA (valor provisional de D-06). El texto «3.00» vale 3, como «3,00» y «4.0» (spec 003, US-29), y un valor como «3.50», «3,5», «Needs Grading», «-» o «NP» la rechaza con NIVEL_NO_NUMERICO (valor provisional de D-03), con efecto RECHAZA_FILA (valor provisional de D-01). El estudiante de esa fila sale de todos los indicadores de desempeño (performance indicators, PI) de la carga. Una celda de PI vacía no rechaza la fila y se carga como SIN_EVIDENCIA. Un Username vacío rechaza su fila con CODIGO_VACIO, y uno repetido rechaza la segunda aparición con CODIGO_DUPLICADO. La respalda `ck_medicion_nivel`.
 - **Columnas dudosas (BR-CARGA-14).** Un Total Pts distinto de 4 deja un aviso PUNTAJE_MAXIMO_DISTINTO y la carga sigue (valor provisional de D-04). Una columna de un PI que no está en el plan se ignora con el aviso COLUMNA_PI_FUERA_DEL_PLAN.
 - **Rechazo por estructura (BR-CARGA-13).** La carga queda RECHAZADA con efecto RECHAZA_CARGA, `filas_leidas` 0 y 201 con esa constancia en cinco casos. Son el archivo sin filas de datos (ARCHIVO_SIN_FILAS, «El archivo no trae filas de estudiantes.»), la falta de la columna de un PI del plan (PI_DEL_PLAN_AUSENTE, «Falta la columna del PI 5.2 que el plan de medición pide para esta sección.»), la falta de Username y Student ID (COLUMNA_CODIGO_AUSENTE, «El archivo no tiene la columna Username ni Student ID.»), un PI repetido (PI_REPETIDO, «El PI 5.1 aparece en dos columnas del archivo.») y el archivo cuyas filas aceptadas no traen ningún nivel en las columnas de los PI del plan (SIN_CALIFICACIONES, «El archivo no trae ningún nivel en las columnas de los PI del plan. La carga no se publicó.», spec 003, US-36 y BR-CARGA-16).
 - **Otra sección o periodo (BR-CARGA-11 y BR-CARGA-12).** El sistema coteja la sección elegida con el nombre de la hoja y, si la hoja no la declara, con el nombre del archivo. Un export de texto no tiene hoja, así que su sección y su periodo salen solo del nombre (spec 003, US-30). Si declaran otra sección u otra asignatura (SECCION_NO_COINCIDE) u otro periodo (PERIODO_NO_COINCIDE), la carga queda RECHAZADA. Con otra sección de la misma asignatura, el mensaje nombra la sección que declara el archivo y la sección elegida, con la misma forma para cualquier par de secciones, las dicte o no el mismo profesor, como «El archivo corresponde a la sección 411 y usted eligió la 410. No se publicó.». Con la 410 y la 412 de 450010 de `varias_secciones.feature`, esa forma da «El archivo corresponde a la sección 410 y usted eligió la 412. No se publicó.» (propuesta). Para otra asignatura, aunque la sección tenga el mismo número, el texto es «El archivo corresponde a la asignatura 450010 y usted eligió la 450002. No se publicó.» (propuesta), y el de otro periodo es «El archivo corresponde al periodo 2026-1 y la sección elegida es de 2026-2. No se publicó.» (propuesta), que la spec 003 comprueba con un export de texto.
-- **Archivo que no declara su sección (BR-CARGA-11 y BR-CARGA-18).** En el corte 1 (D-02), si ni la hoja ni el nombre del archivo declaran la sección, responde 422 sin rastro con «El archivo no indica su sección. Suba el export de Blackboard sin cambiar el nombre del archivo ni el de su hoja.», para los tres formatos (spec 003, US-30). En el corte 2 (US-21) responde primero 422 con «El archivo no indica su sección. ¿Confirma que es de la sección 410 de 450002 en 2026-2?» y `"requiere_confirmacion": true`. Con `confirmar_seccion=true` la carga sigue en la sección elegida y registra en `abet.rechazo_fila` un AVISO con el motivo SECCION_SIN_DECLARAR, que V1_09 agrega junto con COLUMNA_CODIGO_AUSENTE, PI_REPETIDO y PERIODO_NO_COINCIDE, y la constancia lo trae entre sus avisos. El campo solo admite «true», así que un número de sección responde 422 con «La sección confirmada no es la sección elegida. No se guardó nada.». La confirmación no pasa por encima de una sección declarada distinta, que sigue en SECCION_NO_COINCIDE. El 422 a la espera de la confirmación y el campo `requiere_confirmacion` son (propuesta).
+- **Archivo que no declara su sección (BR-CARGA-11 y BR-CARGA-18).** Si ni la hoja ni el nombre del archivo declaran la sección, la API responde 422 sin rastro con «El archivo no indica su sección. ¿Confirma que es de la sección 410 de 450002 en 2026-2?», que nombra la sección, la asignatura y el periodo elegidos, y `"requiere_confirmacion": true`, para los tres formatos (US-21 y valor del corte 2 de D-02). Esta pregunta reemplaza desde el corte 2 al 422 del corte 1, que detenía el archivo sin ofrecer la confirmación. Con `confirmar_seccion=true` la carga sigue en la sección elegida y registra en `abet.rechazo_fila` un AVISO con el motivo SECCION_SIN_DECLARAR, que V1_09 agrega junto con COLUMNA_CODIGO_AUSENTE, PI_REPETIDO y PERIODO_NO_COINCIDE, y la constancia lo trae entre sus avisos con «El archivo no indica su sección. Quien lo subió confirmó la sección elegida.» (propuesta). El campo solo admite «true», así que un número de sección, como 411, responde 422 con «La sección confirmada no es la sección elegida. No se guardó nada.», y cualquier otro valor recibe ese mismo 422 (propuesta), antes de leer el archivo. La confirmación no pasa por encima de una sección declarada distinta, que sigue en SECCION_NO_COINCIDE, y en un archivo que declara su sección no cambia nada. El 422 a la espera de la confirmación y el campo `requiere_confirmacion` son (propuesta).
 - **Todas las filas rechazadas (BR-CARGA-16).** La carga queda RECHAZADA con «Ninguna fila se pudo aceptar. La carga no se publicó.» (propuesta), porque `ck_carga_publicable` impide publicar sin filas aceptadas.
 - **Conciliación (BR-CARGA-16).** Una carga publicada lee tantas filas como trae el archivo, y aceptadas más rechazadas suman las leídas. Lo respaldan `ck_carga_conciliada` y `ck_carga_filas`.
 - **Descarte de datos personales (BR-CARGA-17).** La base guarda solo el código de 8 dígitos y las celdas de los PI del plan. Nombres, último acceso, disponibilidad, actividades y valores leídos se descartan, y Q04 lo vigila.
@@ -240,7 +244,7 @@ Errores, todos sin rastro en la base salvo el 201 de una carga RECHAZADA.
 | 401 | «La sesión venció. Ingrese otra vez.» (propuesta) |
 | 403 | «La sección no está a su cargo.» |
 | 403 | Una sección que no existe recibe el mismo 403 que una ajena, sin un 404 propio (propuesta, sección 9) |
-| 409 | «La sección 410 ya tiene una carga publicada. No se cargó el archivo.» |
+| 409 | «La sección 410 ya tiene una carga publicada. No se cargó el archivo.», con `carga_publicada` en el corte 2 |
 | 409 | «Este archivo ya está publicado en otra sección. No se cargó.» |
 | 422 | «No se pudo abrir el archivo. Descárguelo otra vez desde Blackboard.» |
 | 422 | «El archivo está protegido con contraseña. Guárdelo sin contraseña y súbalo.» |
@@ -250,9 +254,9 @@ Errores, todos sin rastro en la base salvo el 201 de una carga RECHAZADA.
 | 422 | «El contenido del archivo supera el tamaño admitido al descomprimirse.» (propuesta) |
 | 422 | «El archivo supera el máximo de 1 MB.» |
 | 422 | «El piloto solo admite códigos inventados, de 99000000 a 99999999. Revise la fila 4. No se guardó nada.» |
-| 422 | «El archivo no indica su sección. Suba el export de Blackboard sin cambiar el nombre del archivo ni el de su hoja.» (corte 1) |
 | 422 | «El archivo no indica su sección. ¿Confirma que es de la sección 410 de 450002 en 2026-2?» (corte 2, con `requiere_confirmacion`) |
 | 422 | «La sección confirmada no es la sección elegida. No se guardó nada.» (corte 2) |
+| 422 | «La petición no tiene la forma esperada.» (propuesta), sin el campo `archivo` o con un `reemplaza` que no es un entero positivo |
 | 422 | «La carrera aún no registra el plan de medición de esta sección.» (propuesta) |
 | 500 | «La carga no se completó y no se guardó ningún dato. Intente de nuevo.» |
 
@@ -287,15 +291,73 @@ Errores 401, 403 («La sección no está a su cargo.», también para una carga 
 
 #### `GET /api/cargas?seccion_id={seccion_id}`: cargas al alcance del usuario (US-19, BR-CARGA-20)
 
-Responde 200 con una lista de constancias resumidas, de la más reciente a la más antigua. Cada una trae `carga_id`, la sección, `estado`, `filas_leidas`, `filas_aceptadas`, `filas_rechazadas`, `nombre_archivo`, los primeros 12 caracteres de la huella, el correo de `subida_por`, `iniciada_en` y `terminada_en` con el desfase «-05:00», el motivo de una carga RECHAZADA y la carga a la que reemplaza, si la hay. Sin `seccion_id`, lista todas las cargas al alcance del usuario del periodo vigente (propuesta). Un `seccion_id` ajeno responde 403 con «La sección no está a su cargo.».
+Responde 200 con una lista de constancias resumidas, de la más reciente a la más antigua por `iniciada_en` y, a igual hora, por `carga_id`. Sin `seccion_id`, lista las cargas de las secciones que el usuario ve en el periodo vigente, las mismas de la ruta 4 (propuesta). Con `seccion_id`, lista solo las de esa sección, y una sección ajena, o que no existe, responde 403 con «La sección no está a su cargo.», sin ninguna carga. Un `seccion_id` que no es un entero responde 422 con el texto de la sección 3.1. La lista lee el alcance en `app/permisos.py` en cada petición, así que el profesor recibe solo las cargas de sus secciones, también las que reemplaza el coordinador, y el coordinador las de todas las secciones de la carrera.
 
-La constancia de una carga REEMPLAZADA sigue disponible en la ruta 6 y dice qué carga la reemplaza, pero su R-17 responde 409.
+```jsonc
+// Respuesta 200 para coordinacion@example.invalid, con la 410 reemplazada y la 411 publicada (dos de las cargas)
+[
+  {
+    "carga_id": 12,
+    "estado": "PUBLICADA",
+    "seccion": { "seccion_id": 2, "asignatura": "450002", "numero": "411", "periodo": "2026-2" },
+    "nombre_archivo": "export_inventado_411.xlsx",
+    "sha256_corto": "<los primeros 12 caracteres de la huella>",
+    "filas_leidas": 11,
+    "filas_aceptadas": 11,
+    "filas_rechazadas": 0,
+    "motivo": null,
+    "reemplaza_carga_id": null,
+    "reemplazada_por": null,
+    "subida_por": "docente411@example.invalid",
+    "iniciada_en": "2026-11-17T10:20:00.000000-05:00",
+    "terminada_en": "2026-11-17T10:20:01.000000-05:00"
+  },
+  {
+    "carga_id": 11,
+    "estado": "PUBLICADA",
+    "seccion": { "seccion_id": 1, "asignatura": "450002", "numero": "410", "periodo": "2026-2" },
+    "nombre_archivo": "sintetico_20262_450002_410.xlsx",
+    "sha256_corto": "<los primeros 12 caracteres de la huella>",
+    "filas_leidas": 11,
+    "filas_aceptadas": 11,
+    "filas_rechazadas": 0,
+    "motivo": null,
+    "reemplaza_carga_id": 10,
+    "reemplazada_por": null,
+    "subida_por": "docente410@example.invalid",
+    "iniciada_en": "2026-11-17T10:15:00.000000-05:00",
+    "terminada_en": "2026-11-17T10:15:01.000000-05:00"
+  }
+]
+```
+
+Reglas y por qué existen.
+
+- La lista no trae la huella completa, que vive en la constancia de la ruta 6, sino `sha256_corto`, con sus primeros 12 caracteres, que bastan para reconocer el archivo en P5 (propuesta del nombre).
+- `motivo` trae el motivo del RECHAZA_CARGA de una carga RECHAZADA, como SECCION_NO_COINCIDE, y es `null` en las demás, también en la carga RECHAZADA porque ninguna fila se aceptó, que no tiene un motivo único (propuesta). El detalle de cada rechazo está en la constancia.
+- `reemplaza_carga_id` y `reemplazada_por` tienen el sentido de la constancia (sección 6), así que P5 marca la carga vigente que reemplaza a otra y la carga REEMPLAZADA con su sucesora.
+- Ningún elemento trae nombres de estudiantes, valores leídos ni la ruta local del archivo, porque la base no los guarda (BR-CARGA-17).
+
+La constancia de una carga REEMPLAZADA sigue disponible en la ruta 6 y dice qué carga la reemplaza, pero su R-17 responde 409 con «La carga no está publicada y no tiene R-17.», porque solo una carga PUBLICADA produce R-17 (BR-R17-01).
+
+Errores 401, 403 («La sección no está a su cargo.») y 422 («La petición no tiene la forma esperada.» (propuesta)).
 
 #### `POST /api/secciones/{seccion_id}/cargas?reemplaza={carga_id}`: reemplazar la carga publicada (US-18, BR-CARGA-19)
 
-El mismo cuerpo y las mismas reglas de la ruta 5. En una sola transacción, la carga nueva entra EN_CURSO, la anterior pasa a REEMPLAZADA y la nueva pasa a PUBLICADA con `reemplaza_carga_id` igual a la anterior. Si la carga nueva queda RECHAZADA, su `reemplaza_carga_id` queda nulo desde el INSERT y la anterior sigue PUBLICADA, porque `uq_carga_reemplaza` bloquearía el siguiente reemplazo válido. Volver a un export anterior reutiliza su `archivo_id`.
+El mismo cuerpo, el mismo orden y las mismas reglas de la ruta 5, con el parámetro `reemplaza`, que nombra la carga PUBLICADA vigente de la sección. Un `reemplaza` que no es un entero positivo responde 422 con «La petición no tiene la forma esperada.» (propuesta). En una sola transacción, la carga nueva entra EN_CURSO con `reemplaza_carga_id` igual a la anterior, la anterior pasa a REEMPLAZADA y la nueva pasa a PUBLICADA, sin borrar nada. Si la carga nueva queda RECHAZADA, por su estructura, su sección, su periodo o porque no acepta ninguna fila, su `reemplaza_carga_id` queda nulo desde el INSERT, sin un UPDATE de esa columna, y la anterior sigue PUBLICADA, porque `uq_carga_reemplaza` bloquearía el siguiente reemplazo válido. Volver a un export anterior reutiliza su `archivo_id` (BR-CARGA-09).
 
-El profesor reemplaza en su sección y el coordinador en cualquiera, con el plazo que fije D-11. El mismo archivo de la carga publicada responde 200 con su constancia y el aviso «Es el mismo archivo de la carga publicada. No se reemplazó.» (propuesta). El reemplazo de una carga que ya no es la publicada de la sección responde 409 (propuesta), y el de una sección ajena responde 403. Si el archivo nuevo no se abre, responde 422 con «No se pudo abrir el archivo. La carga publicada no cambió.» y nada cambia.
+El profesor reemplaza en su sección y el coordinador en cualquiera de la carrera, sin fecha de cierre mientras D-11 siga abierta. Una sección ajena responde 403 antes de leer el cuerpo, y ninguna carga cambia.
+
+| Caso | Respuesta |
+|---|---|
+| El archivo nuevo se publica | 201 con la constancia de la carga nueva, en PUBLICADA y con `reemplaza_carga_id` igual a la anterior, que queda REEMPLAZADA |
+| El archivo nuevo queda RECHAZADA | 201 con su constancia, en RECHAZADA y con `reemplaza_carga_id` nulo, y la anterior sigue PUBLICADA |
+| Es el mismo archivo de la carga publicada | 200 con la constancia de la carga publicada y el campo `"aviso"` con «Es el mismo archivo de la carga publicada. No se reemplazó.» (propuesta), sin escribir nada, también si `reemplaza` nombra otra carga, porque la huella se busca antes que la carga vigente (propuesta) |
+| `reemplaza` no es la carga PUBLICADA de la sección, porque ya la reemplazó otra, porque la sección no tiene una carga publicada o porque la carga es de otra sección | 409 con «La carga que pide reemplazar no es la publicada de la sección 410. No se cargó el archivo.» (propuesta), sin escribir nada |
+| El archivo nuevo no se abre | 422 con «No se pudo abrir el archivo. La carga publicada no cambió.», sin escribir nada |
+| Cualquier otro 409 o 422 de la ruta 5 | El mismo `detail` de la ruta 5, sin escribir nada, y la carga publicada no cambia |
+
+Dos reemplazos a la vez de la misma carga dejan una sola carga nueva PUBLICADA. La transacción que llega segunda choca con `uq_carga_reemplaza`, se deshace entera y responde el 409 de la carga que ya no es la publicada, o el 200 del mismo archivo si las dos subieron el mismo, como las subidas simultáneas de BR-CARGA-10.
 
 #### `POST /api/sesion/codigo`: pedir el código de acceso (US-20, BR-ACCESO-09)
 
@@ -325,8 +387,9 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI.
 
 ```bash
-# Esperado: 5 caminos en el corte 1 (las 7 rutas, porque /api/sesion reúne tres métodos)
-# y 7 caminos al cerrar el corte 2, sin caminos que este documento no describa.
+# Esperado: 5 caminos en el corte 1 (las 7 rutas, porque /api/sesion reúne tres métodos), 6 con el corte 2
+# sin US-20 (suma /api/cargas, porque el reemplazo usa el camino de la ruta 5) y 7 cuando llegue
+# /api/sesion/codigo, sin caminos que este documento no describa.
 curl -s "$URL_FRONT/api/openapi.json" | python -c "import json,sys; print('\n'.join(sorted(json.load(sys.stdin)['paths'])))"
 ```
 
