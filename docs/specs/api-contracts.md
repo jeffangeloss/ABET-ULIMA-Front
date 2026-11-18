@@ -30,6 +30,12 @@ Este archivo es el índice corto del contrato de la API, que sigue el estilo de 
 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | Reemplazar la carga publicada (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | POST | `/api/sesion/codigo` | No | Pedir el código de acceso al correo | US-20 | BR-ACCESO-09 | 2 |
 | GET | `/api/resultados?periodo=2026-2` | Sí | Logros por SO de las secciones al alcance, ruta 12 del contrato (propuesta, spec 004 en revisión) | US-37 a US-44 (spec 004) | BR-RESULTADOS-NN, BR-ACCESO-07 y BR-ACCESO-10 (propuesta) | spec 004 |
+| GET | `/api/cargas/{carga_id}/indicadores` | Sí | Cifras y semáforo de cada PI de una carga publicada, ruta 13 del contrato (propuesta, spec 005 en revisión) | US-45 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+| GET | `/api/cargas/{carga_id}/mejora` | Sí | Declaración vigente, borrador y `puede_editar`, ruta 14 del contrato (propuesta, spec 005 en revisión) | US-47, US-48 y US-54 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-07 | spec 005 |
+| PUT | `/api/cargas/{carga_id}/mejora/borrador` | Sí | Guardar el borrador de las causas y las acciones con control de versión, ruta 15 del contrato (propuesta, spec 005 en revisión) | US-47, US-48 y US-53 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+| POST | `/api/cargas/{carga_id}/mejora/declaracion` | Sí | Declarar una versión del borrador, ruta 16 del contrato (propuesta, spec 005 en revisión) | US-47 y US-49 a US-53 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+
+La ruta 7 suma, con la spec 005 (propuesta), un 409 para una carga publicada sin declaración, y la sección 13.6 de `docs/03-api/contrato.md` lo describe. La tabla de la sección 2 de ese contrato y su sección 10 se ajustan al aprobar la spec 005 (tarea T011).
 
 Las reglas que no pertenecen a una sola ruta viven en las mismas specs vivas. BR-ACCESO-01 fija el esquema `acceso` y los usuarios de prueba, BR-PERIODO-03 los datos inventados del periodo 2026-2 y BR-PERIODO-01 y BR-PERIODO-02 la comprobación de la configuración al arrancar la API.
 
