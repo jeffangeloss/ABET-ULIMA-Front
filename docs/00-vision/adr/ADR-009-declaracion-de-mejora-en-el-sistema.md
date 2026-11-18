@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Estado** | Propuesto (spec 005 del Back, en revisión y sin aprobar) |
+| **Estado** | Aceptada y vigente (spec 005 del Back, aprobada por Jefferson en el chat el 2026-11-18) |
 | **Fecha** | 2026-11-18 |
 | **Enmienda** | ADR-005 (su frase «El profesor escribe a mano las causas, las acciones y el comentario.» y su invariante 2) y ADR-008 (su invariante 8), a partir de la aprobación de la spec 005 |
 | **Ámbito** | Las rutas 13 a 16 de `docs/03-api/contrato.md` (sección 13), `abet.mejora_borrador`, `abet.mejora_declaracion`, `abet.plan_medicion.descripcion_instrumento`, `abet_carga/r17.py`, `abet_carga/resultados.py`, `app/permisos.py`, `src/pantallas/ResultadoCarga.tsx` (P4), `src/App.tsx` y `src/servicios/api.ts` |
@@ -111,7 +111,6 @@ grep -rEn "localStorage|sessionStorage" src | wc -l | tr -d ' '
 
 ## Lo que todavía NO está
 
-1. **La aprobación de la spec 005**, con J-29 a J-37. Hasta entonces este ADR queda propuesto y no cambia ADR-005 ni ADR-008.
-2. **El código.** Las rutas 13 a 16, V1_11, V1_12, P4 con el formulario y la navegación por el fragmento no existen todavía, así que los criterios esperan a la implementación.
-3. **Las decisiones de la carrera.** D-35 (valor de CORTE_ROJO), D-36 (si una sección en la meta también declara), D-37 (si el profesor corrige tras descargar) y D-34 (quién redacta la descripción del instrumento) siguen abiertas.
-4. **La edición de ADR-005 y de ADR-008**, que se hace con la tarea T011 y no con esta propuesta.
+1. **El código.** Las rutas 13 a 16, V1_11, V1_12, P4 con el formulario y la navegación por el fragmento no existen todavía, así que los criterios esperan a la implementación.
+2. **Las decisiones de la carrera.** D-35 (valor de CORTE_ROJO), D-36 (si una sección en la meta también declara), D-37 (si el profesor corrige tras descargar) y D-34 (quién redacta la descripción del instrumento) siguen abiertas.
+3. **La edición de ADR-005 y de ADR-008**, que se hace con la tarea T011 de la spec 005. Hasta entonces, este ADR manda donde los dos dicen otra cosa.

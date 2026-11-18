@@ -115,7 +115,7 @@ Muestra el estado de la carga y sus conteos con la forma «11 filas leídas, 10 
 
 No muestra el valor leído de ninguna celda, nombres de estudiantes, Last Access, Availability, columnas de actividades ni los porcentajes del R-17, que viven solo en el archivo descargado.
 
-La spec 005 (propuesta) cambia esta pantalla. P4 muestra los niveles, los porcentajes y el semáforo de cada PI de una carga publicada, un formulario para declarar las causas y las acciones, y el único enlace «Descargar R-17», que ofrece solo con la declaración (sección 10). La regla de arriba sigue vigente hasta que Jefferson apruebe esa spec.
+La spec 005, aprobada el 2026-11-18, cambia esta pantalla. P4 muestra los niveles, los porcentajes y el semáforo de cada PI de una carga publicada, un formulario para declarar las causas y las acciones, y el único enlace «Descargar R-17», que ofrece solo con la declaración (sección 10). La regla de arriba sigue vigente hasta que Jefferson apruebe esa spec.
 
 ### P5 Cargas (corte 2)
 
@@ -185,7 +185,7 @@ El coordinador abre P6 con «Ver los logros por SO de la carrera» (propuesta) y
 
 No muestra códigos ni nombres de estudiantes, correos ni nombres de profesores, el botón «Subir export», que sigue solo en P2, un consolidado de varias secciones ni una cifra por SO (D-32), el agregado del curso o de la carrera (D-33), periodos anteriores, la descripción del instrumento (D-34) ni un filtro. P6 no escribe en `localStorage` ni en `sessionStorage`. P2 y P4 siguen sin mostrar porcentajes, como dicen sus secciones.
 
-La spec 005 (propuesta) cambia dos líneas de esta pantalla. El enlace «Descargar R-17 de la sección 412 de 450002» pasa a «Ver la carga de la sección N de A» (propuesta), que abre P4 para que ningún enlace abra un 409 en JSON, y P4 deja de seguir sin porcentajes (sección 10). El texto vigente de esta sección rige hasta la aprobación de la spec 005.
+La spec 005, aprobada el 2026-11-18, cambia dos líneas de esta pantalla. El enlace «Descargar R-17 de la sección 412 de 450002» pasa a «Ver la carga de la sección N de A» (propuesta), que abre P4 para que ningún enlace abra un 409 en JSON, y P4 deja de seguir sin porcentajes (sección 10). El texto vigente de esta sección rige hasta la aprobación de la spec 005.
 
 ### 9.3 Pruebas
 
@@ -310,7 +310,7 @@ Vitest con Testing Library prueba cada escenario `@delegado_a_vitest` de `specs/
 
 ### 10.5 Lo que todavía NO está
 
-1. **La aprobación de la spec 005**, con J-29 a J-37, y las decisiones de la carrera D-35 (valor de CORTE_ROJO), D-36 (si una sección en la meta también declara) y D-37 (si el profesor corrige tras descargar).
+1. **Las decisiones de la carrera** D-35 (valor de CORTE_ROJO), D-36 (si una sección en la meta también declara) y D-37 (si el profesor corrige tras descargar).
 2. **Todo el código de esta sección**, que llega con la fase 4 de la spec 005 y espera a la fusión de la spec 004.
 3. **La marca «Declaración pendiente»** en P2 y P5 (C-14, parte b), y quién declaró (C-12).
 4. **La detección de nombres de estudiantes** escritos en el texto, que la spec cubre con un aviso y no por construcción (J-36).
