@@ -15,8 +15,8 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-18
 - **Rama de trabajo**: `feat/004-reportes-docente`, que sale de `develop` (e88d6f2, con la documentación de la spec 004 fusionada por el PR #18), con la construcción de la pantalla P6 de la spec 004 del Back
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: P6 «Mis logros por SO» (`src/pantallas/MisLogros.tsx`), su enlace en la cabecera y en P4, `obtenerResultados` y la prueba de humo de P6 (T040 a T043 de la spec 004), sobre el contrato definitivo de la ruta 12 (T011, a5d678c)
-- **En curso**: el cierre de la spec 004 con `audit.md` del Back (T060). La ruta 12 y la guardia de sesión por router ya están en `feat/004-reportes-docente` del Back (0db6ee3). Los escenarios pendientes de US-17 siguen en `audit.md` del Back
+- **Último cambio**: el cierre de la spec 004 en esta rama, con ADR-008 al día y la auditoría en `specs/004-reportes-docente/audit.md` del Back, después de P6 y su humo (203d822) y del contrato definitivo de la ruta 12 (a5d678c)
+- **En curso**: nada en esta rama. La spec 004 queda construida y auditada en `feat/004-reportes-docente` del Back y del Front, sin empujar. Los escenarios pendientes de US-17 siguen en `audit.md` del Back
 - **Siguiente paso**: el permiso de Jefferson para empujar esta rama y la del Back y abrir sus PR (T070), y después de las dos fusiones el humo de P6 contra la vista previa de `develop` (T071). Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back); empujar la rama y abrir su PR esperan el permiso de Jefferson (T070 de la spec 004)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, la spec 004 fusionada en `develop` con su PR #27 y su construcción en `feat/004-reportes-docente`, que trae la fase 1 en 55a66b6 y la ruta 12 en 0db6ee3)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 15:57 (Lima) · feat/004-reportes-docente · Cierre de la spec 004 en el Front
+- Quién: Claude Code, sin subagentes en este repositorio. En el Back, un verificador (Sonnet, esfuerzo medio) intenta refutar `specs/004-reportes-docente/audit.md` en solo lectura, y su resultado queda en la entrada de cierre del Back.
+- Qué cambió: ADR-008 ya no dice que la ruta 12, P6 y la guardia de sesión por router no existen, y deja pendientes solo los criterios 2 y 3 contra la vista previa de `develop` (T071).
+- Por qué: T060 de la spec 004, que pide `MEMORIA.md` y `CHANGELOG.md` de los dos repositorios al día con la auditoría.
+- Lo que debe hacer, cómo se probó: el criterio 4 de ADR-008, `node -e …` sobre `package.json`, da «0» bibliotecas de gráficos, y las pruebas que cubren los criterios 1 a 3 en la base desechable, en Vitest y en el humo local están aprobadas (`npm test` con 164 pruebas y 5 passed en el humo).
+- Lo que no debe hacer, cómo se probó: `git diff --stat` muestra solo ADR-008 y esta memoria, sin cambios en `src/`, `tests/` ni `e2e/`, así que el CHANGELOG no cambia.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, `audit.md` del Back y el PR de esta rama, que se abre con el permiso de Jefferson.
+- Pendiente y siguiente paso: el permiso de Jefferson para empujar las dos ramas y abrir sus PR (T070) y, después de las dos fusiones, el humo de P6 contra la vista previa de `develop` (T071).
 
 ### 2026-11-18 15:50 (Lima) · feat/004-reportes-docente · P6 Mis logros por SO y su prueba de humo
 - Quién: Claude Code, sin subagentes, escribe primero las pruebas de Vitest y del humo con `superpowers:test-driven-development` y después la pantalla. Los nombres de las pruebas son los que anotan los pasos `@delegado_a_vitest` del Back (0db6ee3).

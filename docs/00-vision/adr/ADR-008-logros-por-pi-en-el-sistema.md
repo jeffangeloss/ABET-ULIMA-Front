@@ -85,6 +85,6 @@ node -e "const p = require('./package.json'); const d = { ...p.dependencies, ...
 
 ## Lo que todavía NO está
 
-1. **El código.** La ruta 12, P6 y la guardia de sesión por router no existen todavía, así que los criterios 1 a 3 esperan a la implementación.
+1. **Los criterios 2 y 3 en la vista previa de `develop`.** La ruta 12, P6 y la guardia de sesión por router existen desde el 2026-11-18 en `feat/004-reportes-docente` del Back y del Front, y sus pruebas cubren los cuatro criterios en la base desechable, en Vitest y en el humo local (`specs/004-reportes-docente/audit.md` del Back). Los criterios 2 y 3 corren contra la vista previa de `develop` después de fusionar los dos PR (T071).
 2. **Las decisiones de la carrera.** D-32 (consolidado y cifra por SO), D-33 (agregado del curso o de la carrera) y D-34 (descripción del instrumento) siguen abiertas.
 3. **Power BI para la coordinación**, con sus licencias, la región de su inquilino y una vista sin códigos de estudiante.
