@@ -12,14 +12,14 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-17
-- **Rama de trabajo**: `docs/004-reportes-docente`, que sale de `develop` (2a22fb3) con la documentación del sistema de la spec 004 del Back
+- **Fecha**: 2026-11-18
+- **Rama de trabajo**: `docs/004-reportes-docente`, que sale de `develop` (2a22fb3) con la documentación del sistema de la spec 004 del Back, en el PR #18
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: la documentación de la spec 004, los logros del profesor por resultado del estudiante (student outcome, SO), con ADR-008, la ruta 12 del contrato, la pantalla P6 en `frontend.md` y la fila `resultados`, en local y sin código
-- **En curso**: la aprobación de la spec 004 por Jefferson, con los PR de esta rama y de la del Back que se abren solo con su permiso; en otra sesión, el corte 2 de la spec 001 (`feat/001-corte-2`), que edita `docs/01-arquitectura/frontend.md`, `src/App.tsx` y `e2e/humo.spec.ts`. Siguen los escenarios pendientes de US-17 en `audit.md` del Back. El del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
-- **Siguiente paso**: con el permiso de Jefferson, empujar esta rama y abrir su PR a `develop`, que cita el PR de la spec 004 del Back; con la aprobación, T011 de la spec 004 deja definitivo el contrato de la ruta 12. Sigue lo pendiente de US-17 en `audit.md` del Back
+- **Último cambio**: el PR #18 de esta rama, que cita el PR #27 del Back, y su rebase sobre `develop` (2a22fb3), que trae el cierre de la spec 003 del Back en el Front, sin cambios en la documentación de la spec 004
+- **En curso**: la aprobación de la spec 004 por Jefferson en el PR #18 de esta rama y en el PR #27 del Back; en otra rama, el corte 2 de la spec 001 (`feat/001-corte-2`, PR #19), que edita `docs/01-arquitectura/frontend.md`, `src/App.tsx` y `e2e/humo.spec.ts`. Siguen los escenarios pendientes de US-17 en `audit.md` del Back. El del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
+- **Siguiente paso**: con la aprobación, T011 de la spec 004 deja definitivo el contrato de la ruta 12. Sigue lo pendiente de US-17 en `audit.md` del Back
 - **Bloqueos**: D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la spec 004 en su rama `docs/004-reportes-docente`)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la spec 004 en su rama `docs/004-reportes-docente`, en el PR #27)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 07:44 (Lima) · docs/004-reportes-docente · PR #18 abierto y rama rebasada sobre develop con el cierre de la spec 003
+- Quién: Jefferson autoriza en el chat empujar esta rama y abrir su PR («Sí, empuja y abre») y, después, rebasarla y empujarla con `--force-with-lease` («Sí, rebásalas»). Claude Code, sin subagentes, abre el PR #18, que cita el PR #27 del Back, rebasa el commit de la spec 004 sobre `develop` (2a22fb3), resuelve el conflicto de `MEMORIA.md` y escribe esta entrada.
+- Qué cambió: el commit «Documentación del sistema para la spec 004 de los logros por SO» queda sobre el cierre de la spec 003 del Back en el Front (PR #17) con otro SHA. En `MEMORIA.md`, su entrada queda encima de la del 2026-11-17 23:30 por orden de fecha, y «Punto actual» junta lo pendiente de US-17 que trae `develop` con la spec 004. Ningún archivo de `docs/`, `src/` ni de las pruebas cambia.
+- Por qué: `develop` recibe el PR #17 después de abrir el PR #18, y los dos cambian «Punto actual» y el comienzo del «Registro», así que el PR #18 choca con `develop`. `docs/devops.md` pide fusionar los PR con rebase.
+- Lo que debe hacer, cómo se probó: `git merge-tree --write-tree origin/develop HEAD` no da conflictos, `git diff --stat origin/develop...HEAD` muestra solo la documentación de la spec 004, `CHANGELOG.md` y esta memoria, y `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff eda19d1 HEAD -- docs/ CHANGELOG.md` sale vacío, así que la documentación de la spec 004 no cambia con el rebase, y cada entrada de `MEMORIA.md` que trae `develop` sigue completa, según una comparación bloque por bloque con `git show origin/develop:MEMORIA.md`.
+- Correcciones: «Punto actual» del commit anterior todavía dice que la rama espera el permiso para empujar, y esta entrada lo deja al día.
+- Cómo se reporta: esta entrada y el PR #18, que recibe la rama con `--force-with-lease`, sin cambio en `CHANGELOG.md`.
+- Pendiente y siguiente paso: la aprobación de la spec 004 del Back (T004); con ella, T011 de la spec 004 deja definitivo el contrato de la ruta 12.
 
 ### 2026-11-17 23:57 (Lima) · docs/004-reportes-docente · Documentación del sistema para la spec 004 de los logros del profesor por SO (en local)
 - Quién: Claude Code, en la misma sesión que escribe la spec 004 del Back. La entrada de la misma fecha en `MEMORIA.md` del Back nombra los subagentes que auditan las historias y las decisiones técnicas. En el Front no participa ningún subagente, y Claude Code escribe los documentos a partir de la spec y de la crítica de arquitectura.
