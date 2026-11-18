@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-17
-- **Rama de trabajo**: `chore/dependencias-dependabot`, que sale de `develop` (67a04af) con los cuatro saltos de Dependabot
+- **Rama de trabajo**: `docs/003-cierre`, que sale de `develop` (7f6c72b) con el cierre de la spec 003 del Back en este repositorio
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1 en un solo cambio, que reemplaza los PR de Dependabot #5, #6, #9 y #12, con el bundle de producción idéntico al de `develop`
-- **En curso**: el PR de esta rama, que Jefferson aprueba en el chat fusionar con la CI en verde
-- **Siguiente paso**: al fusionar, cerrar los cuatro PR de Dependabot con su razón y seguir con lo pendiente de US-17 en `audit.md` del Back
+- **Último cambio**: la parte del Front de T053 y T061 de la spec 003 del Back, con la suite y la compilación de `develop` en verde y esta memoria al día después de fusionar el PR #16
+- **En curso**: los escenarios pendientes de US-17 en `audit.md` del Back. El del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal. En otras sesiones avanzan `feat/001-corte-2` (corte 2 de la spec 001) y `docs/004-reportes-docente` (spec 004)
+- **Siguiente paso**: con el permiso de Jefferson, empujar esta rama y abrir su PR junto con el de `docs/003-cierre` del Back
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-17 23:30 (Lima) · docs/003-cierre · Cierre de la spec 003 del Back en el Front (T053 y T061)
+- Quién: Jefferson aprueba en el chat empezar a cerrar lo que queda de la versión 0.1.0 («Sí, empieza»). Claude Code corre en un worktree de `develop` la parte del Front de T053 y escribe esta entrada. En el flujo de agentes wf_844270c1-e83, un verificador (Sonnet, esfuerzo medio) corre `tests/pantallas/SubirExport.test.tsx` con `--reporter=verbose` y otro (Sonnet, esfuerzo medio) revisa la memoria y el registro de cambios de los commits de la spec 003 de este repositorio. Claude Code compara sus cifras con los registros de la corrida antes de aceptarlas.
+- Qué cambió: esta memoria, con «Punto actual» al día. El código, las pruebas y `CHANGELOG.md` no cambian.
+- Por qué: T053 y T061 de la spec 003 del Back piden la suite del Front, la revisión previa y la memoria y el registro de cambios de cada repositorio, y «Punto actual» seguía con la rama de Dependabot en curso.
+- Lo que debe hacer, cómo se probó: sobre `develop` (7f6c72b), `npm ci --ignore-scripts --prefer-offline` instala el lockfile, `npm test` da 9 archivos y 85 pruebas aprobadas, `npm run build` compila sin errores, `bash scripts/probar_preflight.sh` da 28 bien y 0 mal y `bash scripts/preflight.sh` no da fallas. `npx vitest run tests/pantallas/SubirExport.test.tsx --reporter=verbose` da 18 de 18, y entre ellas están las tres que cubren los escenarios de US-33. La CI de `develop` termina en verde en 7f6c72b (corrida 44209561524).
+- Lo que no debe hacer, cómo se probó: la compilación da los mismos `index-D0rec67o.js` e `index-5cA2jNHI.css` que la entrada del 2026-11-17 18:25, así que la vista previa y Production no reciben código distinto. Los seis commits de la spec 003 y de su salida a `develop` en este repositorio tocan `MEMORIA.md`, y `CHANGELOG.md` falta solo en b75de56 y 706139d, que no traen un cambio visible.
+- Correcciones: ninguna en este repositorio. En el Back, el verificador del historial encuentra que `[0.1.0]` no nombraba la sección que sale del nombre de un export de texto (US-30), y esa línea se agrega allí.
+- Cómo se reporta: esta entrada, `specs/003-exports-blackboard/audit.md` del Back y el PR de esta rama, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: los escenarios pendientes de US-17 y T062 en `audit.md` del Back, y D-30 (T005 de la spec 003), que espera a Stefanny Montaño o a la Oficina de Calidad.
 
 ### 2026-11-17 18:25 (Lima) · chore/dependencias-dependabot · jsdom, vitest, vite y `@vitejs/plugin-react` en un solo cambio (PR de Dependabot #5, #6, #9 y #12)
 - Quién: Claude Code, por el encargo de la sesión principal de Jefferson del 2026-11-17, aplica los cuatro saltos en un solo cambio, corre las pruebas y escribe esta entrada. Jefferson aprueba en el chat empujar las ramas del Front y del Back, fusionarlas con la CI en verde y cerrar los diez PR de Dependabot. Un subagente (Sonnet, esfuerzo medio) lee en solo lectura las notas de cada versión, las fechas del registro de npm, la base de avisos de GitHub y los diffs de los cuatro PR. Claude Code vuelve a tomar con `npm view` las fechas de los nueve paquetes del lockfile nuevo antes de aceptar su informe.
