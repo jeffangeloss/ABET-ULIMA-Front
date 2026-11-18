@@ -1,8 +1,8 @@
 # Contrato de la API
 
-> **Estado 2026-11-17.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. La sección 7 fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo de la carga publicada, la lista de cargas y la confirmación de la sección, escrita antes de su código en la rama `feat/001-corte-2`. El código de acceso por correo (ruta 10) sigue en espera de T018, el dominio y la cuenta de Resend de Jefferson. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
+> **Estado 2026-11-18.** La sección 12 fija la forma definitiva de la ruta 12 de la spec 004 del Back (T011), los logros por resultado del estudiante (student outcome, SO) de las secciones al alcance del usuario, escrita antes de su código en la rama `feat/004-reportes-docente` después de la aprobación de Jefferson del 2026-11-18. **Estado 2026-11-17.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. La sección 7 fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo de la carga publicada, la lista de cargas y la confirmación de la sección, escrita antes de su código en la rama `feat/001-corte-2`. El código de acceso por correo (ruta 10) sigue en espera de T018, el dominio y la cuenta de Resend de Jefferson. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
 
-Este documento describe todas las rutas de ABET-ULIMA-Back con su cuerpo, su respuesta y sus errores. El índice corto vive en `docs/specs/api-contracts.md`, y las reglas viven en las specs vivas del Back. Son BR-ACCESO-01 a BR-ACCESO-09 (`specs/features/acceso/acceso.spec.md`), BR-PERIODO-01 a BR-PERIODO-04 (`specs/features/periodo/periodo.spec.md`), BR-CARGA-01 a BR-CARGA-20 (`specs/features/carga-export/carga-export.spec.md`) y BR-R17-01 a BR-R17-10 (`specs/features/r17/r17.spec.md`). Los mensajes literales y la forma de las respuestas salen de los escenarios de `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back. Si un ejemplo de aquí y un escenario discrepan, gana el escenario. Lleva la marca «(propuesta)» lo que ningún escenario fija y también lo que un escenario usa sin que las decisiones de la spec lo fijen, como lo marcan los `.feature`. Los ejemplos usan solo datos inventados.
+Este documento describe todas las rutas de ABET-ULIMA-Back con su cuerpo, su respuesta y sus errores. El índice corto vive en `docs/specs/api-contracts.md`, y las reglas viven en las specs vivas del Back. Son BR-ACCESO-01 a BR-ACCESO-10 (`specs/features/acceso/acceso.spec.md`), BR-PERIODO-01 a BR-PERIODO-04 (`specs/features/periodo/periodo.spec.md`), BR-CARGA-01 a BR-CARGA-20 (`specs/features/carga-export/carga-export.spec.md`), BR-R17-01 a BR-R17-10 (`specs/features/r17/r17.spec.md`) y BR-RESULTADOS-01 a BR-RESULTADOS-11 (`specs/features/resultados/resultados.spec.md`). Los mensajes literales y la forma de las respuestas salen de los escenarios de `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back y de los de las specs 003 y 004. Si un ejemplo de aquí y un escenario discrepan, gana el escenario. Lleva la marca «(propuesta)» lo que ningún escenario fija y también lo que un escenario usa sin que las decisiones de la spec lo fijen, como lo marcan los `.feature`. Los ejemplos usan solo datos inventados.
 
 ## 1. Cómo está montada
 
@@ -28,7 +28,7 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 | 8 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | 200 | Lista las cargas al alcance del usuario, con `seccion_id` opcional | US-19 | BR-CARGA-20 y BR-ACCESO-07 | 2 |
 | 9 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | 201 o 200 | Reemplaza la carga publicada en una transacción (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | 10 | POST | `/api/sesion/codigo` | No | 202 | Envía el código de acceso al correo, con la misma respuesta exista o no | US-20 | BR-ACCESO-09 | 2 |
-| 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (propuesta, sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-NN, BR-ACCESO-07 y BR-ACCESO-10 (propuesta) | spec 004 |
+| 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, BR-ACCESO-07 y BR-ACCESO-10 | spec 004 |
 
 ## 3. Convenciones
 
@@ -72,7 +72,7 @@ Toda respuesta de `/api`, de éxito o de error, lleva `Cache-Control: no-store`,
 
 ### 3.4 Horas y cifras
 
-Las horas viajan en el formato de la norma ISO 8601 de la Organización Internacional de Normalización (International Organization for Standardization), con el desfase de Lima (`2026-10-28T10:15:00-05:00`) y el Front las muestra en hora de Lima. Los porcentajes no viajan por la API, porque viven solo en el R-17. La spec 004 del Back, en revisión, propone que la ruta 12 lleve los logros de `abet.v_r17_por_pi` con su decimal y `en_meta` (ADR-008, propuesta). Si Jefferson la aprueba, la frase anterior sigue valiendo para las rutas 1 a 10, y la ruta 12 lleva los porcentajes de la vista sin que el Front los recalcule (T011 de la spec 004).
+Las horas viajan en el formato de la norma ISO 8601 de la Organización Internacional de Normalización (International Organization for Standardization), con el desfase de Lima (`2026-10-28T10:15:00-05:00`) y el Front las muestra en hora de Lima. Las rutas 1 a 10 no llevan porcentajes, que viven en el R-17. La ruta 12 de la spec 004 lleva los logros de `abet.v_r17_por_pi` como números JSON con el decimal de la vista, junto a sus conteos y a `en_meta`, y el Front los muestra sin recalcularlos ni compararlos (ADR-008 y J-22). Un nulo de la vista viaja como `null`, nunca como 0.
 
 ## 4. Sesión
 
@@ -139,7 +139,7 @@ El profesor recibe solo las secciones que `acceso.docente_seccion` le asigna y e
 
 Reglas y por qué existen.
 
-- La regla de visibilidad («los de arriba pueden ver hacia abajo, pero no los de abajo hacia arriba») vive solo aquí y en `app/permisos.py`, y la usan las rutas 5 a 9 (BR-ACCESO-07).
+- La regla de visibilidad («los de arriba pueden ver hacia abajo, pero no los de abajo hacia arriba») vive solo aquí y en `app/permisos.py`, y la usan las rutas 5 a 9 y la 12 (BR-ACCESO-07).
 - `estado` vale «PUBLICADA» cuando la sección tiene una carga en ese estado, con su `carga_id`, `filas_leidas` y `filas_aceptadas`, y vale «SIN_CARGA» en otro caso, con esos tres campos en `null`. Una sección cuyas cargas están todas RECHAZADA o REEMPLAZADA sale también «SIN_CARGA» (propuesta).
 - `tiene_plan` es falso cuando `abet.plan_medicion` no tiene filas para esa asignatura y periodo, y entonces `pi` viene vacío. P2 muestra «La carrera aún no registra el plan de medición de esta sección» y la ruta 5 rechaza la subida (BR-PERIODO-04).
 - La respuesta del profesor no trae ningún dato de secciones ajenas.
@@ -380,7 +380,7 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 3. **Una ruta de salud** (`/api/salud`) para la prueba de humo y el monitoreo, que ninguna historia pide.
 4. **Los nombres de los esquemas Pydantic**, que se fijan con el código.
 5. **El plazo del reemplazo (D-11).** Quién reemplaza está decidido para el corte 2, y hasta cuándo sigue abierto.
-6. **La ruta 12 de la spec 004** (sección 12), en revisión. Cuando Jefferson la apruebe, la sección 10 suma `/api/resultados` a su cuenta de caminos y la carpeta `specs/004-reportes-docente/aceptacion/` a su comprobación de mensajes (T011 de la spec 004).
+6. **Lo que la ruta 12 deja para después**, en su sección 12.3, con las decisiones D-32 a D-34 de la spec 004.
 
 ## 10. Cómo verificar este documento
 
@@ -388,12 +388,12 @@ Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenA
 
 ```bash
 # Esperado: 5 caminos en el corte 1 (las 7 rutas, porque /api/sesion reúne tres métodos), 6 con el corte 2
-# sin US-20 (suma /api/cargas, porque el reemplazo usa el camino de la ruta 5) y 7 cuando llegue
-# /api/sesion/codigo, sin caminos que este documento no describa.
+# sin US-20 (suma /api/cargas, porque el reemplazo usa el camino de la ruta 5), 7 con la ruta 12 de la spec 004
+# (suma /api/resultados) y 8 cuando llegue /api/sesion/codigo, sin caminos que este documento no describa.
 curl -s "$URL_FRONT/api/openapi.json" | python -c "import json,sys; print('\n'.join(sorted(json.load(sys.stdin)['paths'])))"
 ```
 
-Los mensajes literales de este contrato y los de los escenarios de las specs 001 y 003 coinciden en los dos sentidos. La comprobación corre desde la carpeta que contiene los dos repositorios, y las variables `BACK` y `FRONT` cambian sus rutas si viven en otro lugar.
+Los mensajes literales de este contrato y los de los escenarios de las specs 001, 003 y 004 coinciden en los dos sentidos. La comprobación corre desde la carpeta que contiene los dos repositorios, y las variables `BACK` y `FRONT` cambian sus rutas si viven en otro lugar.
 
 ```bash
 # Esperado: «0 mensajes del contrato sin escenario» y «0 mensajes de los escenarios sin contrato».
@@ -409,7 +409,8 @@ import pathlib
 import re
 
 contrato = pathlib.Path(os.environ["FRONT"], "docs/03-api/contrato.md").read_text(encoding="utf-8")
-carpetas = [pathlib.Path(os.environ["BACK"], "specs", c, "aceptacion") for c in ("001-mvp-carga-r17", "003-exports-blackboard")]
+carpetas = [pathlib.Path(os.environ["BACK"], "specs", c, "aceptacion")
+            for c in ("001-mvp-carga-r17", "003-exports-blackboard", "004-reportes-docente")]
 escenarios = "\n".join(p.read_text(encoding="utf-8") for c in carpetas for p in sorted(c.glob("*.feature")))
 
 del_contrato = {
@@ -442,23 +443,24 @@ for texto in sobran:
 PY
 ```
 
-## 12. Rutas de la spec 004, logros por SO (propuesta, spec 004)
+## 12. Rutas de la spec 004, logros por SO
 
-> **Estado 2026-11-17.** Propuesta de la spec 004 del Back (`specs/004-reportes-docente/`), en revisión, que pasa a definitiva con su tarea T011 después de la aprobación de Jefferson. La sección 11 queda para las rutas de la spec 002 de Capstone, que esperan su aprobación en la rama `docs/002-capstone`, y por eso esta ruta lleva el número 12.
+> **Estado 2026-11-18.** Forma definitiva de la ruta 12 de la spec 004 del Back (`specs/004-reportes-docente/`), que Jefferson aprueba en el chat el 2026-11-18 con J-21 a J-28, escrita antes de su código en la rama `feat/004-reportes-docente` (T011). Sus reglas son BR-RESULTADOS-01 a BR-RESULTADOS-11 de `specs/features/resultados/resultados.spec.md` y BR-ACCESO-10. La sección 11 queda para las rutas de la spec 002 de Capstone, que esperan su aprobación en la rama `docs/002-capstone`, y por eso esta ruta lleva el número 12.
 
 ### 12.1 Resumen
 
 | # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Corte |
 |---|---|---|---|---|---|---|---|---|
-| 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por resultado del estudiante (student outcome, SO) y por indicador de desempeño (performance indicator, PI) de las secciones al alcance del usuario | US-37 a US-44 (spec 004) | BR-RESULTADOS-NN, BR-ACCESO-07 y BR-ACCESO-10 (propuesta) | spec 004 |
+| 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por resultado del estudiante (student outcome, SO) y por indicador de desempeño (performance indicator, PI) de las secciones al alcance del usuario | US-37 a US-44 (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, BR-ACCESO-07 y BR-ACCESO-10 | spec 004 |
 
-### 12.2 `GET /api/resultados?periodo=2026-2`: logros por SO de las secciones al alcance (propuesta, spec 004)
+### 12.2 `GET /api/resultados?periodo=2026-2`: logros por SO de las secciones al alcance (BR-RESULTADOS-01 a BR-RESULTADOS-11)
 
-Sin cuerpo y sin identificadores de sección ni de carga (J-23 de la spec 004). Sin `periodo`, la ruta usa `PERIODO_VIGENTE`, y un `seccion_id` u otro parámetro que la ruta no declara no cambia la respuesta. La pantalla P6 «Mis logros por SO» (propuesta) es la única que la consume.
+Sin cuerpo y sin identificadores de sección ni de carga (J-23 de la spec 004). Sin `periodo`, la ruta usa `PERIODO_VIGENTE`, y un `seccion_id` u otro parámetro que la ruta no declara deja la respuesta igual. La pantalla P6 «Mis logros por SO» (propuesta) es la única que la consume.
 
 ```jsonc
 // Respuesta 200 recortada para docente.varias@example.invalid, con la 412 de 450002 publicada y la 410 de
-// 450010 sin carga (propuesta, spec 004). Los identificadores son de ejemplo y salen siempre de la API.
+// 450010 sin carga. Los identificadores son de ejemplo y salen siempre de la API, y las descripciones del SO se
+// recortan aquí con «…».
 {
   "periodo": "2026-2",
   "so": [
@@ -475,7 +477,7 @@ Sin cuerpo y sin identificadores de sección ni de carga (J-23 de la spec 004). 
       "pi": ["5.1", "5.2", "5.3"],
       "conjunto_reglas": "R-2026-BORRADOR",
       "conjunto_reglas_estado": "BORRADOR",
-      "parametros_pendientes": ["CONVERSION_NIVEL_0_1", "CORTE_ROJO", "TRATO_SIN_EVIDENCIA"],
+      "parametros_pendientes": ["TRATO_SIN_EVIDENCIA", "CORTE_ROJO", "CONVERSION_NIVEL_0_1"],
       "provisional": true,
       "indicadores": [
         {
@@ -504,15 +506,16 @@ Sin cuerpo y sin identificadores de sección ni de carga (J-23 de la spec 004). 
 
 Reglas y por qué existen.
 
-- El alcance sale solo de `app/permisos.secciones_visibles()`, el único dueño de la regla de visibilidad (BR-ACCESO-07). El profesor recibe las secciones de `acceso.docente_seccion` y el coordinador todas las de la carrera, sin filas propias. La ruta no recibe identificadores, así que no tiene un caso 403 propio.
-- Cada router con datos exige la sesión, y una prueba recorre las rutas registradas con una lista cerrada de rutas públicas (BR-ACCESO-10, propuesta, J-25).
-- Las cifras salen de `abet.v_r17_por_pi` por el `carga_id` de la carga PUBLICADA de cada sección, en una sola instantánea, y son las del bloque II del R-17 de esa carga (ADR-008, invariante 1). `estudiantes_por_nivel` son `n_nivel_1` a `n_nivel_4`, `logrados` es `n_esperado_o_superior`, `calificados` es `n_total` menos `n_sin_evidencia`, `pct_sobre_calificados` es `pct_logro_sobre_calificados`, `pct_sobre_total` es `pct_logro_sobre_total_con_sin_evidencia` y `meta_pct` es `meta_logro_pct`.
-- Los porcentajes y la meta viajan como números JSON de un decimal, y un nulo de la vista viaja como `null`, nunca como 0.
-- `en_meta` es verdadero si `pct_sobre_calificados` es mayor o igual que `meta_pct`, falso si es menor y nulo si falta alguno, con la misma función del plan de acción del R-17. El Front no compara cifras.
-- Las secciones van por código de asignatura y número de sección, nunca por resultado, y los indicadores por número de SO y número de PI, así que el 5.10 va después del 5.2. `so` trae cada SO que mide el plan de alguna sección de la respuesta.
-- Una sección sin carga PUBLICADA llega con `estado` «SIN_CARGA», `carga_id` nulo, los PI de su plan en `pi` e `indicadores` vacío, también si sus cargas están todas RECHAZADAS.
-- La marca provisional va por sección, con los campos del conjunto de reglas de la constancia (BR-R17-10).
-- La respuesta trae solo las claves del ejemplo. Ninguna parte trae `subida_por`, `nombre_archivo`, `sha256`, `trato_sin_evidencia` ni `pct_logro_segun_regla`, ni un código o un nombre de estudiante. Lleva `Cache-Control: no-store`, como toda `/api`.
+- El alcance sale solo de `app/permisos.secciones_visibles()`, el único dueño de la regla de visibilidad (BR-ACCESO-07). El profesor recibe las secciones de `acceso.docente_seccion` y el coordinador todas las de la carrera, sin filas propias. La ruta no recibe identificadores, así que no tiene un caso 403 propio (BR-RESULTADOS-02).
+- Cada router con datos exige la sesión, y una prueba recorre las rutas registradas con una lista cerrada de rutas públicas (BR-ACCESO-10 y J-25).
+- Las cifras salen de `abet.v_r17_por_pi` por el `carga_id` de la carga PUBLICADA de cada sección, en una sola instantánea, y son las del bloque II del R-17 de esa carga (ADR-008, invariante 1). `estudiantes_por_nivel` son `n_nivel_1` a `n_nivel_4`, `logrados` es `n_esperado_o_superior`, `calificados` es `n_total` menos `n_sin_evidencia`, `pct_sobre_calificados` es `pct_logro_sobre_calificados`, `pct_sobre_total` es `pct_logro_sobre_total_con_sin_evidencia` y `meta_pct` es `meta_logro_pct` (BR-RESULTADOS-03).
+- El SO, su descripción, el PI y el instrumento salen del plan de la carga, y `instrumento` es `null` cuando el plan no lo define (BR-RESULTADOS-04).
+- Los porcentajes y la meta viajan como números JSON de un decimal, y un nulo de la vista viaja como `null`, nunca como 0. Un PI sin calificaciones trae `pct_sobre_calificados` y `en_meta` en `null` aunque `pct_sobre_total` valga 0.0 (BR-RESULTADOS-05).
+- `en_meta` es verdadero si `pct_sobre_calificados` es mayor o igual que `meta_pct`, falso si es menor y nulo si falta alguno, con la misma función del plan de acción del R-17. El Front no compara cifras (BR-RESULTADOS-06).
+- Las secciones van por código de asignatura y número de sección, nunca por resultado, y los indicadores por número de SO y número de PI, así que el 5.10 va después del 5.2. `so` trae una vez cada SO que mide el plan de alguna sección de la respuesta.
+- Una sección sin carga PUBLICADA llega con `estado` «SIN_CARGA», `carga_id` nulo, los PI de su plan en `pi` e `indicadores` vacío, también si sus cargas están todas RECHAZADAS (BR-RESULTADOS-07).
+- La marca provisional va por sección, con los campos y el orden del conjunto de reglas de la constancia (BR-R17-10 y BR-RESULTADOS-08). Una sección sin carga los trae en `null`.
+- La respuesta trae solo las claves del ejemplo. Ninguna parte trae `subida_por`, `nombre_archivo`, `sha256`, `trato_sin_evidencia` ni `pct_logro_segun_regla`, ni un correo, un código o un nombre de estudiante (BR-RESULTADOS-09). Lleva `Cache-Control: no-store`, como toda `/api`.
 
 Errores 401 con «La sesión venció. Ingrese otra vez.» (propuesta), sin cookie, con la sesión vencida o con el usuario dado de baja, y 422 con «El periodo no tiene la forma AAAA-C.» (propuesta). Un periodo bien formado sin secciones del usuario responde 200 con `so` y `secciones` vacíos.
 

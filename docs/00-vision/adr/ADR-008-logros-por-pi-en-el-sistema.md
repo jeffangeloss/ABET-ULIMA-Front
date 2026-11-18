@@ -45,7 +45,7 @@ Antes de la ruta 12, cada router con datos declara la dependencia de sesión, y 
 
 ## Consecuencias
 
-- La sección 3.4 del contrato cambia cuando Jefferson apruebe la spec 004, y su sección 10 suma `/api/resultados` a la cuenta de caminos de OpenAPI.
+- La sección 3.4 del contrato cambia con la aprobación de la spec 004 (T011, 2026-11-18), y su sección 10 suma `/api/resultados` a la cuenta de caminos de OpenAPI y la carpeta `specs/004-reportes-docente/aceptacion/` a la comprobación de mensajes.
 - El Back gana una función pura de la meta, que `abet_carga/r17.py` también usa, y un router más con la dependencia de sesión.
 - `abet_app` no gana permisos, porque ya lee la vista, `abet.so`, `abet.pi`, `abet.instrumento` y `abet.plan_medicion`.
 - El coordinador recibe del orden de 150 secciones y 450 indicadores, que P6 agrupa por asignatura y nunca ordena por resultado, para no armar el ranking de docentes que critica H05.

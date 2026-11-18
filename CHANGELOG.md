@@ -6,6 +6,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Agregado
 
+- Contrato definitivo de la ruta 12 `GET /api/resultados` de la spec 004 del Back (T011), con sus reglas BR-RESULTADOS-01 a BR-RESULTADOS-11 y BR-ACCESO-10, la sección 3.4 que reserva los porcentajes a la ruta 12, la cuenta de 7 caminos de OpenAPI y la carpeta de la spec 004 en la comprobación de mensajes, y la forma definitiva de P6 en la sección 9 de `docs/01-arquitectura/frontend.md`.
 - Documentación del sistema de la spec 004 del Back, los logros del profesor por SO, aprobada por Jefferson en el chat el 2026-11-18. Son ADR-008, la ruta 12 `GET /api/resultados` en la sección 12 de `docs/03-api/contrato.md` y en `docs/specs/api-contracts.md`, la pantalla P6 «Mis logros por SO» en la sección 9 de `docs/01-arquitectura/frontend.md` y la fila `resultados` de `docs/specs/feature-index.md`. Ningún código cambia.
 - P5 Cargas, con las secciones del usuario y sus cargas de la más reciente a la más antigua, la marca de la vigente y de la reemplazada, la huella corta, quién sube cada carga, «Ver constancia», «Descargar R-17» y «Reemplazar carga» en la publicada, para el profesor en su sección y el coordinador en cualquiera (US-18 y US-19, T085).
 - P3 pregunta «La sección 410 ya tiene una carga publicada. ¿Desea reemplazarla?» ante el 409 con `carga_publicada` y reenvía el archivo con `?reemplaza=`, entra en modo reemplazo desde P5 y muestra el aviso del mismo archivo (US-18).

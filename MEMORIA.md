@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-18
-- **Rama de trabajo**: `docs/004-reportes-docente`, que sale de `develop` (2a22fb3) y se actualiza con `develop` (f10fdc3) después del corte 2, con la documentación del sistema de la spec 004 del Back, en el PR #18
+- **Rama de trabajo**: `feat/004-reportes-docente`, que sale de `develop` (e88d6f2, con la documentación de la spec 004 fusionada por el PR #18), con la construcción de la pantalla P6 de la spec 004 del Back
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: la aprobación de la spec 004 del Back, que Jefferson da en el chat el 2026-11-18 («Sí, apruébala»), con ADR-008 aceptado y la feature `resultados` aprobada en `feature-index.md`
-- **En curso**: la fusión del PR #18 después del PR #27 del Back, con la CI en verde. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
-- **Siguiente paso**: con las dos fusiones, T011 de la spec 004 deja definitivo el contrato de la ruta 12 en `feat/004-reportes-docente`. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
-- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, el corte 2 fusionado en `develop` con su PR #28 y la spec 004 en su rama `docs/004-reportes-docente`, en el PR #27)
+- **Último cambio**: el contrato definitivo de la ruta 12 `GET /api/resultados` (T011 de la spec 004), en la sección 12 y la 3.4 de `docs/03-api/contrato.md`, en `docs/specs/api-contracts.md`, en la sección 9 de `docs/01-arquitectura/frontend.md`, en `docs/specs/feature-index.md` y en ADR-008
+- **En curso**: P6 «Mis logros por SO», sus enlaces en la cabecera y en P4 y sus pruebas de Vitest primero (T040 a T042), y la prueba de humo con P6 (T043). En `feat/004-reportes-docente` del Back avanzan la ruta 12 y la guardia de sesión por router. Los escenarios pendientes de US-17 siguen en `audit.md` del Back
+- **Siguiente paso**: la fase 4 de la spec 004 en esta rama y el cierre con `audit.md` del Back (T060). Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
+- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back); empujar la rama y abrir su PR esperan el permiso de Jefferson (T070 de la spec 004)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, la spec 004 fusionada en `develop` con su PR #27 y su construcción en `feat/004-reportes-docente`, que ya trae la fase 1 en 55a66b6)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 15:45 (Lima) · feat/004-reportes-docente · Contrato definitivo de la ruta 12 de la spec 004
+- Quién: la sesión principal encarga la construcción de la spec 004, que Jefferson aprueba en el chat el 2026-11-18 («Sí, apruébala»). Claude Code, sin subagentes, escribe T011 con la skill `specs-back-front` desde su paso 6 y aplica a la prosa la skill `redaccion-ieee-q1`.
+- Qué cambió: la sección 12 de `docs/03-api/contrato.md` deja de ser propuesta y cita BR-RESULTADOS-01 a BR-RESULTADOS-11 y BR-ACCESO-10, la 3.4 reserva los porcentajes a la ruta 12 (ADR-008 y J-22), la 10 cuenta 7 caminos de OpenAPI con `/api/resultados` y suma la carpeta de la spec 004 a la comprobación de mensajes, y la 9 deja de listar la ruta 12 como pendiente. `api-contracts.md`, la sección 9 de `frontend.md` con la forma definitiva de P6, `feature-index.md` con `resultados` en «contrato listo» y ADR-008 quedan al día.
+- Por qué: T011 de la spec 004 y FR-017, porque el contrato de la API se fija en el Front antes de implementar la ruta.
+- Lo que debe hacer, cómo se probó: la comprobación de mensajes de la sección 10, corrida con `BACK=back-004-feat FRONT=front-004-feat` desde `ABET_SIS_MED/wt`, da «0 mensajes de los escenarios sin contrato», ya con los dos `.feature` de la spec 004.
+- Lo que no debe hacer, cómo se probó: la misma comprobación da «1 mensajes del contrato sin escenario», el de la marca de entorno de T077, que ya daba en `develop` antes de la spec 004, así que la ruta 12 no suma ningún mensaje sin escenario. `git diff --stat` muestra solo `docs/`, esta memoria y el CHANGELOG, sin cambios en `src/`.
+- Correcciones: el ejemplo de la sección 12 ordenaba `parametros_pendientes` por orden alfabético, y ahora sigue el orden de la constancia (TRATO_SIN_EVIDENCIA, CORTE_ROJO y CONVERSION_NIVEL_0_1), el que usa la ruta 12 por BR-RESULTADOS-08. La sección 9 de `frontend.md` ya no duda entre la cabecera de P2 y la de `App.tsx`, porque el corte 2 trae la barra de navegación.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR de esta rama, que se abre con el permiso de Jefferson y cita el del Back.
+- Pendiente y siguiente paso: P6 y sus pruebas (T040 a T043) en esta rama.
 
 ### 2026-11-18 14:21 (Lima) · docs/004-reportes-docente · Spec 004 aprobada, con ADR-008 aceptado
 - Quién: Jefferson aprueba la spec 004 en el chat de la sesión principal con «Sí, apruébala», a la pregunta «¿Apruebas la propuesta de los gráficos por profesor?». La sesión principal transmite la cita, y Claude Code la comprueba en el registro de la sesión principal antes de escribir esta entrada, sin subagentes.
