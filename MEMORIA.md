@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-18
 - **Rama de trabajo**: `docs/004-reportes-docente`, que sale de `develop` (2a22fb3) y se actualiza con `develop` (f10fdc3) después del corte 2, con la documentación del sistema de la spec 004 del Back, en el PR #18
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: la actualización de esta rama con `develop`, que trae el corte 2 de la spec 001 del Back en este repositorio (PR #19), sin cambios en la documentación de la spec 004
-- **En curso**: el registro de la aprobación de la spec 004, que Jefferson da en el chat de la sesión principal el 2026-11-18, y la fusión del PR #18 después del PR #27 del Back. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
-- **Siguiente paso**: con la aprobación registrada, fusionar el PR #18 después del PR #27 del Back con la CI en verde; con la spec fusionada, T011 deja definitivo el contrato de la ruta 12. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
+- **Último cambio**: la aprobación de la spec 004 del Back, que Jefferson da en el chat el 2026-11-18 («Sí, apruébala»), con ADR-008 aceptado y la feature `resultados` aprobada en `feature-index.md`
+- **En curso**: la fusión del PR #18 después del PR #27 del Back, con la CI en verde. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
+- **Siguiente paso**: con las dos fusiones, T011 de la spec 004 deja definitivo el contrato de la ruta 12 en `feat/004-reportes-docente`. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, el corte 2 fusionado en `develop` con su PR #28 y la spec 004 en su rama `docs/004-reportes-docente`, en el PR #27)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 14:21 (Lima) · docs/004-reportes-docente · Spec 004 aprobada, con ADR-008 aceptado
+- Quién: Jefferson aprueba la spec 004 en el chat de la sesión principal con «Sí, apruébala», a la pregunta «¿Apruebas la propuesta de los gráficos por profesor?». La sesión principal transmite la cita, y Claude Code la comprueba en el registro de la sesión principal antes de escribir esta entrada, sin subagentes.
+- Qué cambió: ADR-008 pasa a «Aceptada y vigente» con fecha 2026-11-18 y deja de listar la aprobación en «Lo que todavía NO está», el índice de ADR quita su marca de propuesta y su deuda de aprobación, y `feature-index.md` da la feature `resultados` como aprobada. `CHANGELOG.md` deja de dar la documentación como en revisión, y la ruta 12 sigue como propuesta hasta que T011 la deje definitiva.
+- Por qué: el índice de ADR pasa cada ADR a «Aceptada y vigente» con la fusión de su spec, y la escala de `feature-index.md` da «aprobada» a la feature cuyo PR de spec entra a `develop`, lo que ocurre con el PR #27 del Back antes que este.
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff --stat HEAD~1` muestra solo ADR-008, el índice de ADR, `feature-index.md`, `CHANGELOG.md` y esta memoria, así que el contrato, `frontend.md` y `src/` no cambian.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, la descripción del PR #18, que suma la cita, y su fusión con «Create a merge commit» después del PR #27 del Back.
+- Pendiente y siguiente paso: con las dos fusiones, T011 de la spec 004 deja definitivo el contrato de la ruta 12 en `feat/004-reportes-docente`. Los seis ADR del MVP siguen en «Propuesta, pendiente de Jefferson» aunque la spec 001 ya está fusionada, y su cambio de estado queda para otro PR.
 
 ### 2026-11-18 14:21 (Lima) · docs/004-reportes-docente · Actualización con develop tras el corte 2
 - Quién: la sesión principal transmite la aprobación de la spec 004 que Jefferson da en su chat y pide poner al día esta rama y la del Back sin forzar el empuje. Claude Code, sin subagentes, integra `origin/develop` (f10fdc3) con un merge, resuelve `CHANGELOG.md` y `MEMORIA.md` y escribe esta entrada.

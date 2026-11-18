@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Estado** | Propuesta, pendiente de Jefferson (spec 004 del Back, en revisión) |
-| **Fecha** | 2026-11-17 |
+| **Estado** | Aceptada y vigente (spec 004 del Back, aprobada por Jefferson en el chat el 2026-11-18) |
+| **Fecha** | 2026-11-18 |
 | **Ámbito** | `GET /api/resultados` (ruta 12 de `docs/03-api/contrato.md`), `app/rutas/resultados.py`, `abet_carga/resultados.py`, `_plan_de_accion` de `abet_carga/r17.py`, `app/permisos.py` (sin cambios), los routers de `app/rutas/`, `src/pantallas/MisLogros.tsx` (P6), `src/servicios/api.ts`, la sección 3.4 del contrato y la vista `abet.v_r17_por_pi` |
 
 ## Decisión
@@ -85,7 +85,6 @@ node -e "const p = require('./package.json'); const d = { ...p.dependencies, ...
 
 ## Lo que todavía NO está
 
-1. **La aprobación de la spec 004**, con J-21 a J-28, que Jefferson da con la fusión de su PR o con su «apruebo» en el chat.
-2. **El código.** La ruta 12, P6 y la guardia de sesión por router no existen todavía, así que los criterios 1 a 3 esperan a la implementación.
-3. **Las decisiones de la carrera.** D-32 (consolidado y cifra por SO), D-33 (agregado del curso o de la carrera) y D-34 (descripción del instrumento) siguen abiertas.
-4. **Power BI para la coordinación**, con sus licencias, la región de su inquilino y una vista sin códigos de estudiante.
+1. **El código.** La ruta 12, P6 y la guardia de sesión por router no existen todavía, así que los criterios 1 a 3 esperan a la implementación.
+2. **Las decisiones de la carrera.** D-32 (consolidado y cifra por SO), D-33 (agregado del curso o de la carrera) y D-34 (descripción del instrumento) siguen abiertas.
+3. **Power BI para la coordinación**, con sus licencias, la región de su inquilino y una vista sin códigos de estudiante.

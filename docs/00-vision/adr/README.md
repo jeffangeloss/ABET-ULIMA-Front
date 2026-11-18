@@ -14,9 +14,9 @@ Un ADR se escribe aquí cuando la decisión (a) es difícil de revertir, (b) con
 | [ADR-004](ADR-004-sesion-propia-mismo-origen.md) | La sesión es propia, viaja en una cookie HttpOnly y el Front y la API comparten origen | J-03 (depende de J-02) | US-05, US-06, US-20 |
 | [ADR-005](ADR-005-r17-desde-la-vista.md) | El R-17 se genera desde `v_r17_por_pi` con valores calculados, sin fórmulas ni personas | D-08 y D-12 quedan abiertas | US-15, US-16 |
 | [ADR-006](ADR-006-historias-gherkin-auditadas.md) | Ninguna historia entra a la spec sin Gherkin en español y sin pasar la auditoría de refutación | J-09 (dónde corre la prueba de humo) | Todas |
-| [ADR-008](ADR-008-logros-por-pi-en-el-sistema.md) | Los logros por PI se muestran en el sistema desde `v_r17_por_pi`, con el alcance de cada usuario (propuesta, spec 004) | J-21 a J-26 de la spec 004 | US-37 a US-44 (spec 004) |
+| [ADR-008](ADR-008-logros-por-pi-en-el-sistema.md) | Los logros por PI se muestran en el sistema desde `v_r17_por_pi`, con el alcance de cada usuario (spec 004) | J-21 a J-26 de la spec 004 | US-37 a US-44 (spec 004) |
 
-ADR-007 queda para la spec 002 de Capstone, en revisión en la rama `docs/002-capstone`, y ADR-008 es una propuesta de la spec 004, en revisión en la rama `docs/004-reportes-docente`. Los dos pasan a «Aceptada y vigente» con la fusión de su spec.
+ADR-007 queda para la spec 002 de Capstone, en revisión en la rama `docs/002-capstone`, y pasa a «Aceptada y vigente» con la fusión de su spec. ADR-008 está aceptado y vigente desde el 2026-11-18, con la aprobación de la spec 004.
 
 La autoridad final está en las migraciones de la base y en la spec aprobada. Si un ADR contradice a una de las dos, el ADR está mal y se corrige con un ADR nuevo que lo reemplaza.
 
@@ -51,7 +51,7 @@ grep -n "Esperado" docs/00-vision/adr/ADR-*.md
 - ADR-004. Falta probar que la reescritura de rutas de Vercel conserva la cookie de primera parte.
 - ADR-005. La plantilla oficial del R-17 (D-08) sigue abierta, así que la plantilla vaciada es provisional.
 - ADR-006. Falta la prueba de 30 minutos de pytest-bdd con `# language: es`.
-- ADR-008. Sus criterios 1 a 3 esperan el código de la spec 004, y la decisión espera la aprobación de Jefferson (J-21 a J-26).
+- ADR-008. Sus criterios 1 a 3 esperan el código de la spec 004.
 
 ## Lo que todavía NO está
 
