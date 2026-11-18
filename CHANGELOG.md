@@ -7,6 +7,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 ### Cambiado
 
 - `docs/05-operacion/entornos-y-despliegue.md` registra la versión 0.1.0 en Production, la decisión J-07 en Hobby y el entrenamiento de IA del equipo de Vercel, que sigue encendido (T079 y T070 de la spec 001 del Back).
+- jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1, todos con al menos 14 días publicados, en un solo cambio que reemplaza los PR de Dependabot #5, #6, #9 y #12. El bundle de producción sale idéntico al de `develop`.
 
 ## [0.1.0] - 2026-11-17
 

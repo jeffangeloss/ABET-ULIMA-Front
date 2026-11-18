@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-17
-- **Rama de trabajo**: `docs/001-version-0.1.0`, que sale de `develop` (35a4266) con el registro de la versión en Production
+- **Rama de trabajo**: `chore/dependencias-dependabot`, que sale de `develop` (67a04af) con los cuatro saltos de Dependabot
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: Production del Front sale de `main` con la versión 0.1.0, y su reescritura lleva `/api` al Back de Production (T076 y T079 de la spec 001 del Back)
-- **En curso**: nada de la versión 0.1.0
-- **Siguiente paso**: los PR de Dependabot, que esperaban a la versión, y lo pendiente de US-17 en `audit.md` del Back
+- **Último cambio**: jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1 en un solo cambio, que reemplaza los PR de Dependabot #5, #6, #9 y #12, con el bundle de producción idéntico al de `develop`
+- **En curso**: el PR de esta rama, que Jefferson aprueba en el chat fusionar con la CI en verde
+- **Siguiente paso**: al fusionar, cerrar los cuatro PR de Dependabot con su razón y seguir con lo pendiente de US-17 en `audit.md` del Back
 - **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-17 18:25 (Lima) · chore/dependencias-dependabot · jsdom, vitest, vite y `@vitejs/plugin-react` en un solo cambio (PR de Dependabot #5, #6, #9 y #12)
+- Quién: Claude Code, por el encargo de la sesión principal de Jefferson del 2026-11-17, aplica los cuatro saltos en un solo cambio, corre las pruebas y escribe esta entrada. Jefferson aprueba en el chat empujar las ramas del Front y del Back, fusionarlas con la CI en verde y cerrar los diez PR de Dependabot. Un subagente (Sonnet, esfuerzo medio) lee en solo lectura las notas de cada versión, las fechas del registro de npm, la base de avisos de GitHub y los diffs de los cuatro PR. Claude Code vuelve a tomar con `npm view` las fechas de los nueve paquetes del lockfile nuevo antes de aceptar su informe.
+- Qué cambió: `package.json` fija jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1. En `package-lock.json` cambian además cinco dependencias que solo usan las pruebas, `@asamuzakjp/dom-selector` de 9.2.4 a 10.0.5, porque jsdom 30.1.3 pide ^10.0.3, `@vitest/mocker` y `@vitest/spy` a 5.0.5, magic-string a 1.4.5 dentro de `@vitest/mocker` y `@types/estree` a 1.0.10, que pide su estree-walker.
+- Por qué: los PR de Dependabot #5, #6, #9 y #12, que Jefferson deja para después de la versión 0.1.0. Van juntos porque #9 choca con #6 y #12 con #5 en `package.json` y `package-lock.json`. Cada lockfile de Dependabot agrega además los mismos seis paquetes anidados de `@tailwindcss/oxide-wasm32-wasi`, que el npm local no escribe, así que un solo cambio evita cuatro rebases y las entradas sobrantes.
+- Lo que debe hacer, cómo se probó: `npm ci --ignore-scripts` instala el lockfile nuevo, `npm test` da 9 archivos y 85 pruebas aprobadas, igual que en `develop`, y `npm run build` compila sin errores. El bundle sale idéntico al de `develop`, con los mismos `index-D0rec67o.js` e `index-5cA2jNHI.css`, así que la vista previa y Production no reciben código distinto.
+- Lo que no debe hacer, cómo se probó: `npm install --before=2026-11-03T23:00:00Z` no admite ninguna versión con menos de 14 días, y `npm view` fecha los nueve paquetes entre el 2026-10-15 y el 2026-11-02. La base de avisos de GitHub no trae avisos vigentes para las versiones nuevas ni para las dependencias de `package.json`, de modo que ningún salto corrige una vulnerabilidad conocida.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama, que reemplaza los PR #5, #6, #9 y #12.
+- Pendiente y siguiente paso: al fusionar el PR, se cierran los cuatro PR de Dependabot con un comentario que remite a él. Como el bundle no cambia, la prueba de la vista previa de `develop` hace falta solo por el Back.
 
 ### 2026-11-17 17:45 (Lima) · docs/001-version-0.1.0 · Versión 0.1.0 en Production (T076 y T079 de la spec 001 del Back)
 - Quién: Jefferson autoriza en el chat empujar y fusionar cada PR con la CI en verde, y corre `ABET_SIS_MED/herramientas_neon/comprobar_version.sh`, que le pide las contraseñas. Claude Code fusiona el PR de versión, comprueba Production y escribe esta entrada. El subagente revisor del registro del Back (Sonnet, esfuerzo medio) revisa también este cambio en solo lectura y marca la sección 2.2 de `entornos-y-despliegue.md`, que daba el entrenamiento de IA por desactivado, y la fuente de los términos de marzo de 2026, y las dos se corrigen.
