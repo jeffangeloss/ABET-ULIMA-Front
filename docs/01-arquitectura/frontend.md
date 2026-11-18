@@ -137,6 +137,55 @@ Vitest con Testing Library (`npm test`) cubre cada pantalla en lo que debe mostr
 5. **Los textos marcados «(propuesta)».** Los avisos de la carga quedan fuera de esa lista desde la confirmación del 2026-10-29. Ninguna decisión de la spec los fija todavía, aunque algunos ya figuran en un `.feature`, y se confirman con la revisión de las specs vivas `acceso`, `periodo`, `carga-export` y `r17`.
 6. **Lectura de Username en el navegador antes de enviar.** La crítica de arquitectura la propone y ninguna historia del MVP la pide, así que no está.
 
+## 9. Spec 004, logros por SO (propuesta)
+
+> **Estado 2026-11-17.** Propuesta de la spec 004 del Back (`specs/004-reportes-docente/`), en revisión, que pasa a definitiva con su tarea T011 después de la aprobación de Jefferson. La sección 8 queda para la spec 002 de Capstone, que espera su aprobación en la rama `docs/002-capstone`. Nada de esta sección existe todavía en `src/`, y las secciones 1 a 7 siguen describiendo lo construido.
+
+### 9.1 Qué cambia en `src/`
+
+```
+src/
+  pantallas/
+    MisLogros.tsx          P6 Mis logros por SO (nuevo, propuesta)
+    MisSecciones.tsx       P2, + enlace «Ver mis logros por SO» si la cabecera de App.tsx no lo trae
+    ResultadoCarga.tsx     P4, + enlace «Ver mis logros por SO» en una carga PUBLICADA
+  servicios/
+    api.ts                 + obtenerResultados(periodo) para GET /api/resultados (contrato, sección 12)
+    tipos.ts               + Resultados, SeccionConLogros e Indicador
+  App.tsx                  + vista logros
+tests/
+  pantallas/MisLogros.test.tsx   pruebas de P6 (nuevo)
+```
+
+El enlace a P6 va una sola vez en la cabecera. Si la barra de navegación de `App.tsx` del corte 2 de la spec 001 ya existe al implementar, el enlace se suma a ella, y si no, va en la cabecera de P2. El texto «Ver mis logros por SO» (propuesta) no se parece a «Ver resultado», que abre P4.
+
+### 9.2 P6 Mis logros por SO
+
+| Pantalla | Archivo | Historias que la justifican | Rutas que consume | Spec |
+|---|---|---|---|---|
+| P6 Mis logros por SO | `pantallas/MisLogros.tsx` | US-37 a US-44 de la spec 004 | `GET /api/resultados` (sección 12 del contrato) y el enlace a `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | 004 |
+
+Muestra los logros del periodo vigente agrupados por resultado del estudiante (student outcome, SO), cada grupo con la descripción del SO que trae la API. Dentro de cada grupo hay una fila por indicador de desempeño (performance indicator, PI) y sección, con su texto completo, como «5.1 · Sección 412 de 450002 · 81,8 % (9 de 11) · En la meta» o «Debajo de la meta» (propuestas). La barra de cada fila tiene el ancho del porcentaje en `style`, lleva `aria-hidden` y marca la meta con una línea y con el texto «Meta 80 %» (propuesta), de modo que ningún estado depende solo del color. La barra apilada de los niveles escribe sus cuatro conteos, como «Nivel 1: 1, Nivel 2: 2, Nivel 3: 5, Nivel 4: 3» (propuesta). P6 no usa biblioteca de gráficos (ADR-008).
+
+Cada sección con carga lleva su marca provisional, con el texto que corresponde a `conjunto_reglas_estado`, «Resultados provisionales. Las reglas de la carrera (conjunto R-2026-BORRADOR) aún no están aprobadas. No usar como evidencia oficial.» (propuesta) o el del conjunto aprobado que no define todos sus parámetros, y ofrece «Descargar R-17 de la sección 412 de 450002» (propuesta), que apunta a la ruta del R-17 de su carga.
+
+Lo que no se mide se escribe y no se dibuja. Una sección sin carga dice «Sin carga publicada» (propuesta), y un PI sin calificaciones dice «Sin calificaciones (11 sin evidencia)» (propuesta) y nunca muestra 0 %. Un PI con estudiantes sin evidencia escribe sus dos porcentajes, como «60,0 % de los calificados (6 de 10) y 54,5 % del total (6 de 11), 1 sin evidencia» (propuesta). Mientras la API responde, P6 dice «Cargando sus logros…», sin respuesta del servicio dice «El servicio no respondió. Intente de nuevo.» y con la lista vacía dice «No tiene secciones asignadas en este periodo.», todos propuestas. Un 401 vuelve a P1, como en las demás pantallas.
+
+El coordinador abre P6 con «Ver los logros por SO de la carrera» (propuesta) y ve las secciones de toda la carrera agrupadas por asignatura, cada una en el orden de su número y nunca por su porcentaje, para que P6 no arme un ranking de docentes (H05).
+
+No muestra códigos ni nombres de estudiantes, correos ni nombres de profesores, el botón «Subir export», que sigue solo en P2, un consolidado de varias secciones ni una cifra por SO (D-32), el agregado del curso o de la carrera (D-33), periodos anteriores, la descripción del instrumento (D-34) ni un filtro. P6 no escribe en `localStorage` ni en `sessionStorage`. P2 y P4 siguen sin mostrar porcentajes, como dicen sus secciones.
+
+### 9.3 Pruebas
+
+Vitest con Testing Library prueba en `tests/pantallas/MisLogros.test.tsx` cada escenario `@delegado_a_vitest` de `specs/004-reportes-docente/aceptacion/` del Back, con las respuestas del contrato dentro de las pruebas. Busca cada fila por su rol y su texto, comprueba `aria-hidden` en la barra, la ausencia de «Subir export» y de cualquier «0 %» en un PI sin calificaciones, y que el almacenamiento del navegador queda vacío. La prueba de humo con Playwright (T043 de la spec 004) abre P6 en la vista previa de `develop` después de la subida de la 410, compara sus cifras con el R-17 de esa carga y comprueba que `docente411@example.invalid` no ve la 410.
+
+### 9.4 Lo que todavía NO está
+
+1. **La aprobación de la spec 004**, con J-21 a J-28.
+2. **P6 y su código**, que llegan con la fase 4 de la spec 004.
+3. **Las decisiones de la carrera** D-32, D-33 y D-34, que fijan el consolidado, el agregado del curso y la descripción del instrumento.
+4. **Una revisión automática de accesibilidad**, como axe, que sigue fuera, como dice la sección 7.
+
 ## Referencias
 
 - [`03-api/contrato.md`](../03-api/contrato.md), las rutas que consume cada pantalla, con sus errores y sus mensajes literales. La sección 10 del contrato comprueba que esos mensajes coinciden con los de los escenarios.

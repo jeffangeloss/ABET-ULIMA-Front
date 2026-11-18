@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-17
-- **Rama de trabajo**: `docs/003-cierre`, que sale de `develop` (7f6c72b) con el cierre de la spec 003 del Back en este repositorio
+- **Rama de trabajo**: `docs/004-reportes-docente`, que sale de `develop` (2a22fb3) con la documentación del sistema de la spec 004 del Back
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: la parte del Front de T053 y T061 de la spec 003 del Back, con la suite y la compilación de `develop` en verde y esta memoria al día después de fusionar el PR #16
-- **En curso**: los escenarios pendientes de US-17 en `audit.md` del Back. El del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal. En otras sesiones avanzan `feat/001-corte-2` (corte 2 de la spec 001) y `docs/004-reportes-docente` (spec 004)
-- **Siguiente paso**: con el permiso de Jefferson, empujar esta rama y abrir su PR junto con el de `docs/003-cierre` del Back
-- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`)
+- **Último cambio**: la documentación de la spec 004, los logros del profesor por resultado del estudiante (student outcome, SO), con ADR-008, la ruta 12 del contrato, la pantalla P6 en `frontend.md` y la fila `resultados`, en local y sin código
+- **En curso**: la aprobación de la spec 004 por Jefferson, con los PR de esta rama y de la del Back que se abren solo con su permiso; en otra sesión, el corte 2 de la spec 001 (`feat/001-corte-2`), que edita `docs/01-arquitectura/frontend.md`, `src/App.tsx` y `e2e/humo.spec.ts`. Siguen los escenarios pendientes de US-17 en `audit.md` del Back. El del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
+- **Siguiente paso**: con el permiso de Jefferson, empujar esta rama y abrir su PR a `develop`, que cita el PR de la spec 004 del Back; con la aprobación, T011 de la spec 004 deja definitivo el contrato de la ruta 12. Sigue lo pendiente de US-17 en `audit.md` del Back
+- **Bloqueos**: D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la spec 004 en su rama `docs/004-reportes-docente`)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-17 23:57 (Lima) · docs/004-reportes-docente · Documentación del sistema para la spec 004 de los logros del profesor por SO (en local)
+- Quién: Claude Code, en la misma sesión que escribe la spec 004 del Back. La entrada de la misma fecha en `MEMORIA.md` del Back nombra los subagentes que auditan las historias y las decisiones técnicas. En el Front no participa ningún subagente, y Claude Code escribe los documentos a partir de la spec y de la crítica de arquitectura.
+- Qué cambió: `docs/00-vision/adr/ADR-008-logros-por-pi-en-el-sistema.md` es nuevo, en propuesta, con su fila y su deuda en el índice de ADR. `docs/03-api/contrato.md` suma la fila de la ruta 12, una nota en la sección 3.4, un punto en la sección 9 y la sección 12 con `GET /api/resultados`. `docs/specs/api-contracts.md` suma su fila, `docs/01-arquitectura/frontend.md` suma la sección 9 con P6 «Mis logros por SO» y `docs/specs/feature-index.md` suma la fila `resultados`. Ningún archivo de `src/` ni de las pruebas cambia.
+- Por qué: FR-017 de la spec 004 y el método del proyecto piden el contrato y la pantalla en el Front antes de implementar, y la regla 3 de `AGENTS.md` pide que cada pantalla nombre las historias que la justifican, que son US-37 a US-44.
+- Lo que debe hacer, cómo se probó: la comprobación de la sección 10 del contrato, corrida desde `ABET_SIS_MED/wt` con `BACK=back-004 FRONT=front-004`, da 0 mensajes de los escenarios sin contrato, también con la carpeta de la spec 004 sumada a su lectura. `bash scripts/preflight.sh --staged` termina sin fallas con esta memoria.
+- Lo que no debe hacer, cómo se probó: la misma comprobación da 1 mensaje del contrato sin escenario, el de la marca de entorno de T077, que ya daba `develop` antes del cambio, así que los textos nuevos, todos con la marca (propuesta), no suman ninguno. La ruta 12 y la sección 12 no chocan con la ruta 11 y la sección 11 de la spec 002, ni la sección 9 de `frontend.md` con su sección 8. Las secciones 1 a 7 de `frontend.md`, que edita el corte 2 en otra sesión, no cambian.
+- Correcciones: el borrador numeraba 11 la ruta nueva, que la spec 002 de la rama `docs/002-capstone` ya usa, y pasa a 12.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR de esta rama, que cita el de la spec 004 del Back, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: la aprobación de Jefferson y T011, que deja definitivos la sección 3.4, la cuenta de caminos de OpenAPI de la sección 10 y la lectura de la carpeta de la spec 004 en la comprobación de mensajes. El mensaje de la marca de entorno sin escenario queda para su propia corrección.
 
 ### 2026-11-17 23:30 (Lima) · docs/003-cierre · Cierre de la spec 003 del Back en el Front (T053 y T061)
 - Quién: Jefferson aprueba en el chat empezar a cerrar lo que queda de la versión 0.1.0 («Sí, empieza»). Claude Code corre en un worktree de `develop` la parte del Front de T053 y escribe esta entrada. En el flujo de agentes wf_844270c1-e83, un verificador (Sonnet, esfuerzo medio) corre `tests/pantallas/SubirExport.test.tsx` con `--reporter=verbose` y otro (Sonnet, esfuerzo medio) revisa la memoria y el registro de cambios de los commits de la spec 003 de este repositorio. Claude Code compara sus cifras con los registros de la corrida antes de aceptarlas.

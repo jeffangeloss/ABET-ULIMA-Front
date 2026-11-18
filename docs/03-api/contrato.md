@@ -28,6 +28,7 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 | 8 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | 200 | Lista las cargas al alcance del usuario | US-19 | BR-CARGA-20 | 2 |
 | 9 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | 201 | Reemplaza la carga publicada en una transacción | US-18 | BR-CARGA-19 | 2 |
 | 10 | POST | `/api/sesion/codigo` | No | 202 | Envía el código de acceso al correo, con la misma respuesta exista o no | US-20 | BR-ACCESO-09 | 2 |
+| 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (propuesta, sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-NN, BR-ACCESO-07 y BR-ACCESO-10 (propuesta) | spec 004 |
 
 ## 3. Convenciones
 
@@ -69,7 +70,7 @@ Toda respuesta de `/api`, de éxito o de error, lleva `Cache-Control: no-store`,
 
 ### 3.4 Horas y cifras
 
-Las horas viajan en el formato de la norma ISO 8601 de la Organización Internacional de Normalización (International Organization for Standardization), con el desfase de Lima (`2026-10-28T10:15:00-05:00`) y el Front las muestra en hora de Lima. Los porcentajes no viajan por la API, porque viven solo en el R-17.
+Las horas viajan en el formato de la norma ISO 8601 de la Organización Internacional de Normalización (International Organization for Standardization), con el desfase de Lima (`2026-10-28T10:15:00-05:00`) y el Front las muestra en hora de Lima. Los porcentajes no viajan por la API, porque viven solo en el R-17. La spec 004 del Back, en revisión, propone que la ruta 12 lleve los logros de `abet.v_r17_por_pi` con su decimal y `en_meta` (ADR-008, propuesta). Si Jefferson la aprueba, la frase anterior sigue valiendo para las rutas 1 a 10, y la ruta 12 lleva los porcentajes de la vista sin que el Front los recalcule (T011 de la spec 004).
 
 ## 4. Sesión
 
@@ -317,6 +318,7 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 3. **Una ruta de salud** (`/api/salud`) para la prueba de humo y el monitoreo, que ninguna historia pide.
 4. **Los nombres de los esquemas Pydantic**, que se fijan con el código.
 5. **El plazo del reemplazo (D-11).** Quién reemplaza está decidido para el corte 2, y hasta cuándo sigue abierto.
+6. **La ruta 12 de la spec 004** (sección 12), en revisión. Cuando Jefferson la apruebe, la sección 10 suma `/api/resultados` a su cuenta de caminos y la carpeta `specs/004-reportes-docente/aceptacion/` a su comprobación de mensajes (T011 de la spec 004).
 
 ## 10. Cómo verificar este documento
 
@@ -376,3 +378,84 @@ for texto in sobran:
     print("  -", texto)
 PY
 ```
+
+## 12. Rutas de la spec 004, logros por SO (propuesta, spec 004)
+
+> **Estado 2026-11-17.** Propuesta de la spec 004 del Back (`specs/004-reportes-docente/`), en revisión, que pasa a definitiva con su tarea T011 después de la aprobación de Jefferson. La sección 11 queda para las rutas de la spec 002 de Capstone, que esperan su aprobación en la rama `docs/002-capstone`, y por eso esta ruta lleva el número 12.
+
+### 12.1 Resumen
+
+| # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Corte |
+|---|---|---|---|---|---|---|---|---|
+| 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por resultado del estudiante (student outcome, SO) y por indicador de desempeño (performance indicator, PI) de las secciones al alcance del usuario | US-37 a US-44 (spec 004) | BR-RESULTADOS-NN, BR-ACCESO-07 y BR-ACCESO-10 (propuesta) | spec 004 |
+
+### 12.2 `GET /api/resultados?periodo=2026-2`: logros por SO de las secciones al alcance (propuesta, spec 004)
+
+Sin cuerpo y sin identificadores de sección ni de carga (J-23 de la spec 004). Sin `periodo`, la ruta usa `PERIODO_VIGENTE`, y un `seccion_id` u otro parámetro que la ruta no declara no cambia la respuesta. La pantalla P6 «Mis logros por SO» (propuesta) es la única que la consume.
+
+```jsonc
+// Respuesta 200 recortada para docente.varias@example.invalid, con la 412 de 450002 publicada y la 410 de
+// 450010 sin carga (propuesta, spec 004). Los identificadores son de ejemplo y salen siempre de la API.
+{
+  "periodo": "2026-2",
+  "so": [
+    { "numero": 2, "descripcion": "Habilidad para aplicar diseños de ingeniería …" },
+    { "numero": 5, "descripcion": "Habilidad para trabajar efectivamente en un equipo …" }
+  ],
+  "secciones": [
+    {
+      "seccion_id": 3,
+      "asignatura": { "codigo": "450002", "nombre": "Principios de Ingeniería Sostenible" },
+      "numero": "412",
+      "estado": "PUBLICADA",
+      "carga_id": 9,
+      "pi": ["5.1", "5.2", "5.3"],
+      "conjunto_reglas": "R-2026-BORRADOR",
+      "conjunto_reglas_estado": "BORRADOR",
+      "parametros_pendientes": ["CONVERSION_NIVEL_0_1", "CORTE_ROJO", "TRATO_SIN_EVIDENCIA"],
+      "provisional": true,
+      "indicadores": [
+        {
+          "so": 5, "pi": "5.1", "instrumento": "Trabajo Integrador", "nivel_esperado": 3,
+          "estudiantes_por_nivel": [1, 1, 5, 4], "logrados": 9, "calificados": 11, "sin_evidencia": 0, "total": 11,
+          "pct_sobre_calificados": 81.8, "pct_sobre_total": 81.8, "meta_pct": 80.0, "en_meta": true
+        }
+      ]
+    },
+    {
+      "seccion_id": 4,
+      "asignatura": { "codigo": "450010", "nombre": "Gestión Sostenible de Residuos" },
+      "numero": "410",
+      "estado": "SIN_CARGA",
+      "carga_id": null,
+      "pi": ["2.1", "2.2", "5.1"],
+      "conjunto_reglas": null,
+      "conjunto_reglas_estado": null,
+      "parametros_pendientes": null,
+      "provisional": null,
+      "indicadores": []
+    }
+  ]
+}
+```
+
+Reglas y por qué existen.
+
+- El alcance sale solo de `app/permisos.secciones_visibles()`, el único dueño de la regla de visibilidad (BR-ACCESO-07). El profesor recibe las secciones de `acceso.docente_seccion` y el coordinador todas las de la carrera, sin filas propias. La ruta no recibe identificadores, así que no tiene un caso 403 propio.
+- Cada router con datos exige la sesión, y una prueba recorre las rutas registradas con una lista cerrada de rutas públicas (BR-ACCESO-10, propuesta, J-25).
+- Las cifras salen de `abet.v_r17_por_pi` por el `carga_id` de la carga PUBLICADA de cada sección, en una sola instantánea, y son las del bloque II del R-17 de esa carga (ADR-008, invariante 1). `estudiantes_por_nivel` son `n_nivel_1` a `n_nivel_4`, `logrados` es `n_esperado_o_superior`, `calificados` es `n_total` menos `n_sin_evidencia`, `pct_sobre_calificados` es `pct_logro_sobre_calificados`, `pct_sobre_total` es `pct_logro_sobre_total_con_sin_evidencia` y `meta_pct` es `meta_logro_pct`.
+- Los porcentajes y la meta viajan como números JSON de un decimal, y un nulo de la vista viaja como `null`, nunca como 0.
+- `en_meta` es verdadero si `pct_sobre_calificados` es mayor o igual que `meta_pct`, falso si es menor y nulo si falta alguno, con la misma función del plan de acción del R-17. El Front no compara cifras.
+- Las secciones van por código de asignatura y número de sección, nunca por resultado, y los indicadores por número de SO y número de PI, así que el 5.10 va después del 5.2. `so` trae cada SO que mide el plan de alguna sección de la respuesta.
+- Una sección sin carga PUBLICADA llega con `estado` «SIN_CARGA», `carga_id` nulo, los PI de su plan en `pi` e `indicadores` vacío, también si sus cargas están todas RECHAZADAS.
+- La marca provisional va por sección, con los campos del conjunto de reglas de la constancia (BR-R17-10).
+- La respuesta trae solo las claves del ejemplo. Ninguna parte trae `subida_por`, `nombre_archivo`, `sha256`, `trato_sin_evidencia` ni `pct_logro_segun_regla`, ni un código o un nombre de estudiante. Lleva `Cache-Control: no-store`, como toda `/api`.
+
+Errores 401 con «La sesión venció. Ingrese otra vez.» (propuesta), sin cookie, con la sesión vencida o con el usuario dado de baja, y 422 con «El periodo no tiene la forma AAAA-C.» (propuesta). Un periodo bien formado sin secciones del usuario responde 200 con `so` y `secciones` vacíos.
+
+### 12.3 Lo que esta sección no cubre
+
+1. **El consolidado de varias secciones y una cifra por SO**, que esperan a D-32 de la spec 004.
+2. **El agregado del curso o de la carrera junto al resultado del profesor**, que espera a D-33.
+3. **La descripción del instrumento de medición**, que espera a D-34 y a J-27.
+4. **La paginación.** La ruta no pagina, y la spec 004 fija un techo de prueba de 150 secciones para el coordinador, con respuesta en menos de 1 s sin el arranque en frío de Neon (SC-005 de la spec 004).

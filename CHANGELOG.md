@@ -4,6 +4,10 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+### Agregado
+
+- Documentación del sistema de la spec 004 del Back, los logros del profesor por SO, en revisión. Son ADR-008 (propuesta), la ruta 12 `GET /api/resultados` en la sección 12 de `docs/03-api/contrato.md` y en `docs/specs/api-contracts.md`, la pantalla P6 «Mis logros por SO» en la sección 9 de `docs/01-arquitectura/frontend.md` y la fila `resultados` de `docs/specs/feature-index.md`. Ningún código cambia.
+
 ### Cambiado
 
 - `docs/05-operacion/entornos-y-despliegue.md` registra la versión 0.1.0 en Production, la decisión J-07 en Hobby y el entrenamiento de IA del equipo de Vercel, que sigue encendido (T079 y T070 de la spec 001 del Back).
