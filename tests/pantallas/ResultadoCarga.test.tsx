@@ -8,8 +8,10 @@ import {
   constanciaConError,
   constanciaLimpia,
   constanciaOtraSeccion,
+  constanciaReemplazada,
   constanciaSinColumna,
   constanciaSinFilasAceptadas,
+  constanciaVigenteQueReemplaza,
   SHA,
 } from "../respuestas";
 
@@ -149,5 +151,37 @@ describe("P4 Resultado de la carga", () => {
   it("muestra el rótulo del piloto", () => {
     montar(constanciaConError);
     expect(screen.getByText("Solo exports con códigos inventados (99000000 a 99999999)")).toBeInTheDocument();
+  });
+  it("sin reemplazo la constancia no trae las filas de reemplazo", () => {
+    montar(constanciaConError);
+    const constancia = screen.getByRole("region", { name: "Constancia" });
+    expect(within(constancia).queryByText("Reemplaza a la carga")).toBeNull();
+    expect(within(constancia).queryByText("Reemplazada por la carga")).toBeNull();
+  });
+
+  it("la carga vigente que reemplaza a otra lo dice en la constancia y ofrece el R-17", () => {
+    montar(constanciaVigenteQueReemplaza);
+    const constancia = screen.getByRole("region", { name: "Constancia" });
+    const termino = within(constancia).getByText("Reemplaza a la carga");
+    expect(termino.nextElementSibling).toHaveTextContent("10");
+    expect(within(constancia).queryByText("Reemplazada por la carga")).toBeNull();
+    expect(screen.getByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/11/r17.xlsx");
+  });
+
+  it("una carga REEMPLAZADA nombra a su sucesora como la publicada y no ofrece el R-17", () => {
+    montar(constanciaReemplazada);
+    expect(screen.getByText("Reemplazada")).toBeInTheDocument();
+    expect(screen.getByText("11 filas leídas, 10 aceptadas y 1 rechazada")).toBeInTheDocument();
+    const constancia = screen.getByRole("region", { name: "Constancia" });
+    expect(within(constancia).getByText("Reemplazada por la carga").nextElementSibling).toHaveTextContent("11");
+    expect(screen.getByText("La carga 11 la reemplaza, así que esta carga no tiene R-17.")).toBeInTheDocument();
+    expect(screen.queryByText("No hay una carga publicada para esta sección")).toBeNull();
+    expect(screen.queryByRole("link", { name: "Descargar R-17" })).toBeNull();
+  });
+
+  it("una carga REEMPLAZADA sin sucesora conocida conserva el texto de la carga no publicada", () => {
+    montar({ ...constanciaReemplazada, reemplazada_por: null });
+    expect(screen.getByText("No hay una carga publicada para esta sección")).toBeInTheDocument();
+    expect(screen.queryByText(/la reemplaza, así que/)).toBeNull();
   });
 });

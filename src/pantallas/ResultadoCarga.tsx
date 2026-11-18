@@ -6,7 +6,7 @@ import { TablaRechazos } from "../componentes/TablaRechazos";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, obtenerCarga, urlR17 } from "../servicios/api";
-import { horaDeLima } from "../servicios/formato";
+import { horaDeLima, resumenFilas } from "../servicios/formato";
 import type { Constancia, EstadoCarga } from "../servicios/tipos";
 
 interface Props {
@@ -22,13 +22,6 @@ const ETIQUETA_ESTADO: Record<EstadoCarga, string> = {
   EN_CURSO: "En curso",
   REEMPLAZADA: "Reemplazada",
 };
-
-function resumen(c: Constancia): string {
-  const leidas = c.filas_leidas === 1 ? "1 fila leída" : `${c.filas_leidas} filas leídas`;
-  const aceptadas = c.filas_aceptadas === 1 ? "1 aceptada" : `${c.filas_aceptadas} aceptadas`;
-  const rechazadas = c.filas_rechazadas === 1 ? "1 rechazada" : `${c.filas_rechazadas} rechazadas`;
-  return `${leidas}, ${aceptadas} y ${rechazadas}`;
-}
 
 /** P4. Estado y conteos, rechazos, avisos aparte, constancia y descarga. Nunca un valor leído ni un nombre. */
 export function ResultadoCarga({ cargaId, constanciaInicial, alVolver }: Props) {
@@ -57,7 +50,7 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver }: Props) 
           <p>
             Estado de la carga: <strong>{ETIQUETA_ESTADO[constancia.estado]}</strong>
           </p>
-          <p className="mt-1">{resumen(constancia)}</p>
+          <p className="mt-1">{resumenFilas(constancia)}</p>
           {constancia.mensaje && <Mensaje tipo={constancia.estado === "PUBLICADA" ? "aviso" : "error"}>{constancia.mensaje}</Mensaje>}
           <TablaRechazos rechazos={constancia.rechazos} />
           <AvisosCarga avisos={constancia.avisos} />
@@ -78,12 +71,26 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver }: Props) 
               <dd>{horaDeLima(constancia.iniciada_en)}</dd>
               <dt className="font-medium">Fin</dt>
               <dd>{horaDeLima(constancia.terminada_en)}</dd>
+              {constancia.reemplaza_carga_id !== null && (
+                <>
+                  <dt className="font-medium">Reemplaza a la carga</dt>
+                  <dd>{constancia.reemplaza_carga_id}</dd>
+                </>
+              )}
+              {constancia.reemplazada_por !== null && (
+                <>
+                  <dt className="font-medium">Reemplazada por la carga</dt>
+                  <dd>{constancia.reemplazada_por}</dd>
+                </>
+              )}
             </dl>
           </section>
           {constancia.estado === "PUBLICADA" ? (
             <a className={boton} href={urlR17(constancia.carga_id)}>
               Descargar R-17
             </a>
+          ) : constancia.estado === "REEMPLAZADA" && constancia.reemplazada_por !== null ? (
+            <p>La carga {constancia.reemplazada_por} la reemplaza, así que esta carga no tiene R-17.</p>
           ) : (
             <p>No hay una carga publicada para esta sección</p>
           )}

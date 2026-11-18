@@ -12,12 +12,12 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-17
-- **Rama de trabajo**: `feat/001-corte-2`, que sale de `develop` (7f6c72b) con el corte 2 de la spec 001 del Back (US-18, US-19 y US-21), en el worktree `ABET_SIS_MED/wt/front-corte2`
+- **Fecha**: 2026-11-18
+- **Rama de trabajo**: `feat/001-corte-2`, que sale de `develop` (7f6c72b) con el corte 2 de la spec 001 del Back (US-18, US-19 y US-21), en el worktree `ABET_SIS_MED/wt/front-corte2`, todavía sin empujar
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: `docs/03-api/contrato.md` fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo, la lista de cargas, la confirmación de la sección y los campos nuevos de la constancia, antes de su código
-- **En curso**: P5 Cargas, el reemplazo y la confirmación de la sección en P3 (T085), con sus pruebas de Vitest y la prueba de humo del reemplazo (T087 del Back)
-- **Siguiente paso**: terminar T085 en esta rama, correr `npm test`, `npm run build` y la prueba de humo contra el Back del corte 2 en local, y abrir el PR solo con el permiso de Jefferson
+- **Último cambio**: P5 Cargas, el reemplazo y la confirmación de la sección en P3 y las filas del reemplazo en P4 (T085), con 139 pruebas de Vitest y la prueba de humo del reemplazo, que pasa en local contra el Back del corte 2
+- **En curso**: nada en este repositorio; la rama espera el permiso de Jefferson para empujarla y abrir su PR, junto con la del Back
+- **Siguiente paso**: con ese permiso, empujar las dos ramas, abrir los PR a `develop` (el Back primero), fusionarlos con la CI en verde y correr la prueba de humo contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la rama `feat/001-corte-2` del mismo corte)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 00:15 (Lima) · feat/001-corte-2 · P5 Cargas, reemplazo y confirmación de la sección en P3 (T085 de la spec 001 del Back)
+- Quién: Claude Code, en la sesión lateral del corte 2. Un subagente con el modelo de la sesión y esfuerzo medio implementa T085 con las pruebas de Vitest escritas antes que el código, sobre el contrato del commit anterior, y no hace commit. Claude Code revisa su diff completo, corrige el texto de P4 que el mismo subagente señala como posiblemente falso, cambia el nombre con que la prueba de humo guarda el R-17, corre las comprobaciones y escribe esta entrada. Otro subagente, con el modelo de la sesión y esfuerzo alto, revisa en solo lectura el diff de los dos repositorios y no halla defectos de severidad alta ni media.
+- Qué cambió: `src/pantallas/Cargas.tsx` (P5) es nuevo, y cambian `SubirExport.tsx` (P3, con el modo reemplazo, la pregunta del 409 y la del 422), `ResultadoCarga.tsx` (P4), `App.tsx` (vista de P5 y botones de la cabecera), `servicios/api.ts`, `servicios/tipos.ts` y `servicios/formato.ts`, con sus pruebas en `tests/` y el nuevo `tests/pantallas/Cargas.test.tsx`. `e2e/humo.spec.ts` suma el reemplazo en P5, `docs/01-arquitectura/frontend.md` describe las pantallas del corte 2 y `docs/03-api/contrato.md` precisa que el 200 del mismo archivo manda aunque `reemplaza` nombre otra carga.
+- Por qué: T085 y T087 de la spec 001 del Back, para US-18 (reemplazo), US-19 (lista de cargas) y US-21 (confirmación de la sección), con BR-CARGA-18 a 20. P1 no cambia, porque el código por correo (US-20) espera a T018.
+- Lo que debe hacer, cómo se probó: `npx vitest run` da 10 archivos y 139 pruebas aprobadas, frente a 9 y 85 en `develop`. Las tres pruebas que citan los pasos de aceptación del Back existen con su nombre exacto. `npx tsc --noEmit` y `npm run build` terminan sin errores y `bash scripts/preflight.sh` sin fallas. La prueba de humo, con `bash scripts/e2e.sh e2e/humo.spec.ts` contra `scripts/api_local.sh --sin-https` del Back y Vite en 5173, da 3 passed, y en P5 la carga nueva queda «Vigente, reemplaza a la carga 1» y la anterior «Reemplazada por la carga 2». El R-17 que descarga pasa `herramientas_neon/revisar_r17.py` con 0 fallas, 33 filas y 63,6 %, 63,6 % y 72,7 %.
+- Lo que no debe hacer, cómo se probó: P5 no muestra el código de `motivo`, nombres de estudiantes, valores leídos ni rutas, aunque la respuesta simulada los traiga de más («no muestra nombres de estudiantes, valores leídos ni rutas locales»). «No» cierra cada pregunta sin ninguna petición, un 409 sin `carga_publicada` no pregunta por el reemplazo y P3 nunca ofrece escribir el número de la sección confirmada. Ningún archivo de `src/` guarda nada en el navegador ni llama a `fetch` fuera de `api.ts`.
+- Correcciones: el texto de P4 para una carga REEMPLAZADA decía que su sucesora «es la publicada», lo que deja de ser cierto si la sucesora también se reemplaza, y pasa a «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta). La prueba de humo guardaba el R-17 como `R017_reemplazo_410.xlsx`, y `revisar_r17.py` marcaba dos fallas porque coteja la franja PROVISIONAL con el nombre, así que ahora lo guarda con el nombre que fija la API, en `DIR_CAPTURAS/reemplazo/`. La revisión independiente deja un hallazgo de severidad baja aceptado, porque P3 no vuelve a ofrecer el reemplazo si otra persona reemplaza la carga mientras pregunta, y la pantalla muestra el 409 tal cual.
+- Cómo se reporta: esta entrada, el CHANGELOG, la sección «Corte 2» de `specs/001-mvp-carga-r17/audit.md` del Back, las capturas de `ABET_SIS_MED/demo_corte2/` y el PR de esta rama, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: P1 con el código por correo (T083, que espera a T018), la prueba de humo contra la vista previa de `develop` después de fusionar las dos ramas (T099) y la versión 0.2.0, que publica Jefferson (T089).
 
 ### 2026-11-17 23:25 (Lima) · feat/001-corte-2 · Contrato de la API del corte 2 (T080 de la spec 001 del Back)
 - Quién: Claude Code, en una sesión lateral que abre la sesión principal de Jefferson para implementar el corte 2 de la spec 001 (US-18 a US-21, tareas T080 a T088 y T099), sin subagentes en este cambio. La spec 001 ya está aprobada, así que el corte 2 no pide otra aprobación.

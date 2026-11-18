@@ -4,8 +4,18 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+### Agregado
+
+- P5 Cargas, con las secciones del usuario y sus cargas de la más reciente a la más antigua, la marca de la vigente y de la reemplazada, la huella corta, quién sube cada carga, «Ver constancia», «Descargar R-17» y «Reemplazar carga» en la publicada, para el profesor en su sección y el coordinador en cualquiera (US-18 y US-19, T085).
+- P3 pregunta «La sección 410 ya tiene una carga publicada. ¿Desea reemplazarla?» ante el 409 con `carga_publicada` y reenvía el archivo con `?reemplaza=`, entra en modo reemplazo desde P5 y muestra el aviso del mismo archivo (US-18).
+- P3 muestra la pregunta del 422 con `requiere_confirmacion` y reenvía el archivo con `confirmar_seccion=true` cuando el profesor confirma la sección (US-21).
+- P4 muestra a qué carga reemplaza la carga y cuál la reemplaza, y la cabecera suma los botones «Mis secciones» y «Cargas».
+- `api.ts` suma `listarCargas()`, las opciones `reemplaza` y `confirmarSeccion` de `subirExport()` y los campos `requiereConfirmacion` y `cargaPublicada` de `ErrorApi`.
+- La prueba de humo `e2e/humo.spec.ts` suma el reemplazo en P5 de la carga con el error por el export correcto, con el R-17 guardado con el nombre que fija la API (T087 del Back).
+
 ### Cambiado
 
+- El contrato precisa que el 200 del mismo archivo de la carga publicada manda aunque `reemplaza` nombre otra carga, porque la huella se busca antes que la carga vigente (BR-CARGA-19).
 - El contrato de la API fija la forma definitiva de las rutas del corte 2, con el reemplazo de la carga publicada (`?reemplaza=`), la lista de cargas (`GET /api/cargas`), la confirmación de la sección (`confirmar_seccion=true` y `requiere_confirmacion`), `carga_publicada` en el 409 y `reemplaza_carga_id` y `reemplazada_por` en la constancia (T080 de la spec 001 del Back).
 - `docs/05-operacion/entornos-y-despliegue.md` registra la versión 0.1.0 en Production, la decisión J-07 en Hobby y el entrenamiento de IA del equipo de Vercel, que sigue encendido (T079 y T070 de la spec 001 del Back).
 - jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1, todos con al menos 14 días publicados, en un solo cambio que reemplaza los PR de Dependabot #5, #6, #9 y #12. El bundle de producción sale idéntico al de `develop`.

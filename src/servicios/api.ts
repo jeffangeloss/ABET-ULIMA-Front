@@ -1,22 +1,31 @@
 // Única puerta HTTP del Front (docs/01-arquitectura/frontend.md, sección 2). Ningún componente
 // llama a fetch. La sesión viaja en la cookie abet_sesion, que el navegador manda solo porque el Front
 // y la API comparten origen (ADR-004), así que este archivo no lee ni guarda ningún token.
-import type { Constancia, ResultadoSubida, Seccion, Usuario } from "./tipos";
+import type { CargaResumida, Constancia, ResultadoSubida, Seccion, Usuario } from "./tipos";
 
 const MSG_NO_RESPONDE = "El servicio no respondió. Intente de nuevo.";
 const MSG_ENTORNO = "El entorno de pruebas no está disponible.";
 const MSG_TAMANO = "El archivo supera el máximo de 1 MB.";
 const MSG_FORMA = "La petición no tiene la forma esperada.";
 
-/** Error de la API con el código HTTP y el texto que la pantalla muestra sin reescribirlo. */
+/**
+ * Error de la API con el código HTTP y el texto que la pantalla muestra sin reescribirlo. Desde el corte 2
+ * trae también los dos campos con que P3 ofrece el paso siguiente sin leer el texto (contrato, sección 3.1).
+ */
 export class ErrorApi extends Error {
   readonly status: number;
   readonly detail: string;
-  constructor(status: number, detail: string) {
+  /** Verdadero solo si el cuerpo trae requiere_confirmacion igual a true (422 de la sección sin declarar). */
+  readonly requiereConfirmacion: boolean;
+  /** El carga_id del 409 de una sección con carga publicada, o null. */
+  readonly cargaPublicada: number | null;
+  constructor(status: number, detail: string, requiereConfirmacion = false, cargaPublicada: number | null = null) {
     super(detail);
     this.name = "ErrorApi";
     this.status = status;
     this.detail = detail;
+    this.requiereConfirmacion = requiereConfirmacion;
+    this.cargaPublicada = cargaPublicada;
   }
 }
 
@@ -35,9 +44,15 @@ async function aErrorApi(r: Response): Promise<ErrorApi> {
   const tipo = r.headers.get("content-type") ?? "";
   if (tipo.includes("json")) {
     try {
-      const cuerpo: unknown = await r.json();
-      const detail = (cuerpo as { detail?: unknown } | null)?.detail;
-      return new ErrorApi(r.status, typeof detail === "string" ? detail : MSG_FORMA);
+      const cuerpo = (await r.json()) as { detail?: unknown; requiere_confirmacion?: unknown; carga_publicada?: unknown } | null;
+      const detail = cuerpo?.detail;
+      const cargaPublicada = cuerpo?.carga_publicada;
+      return new ErrorApi(
+        r.status,
+        typeof detail === "string" ? detail : MSG_FORMA,
+        cuerpo?.requiere_confirmacion === true,
+        typeof cargaPublicada === "number" ? cargaPublicada : null,
+      );
     } catch {
       return new ErrorApi(r.status, MSG_NO_RESPONDE);
     }
@@ -92,12 +107,36 @@ export async function listarSecciones(periodo?: string): Promise<Seccion[]> {
   return leer<Seccion[]>(await pedir(ruta));
 }
 
-export async function subirExport(seccionId: number, archivo: File): Promise<ResultadoSubida> {
+export interface OpcionesSubida {
+  /** Corte 2. La carga PUBLICADA que esta subida reemplaza (contrato, sección 7). */
+  reemplaza?: number;
+  /** Corte 2. Confirma la sección elegida cuando el archivo no la declara (US-21). */
+  confirmarSeccion?: boolean;
+}
+
+export async function subirExport(
+  seccionId: number,
+  archivo: File,
+  opciones: OpcionesSubida = {},
+): Promise<ResultadoSubida> {
   const cuerpo = new FormData();
   cuerpo.append("archivo", archivo);
-  // Sin cabecera Content-Type: el navegador la arma con el límite del multipart.
-  const r = await pedir(`/api/secciones/${seccionId}/cargas`, { method: "POST", body: cuerpo });
-  return { yaCargada: r.status === 200, constancia: await leer<Constancia>(r) };
+  if (opciones.confirmarSeccion) cuerpo.append("confirmar_seccion", "true");
+  const consulta = opciones.reemplaza === undefined ? "" : `?reemplaza=${encodeURIComponent(opciones.reemplaza)}`;
+  // Sin cabecera Content-Type, porque el navegador la arma con el límite del multipart.
+  const r = await pedir(`/api/secciones/${seccionId}/cargas${consulta}`, { method: "POST", body: cuerpo });
+  const { aviso, ...constancia } = await leer<Constancia & { aviso?: unknown }>(r);
+  return {
+    yaCargada: r.status === 200,
+    constancia: constancia as Constancia,
+    aviso: typeof aviso === "string" ? aviso : null,
+  };
+}
+
+/** Corte 2. Cargas al alcance del usuario, de la más reciente a la más antigua (contrato, sección 7). */
+export async function listarCargas(seccionId?: number): Promise<CargaResumida[]> {
+  const ruta = seccionId === undefined ? "/api/cargas" : `/api/cargas?seccion_id=${encodeURIComponent(seccionId)}`;
+  return leer<CargaResumida[]>(await pedir(ruta));
 }
 
 export async function obtenerCarga(cargaId: number): Promise<Constancia> {

@@ -351,7 +351,7 @@ El profesor reemplaza en su sección y el coordinador en cualquiera de la carrer
 |---|---|
 | El archivo nuevo se publica | 201 con la constancia de la carga nueva, en PUBLICADA y con `reemplaza_carga_id` igual a la anterior, que queda REEMPLAZADA |
 | El archivo nuevo queda RECHAZADA | 201 con su constancia, en RECHAZADA y con `reemplaza_carga_id` nulo, y la anterior sigue PUBLICADA |
-| Es el mismo archivo de la carga publicada | 200 con la constancia de la carga publicada y el campo `"aviso"` con «Es el mismo archivo de la carga publicada. No se reemplazó.» (propuesta), sin escribir nada |
+| Es el mismo archivo de la carga publicada | 200 con la constancia de la carga publicada y el campo `"aviso"` con «Es el mismo archivo de la carga publicada. No se reemplazó.» (propuesta), sin escribir nada, también si `reemplaza` nombra otra carga, porque la huella se busca antes que la carga vigente (propuesta) |
 | `reemplaza` no es la carga PUBLICADA de la sección, porque ya la reemplazó otra, porque la sección no tiene una carga publicada o porque la carga es de otra sección | 409 con «La carga que pide reemplazar no es la publicada de la sección 410. No se cargó el archivo.» (propuesta), sin escribir nada |
 | El archivo nuevo no se abre | 422 con «No se pudo abrir el archivo. La carga publicada no cambió.», sin escribir nada |
 | Cualquier otro 409 o 422 de la ruta 5 | El mismo `detail` de la ruta 5, sin escribir nada, y la carga publicada no cambia |
