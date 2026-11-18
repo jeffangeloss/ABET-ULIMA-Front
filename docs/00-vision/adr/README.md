@@ -15,8 +15,9 @@ Un ADR se escribe aquí cuando la decisión (a) es difícil de revertir, (b) con
 | [ADR-005](ADR-005-r17-desde-la-vista.md) | El R-17 se genera desde `v_r17_por_pi` con valores calculados, sin fórmulas ni personas | D-08 y D-12 quedan abiertas | US-15, US-16 |
 | [ADR-006](ADR-006-historias-gherkin-auditadas.md) | Ninguna historia entra a la spec sin Gherkin en español y sin pasar la auditoría de refutación | J-09 (dónde corre la prueba de humo) | Todas |
 | [ADR-008](ADR-008-logros-por-pi-en-el-sistema.md) | Los logros por PI se muestran en el sistema desde `v_r17_por_pi`, con el alcance de cada usuario (spec 004) | J-21 a J-26 de la spec 004 | US-37 a US-44 (spec 004) |
+| [ADR-009](ADR-009-declaracion-de-mejora-en-el-sistema.md) | Las causas y las acciones de mejora se declaran en el sistema y el R-17 las escribe desde la base (spec 005; enmienda ADR-005 y el invariante 8 de ADR-008) | J-29 a J-37 de la spec 005 | US-45 a US-54 (spec 005) |
 
-ADR-007 queda para la spec 002 de Capstone, en revisión en la rama `docs/002-capstone`, y pasa a «Aceptada y vigente» con la fusión de su spec. ADR-008 está aceptado y vigente desde el 2026-11-18, con la aprobación de la spec 004.
+ADR-007 queda para la spec 002 de Capstone, en revisión en la rama `docs/002-capstone`, y pasa a «Aceptada y vigente» con la fusión de su spec. ADR-008 está aceptado y vigente desde el 2026-11-18, con la aprobación de la spec 004. ADR-009 está aceptado y vigente desde el 2026-11-18, con la aprobación de la spec 005, y su enmienda de ADR-005 y de ADR-008 entra en esos documentos con la tarea T011.
 
 La autoridad final está en las migraciones de la base y en la spec aprobada. Si un ADR contradice a una de las dos, el ADR está mal y se corrige con un ADR nuevo que lo reemplaza.
 
@@ -52,6 +53,7 @@ grep -n "Esperado" docs/00-vision/adr/ADR-*.md
 - ADR-005. La plantilla oficial del R-17 (D-08) sigue abierta, así que la plantilla vaciada es provisional.
 - ADR-006. Falta la prueba de 30 minutos de pytest-bdd con `# language: es`.
 - ADR-008. Sus criterios 1 a 3 esperan el código de la spec 004.
+- ADR-009. Sus criterios esperan el código de la spec 005, y su enmienda a ADR-005 y a ADR-008 espera la tarea T011.
 
 ## Lo que todavía NO está
 

@@ -117,6 +117,8 @@ Muestra el estado de la carga y sus conteos con la forma «11 filas leídas, 10 
 
 No muestra el valor leído de ninguna celda, nombres de estudiantes, Last Access, Availability, columnas de actividades ni los porcentajes del R-17, que viven solo en el archivo descargado.
 
+La spec 005, aprobada el 2026-11-18, cambia esta pantalla. P4 muestra los niveles, los porcentajes y el semáforo de cada PI de una carga publicada, un formulario para declarar las causas y las acciones, y el único enlace «Descargar R-17», que ofrece solo con la declaración (sección 10). La regla de arriba sigue vigente hasta que Jefferson apruebe esa spec.
+
 ### P5 Cargas (corte 2)
 
 Justifican la pantalla US-18 (reemplazar la carga publicada de una sección) y US-19 (ver las cargas al alcance del usuario).
@@ -193,6 +195,8 @@ El coordinador ve las secciones de toda la carrera con la misma pantalla, agrupa
 
 P6 no muestra códigos ni nombres de estudiantes, correos ni nombres de profesores, el botón «Subir export», que sigue solo en P2, un consolidado de varias secciones ni una cifra por SO (D-32), el agregado del curso o de la carrera (D-33), periodos anteriores, la descripción del instrumento (D-34) ni un filtro. P6 no escribe en `localStorage` ni en `sessionStorage`, y no compara cifras ni decide la meta, que trae la API en `en_meta`. P2 y P4 siguen sin mostrar porcentajes, como dicen sus secciones.
 
+La spec 005, aprobada el 2026-11-18, cambia dos líneas de esta pantalla. El enlace «Descargar R-17 de la sección 412 de 450002» pasa a «Ver la carga de la sección N de A» (propuesta), que abre P4 para que ningún enlace abra un 409 en JSON, y P4 deja de seguir sin porcentajes (sección 10). El texto vigente de esta sección rige hasta la aprobación de la spec 005.
+
 ### 9.3 Pruebas
 
 Vitest con Testing Library prueba en `tests/pantallas/MisLogros.test.tsx` cada escenario `@delegado_a_vitest` de `specs/004-reportes-docente/aceptacion/` del Back, con respuestas del contrato dentro de las pruebas, y `tests/App.test.tsx` prueba los enlaces de la cabecera y de P4. Las pruebas buscan cada fila por su rol y su texto, comprueban `aria-hidden` en las barras, la ausencia de «Subir export» y de cualquier «0 %» en un PI sin calificaciones y que el almacenamiento del navegador queda vacío. La prueba de humo con Playwright (T043 de la spec 004) abre P6 en la vista previa de `develop` después de la subida de la 410, compara sus cifras con el R-17 de esa carga y comprueba que `docente411@example.invalid` no ve la 410.
@@ -202,6 +206,125 @@ Vitest con Testing Library prueba en `tests/pantallas/MisLogros.test.tsx` cada e
 1. **La prueba de humo de P6 contra la vista previa de `develop`** (T071 del Back), que espera la fusión de los dos PR de `feat/004-reportes-docente`, porque la vista previa del Front reescribe `/api` hacia la de `develop` del Back.
 2. **Las decisiones de la carrera** D-32, D-33 y D-34, que fijan el consolidado, el agregado del curso y la descripción del instrumento.
 3. **Una revisión automática de accesibilidad**, como axe, que sigue fuera, como dice la sección 7.
+
+## 10. Spec 005, oportunidades de mejora (propuesta)
+
+> **Estado 2026-11-18.** Propuesta de la spec 005 del Back (`specs/005-oportunidades-de-mejora/`), en revisión, que pasa a definitiva con su tarea T011 después de la aprobación de Jefferson. Sus historias son US-45 a US-54 y sus decisiones J-29 a J-37 y D-35 a D-37. Nada de esta sección existe todavía en `src/`. Las secciones 1 a 7 siguen describiendo lo construido, y la sección 9 sigue siendo la propuesta de la spec 004. Los textos de pantalla de esta sección son propuestas hasta que un `.feature` aprobado los fije, salvo los que la spec 005 copia de la plantilla del R-17.
+
+La spec 005 no agrega una pantalla. Cambia P4 para que el profesor vea cómo va su sección al terminar la carga, declare las causas y las acciones de su resultado y recién entonces descargue el R-17, y cambia `App.tsx` para que el botón atrás del navegador vuelva a la pantalla anterior de la aplicación.
+
+### 10.1 Qué cambia en `src/`
+
+```
+src/
+  pantallas/
+    ResultadoCarga.tsx     P4, + semáforo, formulario, guardado automático y R-17 solo con declaración (propuesta)
+    MisSecciones.tsx       P2, el «Descargar R-17» del coordinador pasa a un enlace a P4 (propuesta)
+    Cargas.tsx             P5, el enlace «Descargar R-17» pasa a un enlace a P4 (propuesta)
+    MisLogros.tsx          P6, el enlace al R-17 pasa a «Ver la carga de la sección N de A» (propuesta)
+  servicios/
+    api.ts                 + obtenerIndicadores, obtenerMejora, guardarBorrador y declarar (T040)
+    tipos.ts               + los tipos de las rutas 13 a 16
+  App.tsx                  + navegación por el fragmento de la dirección (T044)
+tests/
+  preparar.ts              reinicia el fragmento de la dirección entre pruebas
+```
+
+- **P4** suma la sección «Cómo va su sección» (propuesta), el formulario «Análisis del resultado» (propuesta) y el estado del R-17. Es el único lugar que ofrece «Descargar R-17» (J-32, propuesta), de modo que ningún enlace abre el 409 en JSON de la ruta 7 sin declaración.
+- **`api.ts` y `tipos.ts`** suman una función por ruta nueva, la ruta 13 `GET /api/cargas/{carga_id}/indicadores`, la 14 `GET /api/cargas/{carga_id}/mejora`, la 15 `PUT /api/cargas/{carga_id}/mejora/borrador` y la 16 `POST /api/cargas/{carga_id}/mejora/declaracion` (contrato, sección 13). Los nombres de las funciones salen de la tarea T040 de la spec 005 y siguen la regla de la sección 2, una función por ruta y ningún `fetch` fuera de `api.ts`.
+- **P2 y P5** dejan de ofrecer «Descargar R-17», porque solo P4 sabe si la declaración existe. P2 conserva «Ver resultado» y P5 «Ver constancia», que ya abren P4 de esa carga, así que ningún texto nuevo hace falta.
+- **P6** cambia su enlace al R-17 (FR-015 de la spec 004) por «Ver la carga de la sección N de A» (propuesta), con el número de la sección y el código de la asignatura.
+- **`App.tsx`** guarda cada pantalla en el fragmento de la dirección y la recupera con el evento `popstate` (sección 10.3). No cambia `vercel.json`, porque la regla 7 de `scripts/preflight.sh` rechaza una ruta literal fuera de `/api`.
+
+### 10.2 P4 con el semáforo y el formulario
+
+Justifican los cambios de P4 las historias US-46 (el semáforo), US-47 (declarar causas y acciones), US-48 (el borrador se guarda solo), US-49 (el R-17 solo con la declaración), US-53 (sin datos de estudiantes) y US-54 (el texto anterior llega como borrador) de la spec 005. Las rutas nuevas son la 13, la 14, la 15 y la 16, y P4 sigue consumiendo `GET /api/cargas/{carga_id}` y la descarga de la ruta 7.
+
+**Orden de los bloques**, de arriba abajo, en una carga PUBLICADA.
+
+1. La constancia, los conteos, los rechazos y los avisos de hoy, sin cambios.
+2. «Cómo va su sección» (propuesta), con la franja provisional, la tabla del semáforo y su leyenda. Solo aparece en una carga PUBLICADA.
+3. El formulario «Análisis del resultado» (propuesta), con los dos enunciados, la nota de datos de estudiantes, los dos campos, el estado del guardado y el botón «Guardar declaración» (propuesta).
+4. Tras declarar, los dos textos declarados con «Declarado el 18/11/2026 15:10» (propuesta), y el formulario sigue disponible para corregir.
+5. El estado del R-17, que es el botón «Descargar R-17» deshabilitado o su enlace.
+
+El orden de los bloques 4 y 5 no lo fija la síntesis de la spec 005 y queda como propuesta.
+
+**El semáforo.** P4 pide la ruta 13 solo para una carga PUBLICADA, y no la pide para una RECHAZADA o REEMPLAZADA ni muestra la sección. La tabla tiene las columnas «PI», «Nivel 1» a «Nivel 4», «Logran / calificados» y «% sobre el total», que son las del R-17, y además «Logro», «Meta» y «Estado». Con la respuesta de la 410 de ejemplo (contrato, sección 13.2) muestra tres filas, con «7 de 11», «63,6 %» y «Debajo de la meta» en 5.1 y 5.2, y «8 de 11», «72,7 %» y «Debajo de la meta» en 5.3.
+
+| `semaforo` | Texto del estado (propuesta) |
+|---|---|
+| VERDE | «En la meta» |
+| AMBAR | «Cerca de la meta» |
+| ROJO | «Debajo de la meta» |
+| SIN_DATO | «Sin calificaciones (N sin evidencia)», «Sin meta definida» o «Sin nivel esperado definido» |
+
+Cada estado lleva una luz de color con `aria-hidden` y su texto, de modo que ninguno depende solo del color. Un PI SIN_DATO dice, por ejemplo, «Sin calificaciones (11 sin evidencia)» y nunca «0 %» ni una luz roja. El Front no compara cifras, porque la ruta 13 trae `semaforo` ya decidido (J-29).
+
+La leyenda sale de la respuesta. Con `corte_rojo_pct` nulo dice «Verde, el logro alcanza la meta de 80 %. Rojo, todavía no la alcanza.» (propuesta), y con 75.0 dice «Verde, desde la meta de 80 %. Ámbar, desde 75 % hasta debajo de la meta. Rojo, debajo de 75 %.» (propuesta). Mientras CORTE_ROJO siga PENDIENTE en R-2026-BORRADOR, el piloto no muestra ámbar (D-35). Con `provisional` verdadero, P4 muestra sobre la tabla la franja de la constancia y del R-17 con el texto de su conjunto de reglas, y con `provisional` falso no muestra nada.
+
+**El formulario.** Lleva sobre cada campo el enunciado literal de la plantilla del R-17, sin cambios. Sobre las causas va el de B28, «A. Identifique las causas principales que pudieron influir en no alcanzar el indicador (por ejemplo: planificación, participación, recursos, tiempos, entre otros).», y sobre las acciones el de B33, «B. Proponga acciones concretas que permitan superar las causas identificadas y/o mejorar el resultado del indicador». Sobre el formulario va la nota «No escriba nombres, códigos ni correos de estudiantes.» (propuesta). Cada campo admite hasta 2000 puntos de código, y el Front los cuenta con la misma regla del Back, sin usar `maxLength`. El botón «Guardar declaración» queda deshabilitado mientras falte un campo. La declaración vigente es la última, y el formulario sigue disponible para corregirla con una declaración nueva (D-37).
+
+**Estados del guardado.** El borrador se guarda en la base y nunca en `localStorage` ni en `sessionStorage` (J-30).
+
+| Momento | Qué hace P4 |
+|---|---|
+| 2,5 s después de la última tecla, con un máximo de 15 s si se escribe sin pausa, al salir del campo y en `pagehide` con `keepalive` | Envía un solo PUT a la vez, con la `version` leída |
+| Mientras responde | Dice «Guardando…» (propuesta) |
+| Respuesta 200 | Dice «Borrador guardado a las 15:10» (propuesta) |
+| Falla de red o 500 | Dice «No se pudo guardar el borrador. Su texto sigue en pantalla.» (propuesta) y conserva lo escrito |
+| 409 por versión | Muestra «Otra pestaña guardó un texto más reciente.» (propuesta) y ofrece elegir cuál texto conservar |
+| 422 durante el guardado | Deja el texto en pantalla con el mensaje de la API y no reintenta en bucle |
+| 401 durante el guardado | No desmonta P4. El ingreso la tapa con el texto en memoria, y si vuelve a ingresar el mismo usuario, reintenta con la misma versión (decisión de arquitectura AD-22). Con otro usuario, o después de «Salir», descarta el texto |
+| Carga REEMPLAZADA con 409 | Conserva el texto y ofrece «Llevar el texto a la carga N» (propuesta), con el número de `reemplazada_por` |
+
+**El R-17 solo con declaración.** Sin declaración, P4 muestra «Descargar R-17» deshabilitado con «El R-17 se habilita cuando complete y guarde las causas y las acciones.» (propuesta) para el profesor, y «El R-17 se habilita cuando el profesor de la sección declare las causas y las acciones.» (propuesta) para el coordinador. Con la declaración ofrece el enlace de siempre a la ruta 7. Una carga REEMPLAZADA mantiene su texto de hoy, «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta).
+
+**Borrador heredado.** Una carga nueva de un reemplazo trae, en la ruta 14, el texto anterior como borrador con `heredado_de`, y P4 lo muestra en el formulario para revisarlo con las cifras nuevas. El texto se guarda en la carga nueva con el primer PUT, y el R-17 de esa carga sigue en 409 hasta declarar.
+
+**El coordinador** lee la declaración sin editarla. Su P4 muestra los textos declarados sin campos ni botón, y con solo un borrador del profesor dice «El profesor todavía no declara las causas y las acciones.» (propuesta), sin ningún texto, porque la ruta 14 no le entrega el borrador.
+
+**Respaldo ante un Back anterior.** Si la ruta 13 responde 404, porque el Back todavía no incluye la spec 005, P4 se comporta como hoy, sin semáforo ni formulario y con el enlace «Descargar R-17» (decisión de arquitectura AD-28, propuesta). Por eso el Front se despliega antes que el Back (J-37).
+
+No muestra nombres, códigos ni correos de estudiantes, el texto del borrador al coordinador, un semáforo para una carga RECHAZADA o REEMPLAZADA, una cifra que el Front haya calculado ni quién declaró (C-12).
+
+### 10.3 Navegación con el botón atrás
+
+La spec 005 (US-52, J-34) agrega la navegación por el fragmento de la dirección, sin tocar `vercel.json`. `App.tsx` llama a `history.pushState` al cambiar de pantalla y recupera la pantalla con `popstate`.
+
+| Fragmento (propuesta) | Pantalla |
+|---|---|
+| `#/secciones` | P2 |
+| `#/cargas` | P5 |
+| `#/secciones/{seccion_id}/subir` | P3 |
+| `#/secciones/{seccion_id}/subir?reemplaza={carga_id}` | P3 en modo reemplazo |
+| `#/cargas/{carga_id}` | P4 |
+| `#/logros` | P6 |
+
+- **`history.state`** lleva solo la ruta y una marca del ingreso, nunca la constancia ni el borrador. Cada pantalla vuelve a pedir sus datos.
+- **Reemplazo tras la subida.** Después de una subida que termina en P4, `replaceState` reemplaza la entrada de P3 solo si la pantalla visible sigue siendo esa subida, de modo que atrás lleve a P2 sin repetir el POST. Una carga RECHAZADA ofrece «Subir otro archivo» (propuesta).
+- **«Salir».** Después de «Salir», `replaceState` lleva a `#/`, y sin usuario `App.tsx` muestra P1 con cualquier fragmento. Atrás desde ahí no muestra ninguna sección.
+- **Entradas inválidas.** Una entrada de otro ingreso o un fragmento desconocido llevan a P2. P3 recargada cae a P2, porque necesita la sección. Recargar en P4 conserva la pantalla por el fragmento, sin prueba propia.
+- **Fragmento ajeno.** Un fragmento a una carga ajena, como `#/cargas/999`, muestra el 403 de P4, «La sección no está a su cargo.».
+
+### 10.4 Pruebas
+
+Vitest con Testing Library prueba cada escenario `@delegado_a_vitest` de `specs/005-oportunidades-de-mejora/aceptacion/` del Back, con las respuestas del contrato escritas solo dentro de las pruebas, y las historias que cubre son US-46, US-47, US-48, US-49, US-52, US-53 y US-54.
+
+- **Semáforo (`semaforo.feature`).** Las tres filas de la 410, la leyenda con y sin `corte_rojo_pct`, la franja provisional, el PI SIN_DATO sin «0 %», la carga RECHAZADA o REEMPLAZADA sin petición a la ruta 13 y el 404 de un Back anterior.
+- **Declaración (`declaracion.feature`).** Los enunciados sobre cada campo, el botón deshabilitado mientras falte un campo, el «Declarado el …» y el borrador que vuelve al abrir P4. También el guardado a los 2,5 s y al salir del campo, la falla con 500, el 401 que conserva el texto y el 422 sin bucle. Por último, el coordinador sin campos, los enlaces de P2 y P5 hacia P4 y «Llevar el texto a la carga N».
+- **Navegación (`navegacion.feature`).** Los cinco recorridos de US-52 con atrás y adelante, sin salir de la aplicación ni pedir otra vez la sesión.
+- **Almacenamiento.** Después de escribir en P4, `localStorage` y `sessionStorage` quedan con 0 entradas, y `tests/preparar.ts` reinicia el fragmento entre pruebas.
+- **Prueba de humo.** `e2e/humo.spec.ts` suma, en T046, el semáforo, la declaración y la descarga con las causas y las acciones en la vista previa de `develop` (SC-007 de la spec 005). Sube la 410, ve tres PI en rojo, declara y descarga un R-17 con los recuadros A y B.
+
+### 10.5 Lo que todavía NO está
+
+1. **Las decisiones de la carrera** D-35 (valor de CORTE_ROJO), D-36 (si una sección en la meta también declara) y D-37 (si el profesor corrige tras descargar).
+2. **Todo el código de esta sección**, que llega con la fase 4 de la spec 005 y espera a la fusión de la spec 004.
+3. **La marca «Declaración pendiente»** en P2 y P5 (C-14, parte b), y quién declaró (C-12).
+4. **La detección de nombres de estudiantes** escritos en el texto, que la spec cubre con un aviso y no por construcción (J-36).
+5. **La reunión de mejora, las acciones con responsable y fecha y la precarga del ciclo siguiente** (N11 a N13).
+6. **La edición de la descripción del instrumento desde una pantalla** (D-34), que llega al R-17 desde la base y no pasa por el Front.
 
 ## Referencias
 

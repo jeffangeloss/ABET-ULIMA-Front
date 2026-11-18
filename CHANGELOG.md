@@ -6,6 +6,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Agregado
 
+- Documentación del sistema de la spec 005 del Back, las oportunidades de mejora en la carga, aprobada por Jefferson en el chat el 2026-11-18. Son ADR-009, las rutas 13 a 16 en la sección 13 de `docs/03-api/contrato.md` y en `docs/specs/api-contracts.md`, P4 con el semáforo, el formulario de causas y acciones y la navegación con el botón atrás en la sección 10 de `docs/01-arquitectura/frontend.md` y la fila `mejora` de `docs/specs/feature-index.md`. Ningún código cambia.
 - P6 «Mis logros por SO» con los logros de cada PI de las secciones del usuario agrupados por SO, la barra de cada fila en HTML con `aria-hidden` y la meta marcada con una línea y con texto, el reparto por nivel, la marca provisional por sección, el R-17 de cada sección publicada y lo que no se mide escrito con texto. La abre el enlace «Ver mis logros por SO» de la cabecera y de P4, o «Ver los logros por SO de la carrera» para el coordinador (US-37 a US-44 de la spec 004, T040 a T042).
 - `obtenerResultados()` en `api.ts` para `GET /api/resultados`, con sus tipos y las cifras con coma decimal de `formato.ts`.
 - La prueba de humo `e2e/humo.spec.ts` suma P6, que compara sus cifras con el R-17 de la misma carga de la 410, y comprueba que el profesor ajeno no ve la 410 en su P6 (T043).
