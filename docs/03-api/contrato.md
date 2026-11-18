@@ -522,3 +522,202 @@ Errores 401 con «La sesión venció. Ingrese otra vez.» (propuesta), sin cooki
 2. **El agregado del curso o de la carrera junto al resultado del profesor**, que espera a D-33.
 3. **La descripción del instrumento de medición**, que espera a D-34 y a J-27.
 4. **La paginación.** La ruta no pagina, y la spec 004 fija un techo de prueba de 150 secciones para el coordinador, con respuesta en menos de 1 s sin el arranque en frío de Neon (SC-005 de la spec 004).
+
+## 13. Rutas de la spec 005, oportunidades de mejora (propuesta, spec 005)
+
+> **Estado 2026-11-18.** Propuesta de la spec 005 del Back (`specs/005-oportunidades-de-mejora/`), en revisión, que pasa a definitiva con su tarea T011 después de la aprobación de Jefferson. Las rutas siguen a la 12 de la spec 004, que a su vez espera a la fusión de esa spec. La tabla resumen de la sección 2 y la sección 10 no cambian hasta esa aprobación, y nada de esta sección existe todavía en el Back ni en `src/`.
+
+### 13.1 Resumen
+
+| # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Corte |
+|---|---|---|---|---|---|---|---|---|
+| 13 | GET | `/api/cargas/{carga_id}/indicadores` | Sí | 200 | Devuelve los conteos por nivel, el logro, la meta y el semáforo de cada PI de una carga publicada | US-45 | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+| 14 | GET | `/api/cargas/{carga_id}/mejora` | Sí | 200 | Devuelve la declaración vigente, el borrador y quién puede editar | US-47, US-48 y US-54 | BR-MEJORA-NN (propuesta) y BR-ACCESO-07 | spec 005 |
+| 15 | PUT | `/api/cargas/{carga_id}/mejora/borrador` | Sí | 200 | Guarda el borrador de las causas y las acciones con control de versión | US-47, US-48 y US-53 | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+| 16 | POST | `/api/cargas/{carga_id}/mejora/declaracion` | Sí | 201 | Declara una versión exacta del borrador, y esa declaración alimenta el R-17 | US-47 y US-49 a US-53 | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+
+Los cuatro nombres de ruta, los campos y los textos de esta sección son propuestas hasta que Jefferson apruebe la spec 005. Sus decisiones son J-29 a J-37 de la spec 005 y D-35 a D-37 de la carrera.
+
+Reglas comunes a las cuatro rutas.
+
+- Cada ruta exige la sesión y responde con `Cache-Control: no-store`, como toda `/api`. Ninguna respuesta trae códigos, nombres ni correos de estudiantes (US-53).
+- El alcance de la lectura sale de `puede_leer()`, así que el profesor lo recibe de sus secciones y el coordinador de cualquiera. La escritura (rutas 15 y 16) sale de una función propia, `puede_declarar()` de `app/permisos.py`, que admite solo al profesor asignado a la sección (J-33).
+- Las rutas con cuerpo (15 y 16) responden en el orden 401, 403, 422 y 409. El Back lee el cuerpo a mano después de comprobar el alcance y exige JSON, de modo que un usuario sin permiso recibe 403 aunque su cuerpo no sea JSON (AD-23). Un cuerpo que no es JSON recibe 422 con «La petición no tiene la forma esperada.» (propuesta).
+- Una carga que no existe recibe el mismo 403 que una ajena, como en la sección 9. El 403 dice «La sección no está a su cargo.». El 401 dice «La sesión venció. Ingrese otra vez.» (propuesta), igual que en las demás rutas.
+- Las cuatro rutas entran en la prueba que recorre las rutas registradas con su lista cerrada de rutas públicas (BR-ACCESO-10, propuesta).
+
+### 13.2 `GET /api/cargas/{carga_id}/indicadores`: cifras y semáforo de una carga (propuesta, spec 005)
+
+Sin cuerpo. Alcance de `puede_leer()`, una sola instantánea de `abet.v_r17_por_pi` y `Cache-Control: no-store`. La única pantalla que la consume es P4, solo para una carga PUBLICADA.
+
+```jsonc
+// Respuesta 200 recortada para docente410@example.invalid, con la 410 de 450002 publicada con el export correcto y
+// el conjunto R-2026-BORRADOR (propuesta, spec 005). El carga_id es de ejemplo y sale siempre de la API.
+// El instrumento de 5.2 y 5.3 se abrevia con «…».
+{
+  "carga_id": 7,
+  "estado": "PUBLICADA",
+  "provisional": true,
+  "conjunto_reglas": "R-2026-BORRADOR",
+  "conjunto_reglas_estado": "BORRADOR",
+  "parametros_pendientes": ["CONVERSION_NIVEL_0_1", "CORTE_ROJO", "TRATO_SIN_EVIDENCIA"],
+  "meta_pct": 80.0,
+  "corte_rojo_pct": null,
+  "indicadores": [
+    {
+      "so": 5, "pi": "5.1", "instrumento": "Trabajo Integrador", "nivel_esperado": 3,
+      "estudiantes_por_nivel": [1, 3, 4, 3], "logrados": 7, "calificados": 11, "sin_evidencia": 0, "total": 11,
+      "pct_sobre_calificados": 63.6, "pct_sobre_total": 63.6, "meta_pct": 80.0, "en_meta": false, "semaforo": "ROJO"
+    },
+    {
+      "so": 5, "pi": "5.2", "instrumento": "…", "nivel_esperado": 3,
+      "estudiantes_por_nivel": [1, 3, 4, 3], "logrados": 7, "calificados": 11, "sin_evidencia": 0, "total": 11,
+      "pct_sobre_calificados": 63.6, "pct_sobre_total": 63.6, "meta_pct": 80.0, "en_meta": false, "semaforo": "ROJO"
+    },
+    {
+      "so": 5, "pi": "5.3", "instrumento": "…", "nivel_esperado": 3,
+      "estudiantes_por_nivel": [1, 2, 5, 3], "logrados": 8, "calificados": 11, "sin_evidencia": 0, "total": 11,
+      "pct_sobre_calificados": 72.7, "pct_sobre_total": 72.7, "meta_pct": 80.0, "en_meta": false, "semaforo": "ROJO"
+    }
+  ]
+}
+```
+
+Reglas y por qué existen.
+
+- Las claves de cada indicador son las de la ruta 12 (sección 12.2) más `semaforo`, y las cifras son las del bloque II y de la tabla K28:Q31 del R-17 de la misma carga. El logro es `round(100 × E, 1)` de su fila, la meta es `round(100 × G, 1)` y el porcentaje sobre el total es `round(100 × Q, 1)`. Los indicadores van por `so_numero` y número de PI, y la ruta lee una sola instantánea.
+- `semaforo` lo decide una función pura del Back, junto a la función de la meta de la spec 004 (J-29). Vale SIN_DATO si falta el logro o la meta, VERDE si `en_meta` es verdadero, AMBAR si `corte_rojo_pct` está definido y el logro es mayor o igual que el corte y menor que la meta, y ROJO en los demás casos. Así VERDE coincide con «En la meta» de P6 y ROJO o AMBAR con «El indicador aún no alcanza …» de la hoja del R-17. El Front no compara cifras.
+- `corte_rojo_pct` es nulo mientras CORTE_ROJO siga PENDIENTE en R-2026-BORRADOR, y entonces el piloto muestra VERDE, ROJO o SIN_DATO. Con R-PRUEBA-SEMAFORO, un conjunto de prueba con CORTE_ROJO 0,75, la misma respuesta trae `corte_rojo_pct` igual a 75.0 y el ámbar aparece (D-35).
+- Un PI sin ninguna calificación trae `pct_sobre_calificados` nulo, `pct_sobre_total` igual a 0.0 y SIN_DATO, nunca ROJO. Con NIVEL_ESPERADO o META_LOGRO sin DEFINIR, cada indicador trae SIN_DATO y la ruta responde 200 y no 500.
+- La respuesta no trae `subida_por`, `nombre_archivo`, `sha256` ni ningún código, nombre o correo de estudiante.
+
+Errores 401, 403 («La sección no está a su cargo.»), también para una carga que no existe, y 409 con «La carga no está publicada y no tiene semáforo.» (propuesta) para una carga RECHAZADA o REEMPLAZADA. La ruta no tiene cuerpo ni parámetros, así que no responde 422.
+
+### 13.3 `GET /api/cargas/{carga_id}/mejora`: declaración y borrador de una carga (propuesta, spec 005)
+
+Sin cuerpo. Alcance de `puede_leer()`, con `puede_editar` verdadero solo para el profesor asignado a la sección. P4 la pide al abrirse, para llenar el formulario y para decidir si ofrece el R-17.
+
+```jsonc
+// Respuesta 200 para docente410@example.invalid con la 410 declarada y sin cambios posteriores (propuesta, spec 005).
+{
+  "declaracion": {
+    "causas": "La entrega coincidió con la semana de parciales.",
+    "acciones": "Mover la entrega a la semana 10 y revisar el avance en clase.",
+    "declarada_en": "2026-11-18T15:10:00-05:00"
+  },
+  "borrador": {
+    "causas": "La entrega coincidió con la semana de parciales.",
+    "acciones": "Mover la entrega a la semana 10 y revisar el avance en clase.",
+    "version": 1,
+    "actualizado_en": "2026-11-18T15:09:00-05:00"
+  },
+  "borrador_pendiente": false,
+  "heredado_de": null,
+  "puede_editar": true
+}
+```
+
+Reglas y por qué existen.
+
+- Una carga sin texto responde 200 con `declaracion` nulo, `borrador` nulo y `puede_editar` verdadero para su profesor.
+- La declaración vigente de una carga es la última fila de `abet.mejora_declaracion`, que la aplicación solo inserta (J-30). `borrador_pendiente` es verdadero si existe un borrador posterior a esa declaración. Mientras tanto la declaración anterior sigue vigente y el R-17 sigue saliendo con ella (D-37).
+- El coordinador lee la declaración y nunca recibe el texto del borrador. Su respuesta trae `borrador` nulo y `puede_editar` falso, también si el profesor solo guardó un borrador.
+- La herencia de US-54 ocurre al leer, sin escribir. Si la carga nueva no tiene borrador ni declaración, `borrador` trae el texto de la declaración vigente de la carga que reemplaza o, si esa carga no tiene declaración, el de su borrador, con `version` igual a 0 y `heredado_de` igual al `carga_id` de origen. Sin texto anterior, `borrador` queda nulo y `heredado_de` nulo. El texto se guarda en la carga nueva con el primer PUT de la ruta 15, y el coordinador no ve el texto heredado.
+- Una carga RECHAZADA o REEMPLAZADA se puede leer. Su escritura no se admite (rutas 15 y 16).
+
+Errores 401 y 403 («La sección no está a su cargo.»), también para una carga que no existe.
+
+### 13.4 `PUT /api/cargas/{carga_id}/mejora/borrador`: guardar el borrador (propuesta, spec 005)
+
+Cuerpo JSON `{ "causas": "…", "acciones": "…", "version": 0 }`, donde `causas` y `acciones` son opcionales para admitir un borrador parcial y `version` es la que la persona leyó. Escribe solo el profesor asignado, por `puede_declarar()`.
+
+```jsonc
+// Respuesta 200 a un PUT con solo causas y version 0 (propuesta, spec 005). La fecha es de ejemplo.
+{ "version": 1, "actualizado_en": "2026-11-18T15:10:00-05:00" }
+```
+
+Reglas y por qué existen.
+
+- Un PUT con la versión guardada cambia el borrador y suma 1 a `version`. Con solo `causas`, un GET posterior devuelve esas causas y `acciones` nulo.
+- Un PUT con una versión distinta de la guardada no cambia nada y responde 409 con «Otra pestaña guardó un texto más reciente.» (propuesta), junto con el texto guardado y su versión, para que P4 ofrezca elegir cuál conservar (AD-05).
+- El Back normaliza cada campo a la forma NFC de Unicode, cambia `\r\n` por `\n`, rechaza los caracteres de control salvo `\n` y `\t` y cuenta puntos de código, hasta 2000 por campo (AD-10). El Front cuenta igual y no usa `maxLength`.
+- La validación corre después del 403 y busca códigos de estudiante y correos con el mismo patrón ASCII de la ruta 16 y de los CHECK de la tabla. Ni la respuesta ni el registro de la aplicación repiten el texto (AD-11). La violación del CHECK sale como 422 y nunca como 500.
+- Un borrador con 422 no se guarda, tampoco como borrador.
+
+```jsonc
+// 409 por versión desactualizada (propuesta, spec 005). El borrador guardado viaja con la misma forma
+// que en la ruta 14, para que P4 lo muestre junto al texto de la pantalla. La fecha es de ejemplo.
+{
+  "detail": "Otra pestaña guardó un texto más reciente.",
+  "borrador": {
+    "causas": "La entrega coincidió con la semana de parciales.",
+    "acciones": null,
+    "version": 3,
+    "actualizado_en": "2026-11-18T15:12:00-05:00"
+  }
+}
+```
+
+Errores en este orden.
+
+| Código | Cuándo | `detail` |
+|---|---|---|
+| 401 | Sin sesión o con la sesión vencida | «La sesión venció. Ingrese otra vez.» (propuesta) |
+| 403 | Coordinador, profesor de otra sección o carga que no existe, aunque el cuerpo no sea JSON | «La sección no está a su cargo.» |
+| 422 | Cuerpo que no es JSON | «La petición no tiene la forma esperada.» (propuesta) |
+| 422 | Un campo de más de 2000 puntos de código | «Cada campo admite hasta 2000 caracteres.» (propuesta) |
+| 422 | Un carácter de control, como U+0007 | «El texto trae caracteres que no se pueden guardar.» (propuesta) |
+| 422 | Un código de estudiante de 8 dígitos o un correo | «La declaración no puede llevar códigos ni correos. Describa las causas y las acciones sin datos de estudiantes.» (propuesta) |
+| 409 | Carga RECHAZADA o REEMPLAZADA, con `reemplazada_por` en la REEMPLAZADA (AD-27) | «La carga no está publicada y no admite causas ni acciones.» (propuesta) |
+| 409 | `version` distinta de la guardada, con `borrador` | «Otra pestaña guardó un texto más reciente.» (propuesta) |
+
+El 409 de la carga que no está PUBLICADA manda sobre el de la versión. Un número de 9 dígitos o una fecha como 18/11/2026 se aceptan. Un nombre de estudiante escrito en el texto no se detecta, y por eso P4 lo advierte con una nota (J-36).
+
+### 13.5 `POST /api/cargas/{carga_id}/mejora/declaracion`: declarar una versión del borrador (propuesta, spec 005)
+
+Cuerpo JSON `{ "version": 1 }`, que declara esa versión exacta del borrador. Escribe solo el profesor asignado, por `puede_declarar()`. La declaración no se edita, y una corrección es una declaración nueva que reemplaza a la anterior en el R-17 siguiente (D-37).
+
+```jsonc
+// Respuesta 201 (propuesta, spec 005). La fecha es de ejemplo.
+{ "declarada_en": "2026-11-18T15:10:00-05:00" }
+```
+
+Reglas y por qué existen.
+
+- La declaración inserta una fila en `abet.mejora_declaracion` con las causas y las acciones de esa versión, y la fila anterior queda guardada. Después, un GET de la ruta 14 devuelve la declaración con los mismos textos y `borrador_pendiente` falso.
+- Una declaración exige causas y acciones sin vacío ni espacios solos, con el mismo límite de 2000 puntos de código y el mismo control de caracteres y de códigos que la ruta 15.
+- Declarar habilita el R-17 de la carga (ruta 7), que escribe esos textos en B29 y B34 y vale también para el coordinador.
+
+Errores en este orden.
+
+| Código | Cuándo | `detail` |
+|---|---|---|
+| 401 | Sin sesión o con la sesión vencida | «La sesión venció. Ingrese otra vez.» (propuesta) |
+| 403 | Coordinador, profesor de otra sección o carga que no existe, aunque el cuerpo no sea JSON | «La sección no está a su cargo.» |
+| 422 | Causas o acciones vacías o de solo espacios, o `version` 0 sin ningún borrador guardado | «Complete las causas y las acciones.» (propuesta) |
+| 422 | Los otros casos de la ruta 15 (cuerpo, largo, control, códigos y correos) | Los mismos textos de la ruta 15 |
+| 409 | Carga RECHAZADA o REEMPLAZADA, con `reemplazada_por` en la REEMPLAZADA (AD-27) | «La carga no está publicada y no admite causas ni acciones.» (propuesta) |
+| 409 | `version` distinta de la del borrador guardado, con `borrador` como en la ruta 15 | «El borrador cambió después de este guardado. Guarde otra vez antes de declarar.» (propuesta) |
+
+Con una declaración vacía no se crea ninguna fila. P4 envía siempre el guardado pendiente antes de declarar, así que el 409 por versión aparece solo cuando otra pestaña guardó entre los dos pasos.
+
+### 13.6 El cambio de la ruta 7 con la spec 005 (propuesta, spec 005)
+
+`GET /api/cargas/{carga_id}/r17.xlsx` suma un 409 para una carga PUBLICADA sin declaración, con el texto «Complete las causas y las acciones en la página de la carga antes de descargar el R-17.» (propuesta). Ese 409 vale también para el coordinador (J-33), que no escribe la declaración, y si el profesor no declara la salida es reasignar la sección en `acceso.docente_seccion`.
+
+- El 409 de una carga que no está PUBLICADA manda sobre el de la declaración, así que una carga RECHAZADA responde «La carga no está publicada y no tiene R-17.» aunque no tenga declaración.
+- Con solo un borrador, la ruta sigue en 409. Con la declaración responde 200 con el archivo `R017_450002_410_2026-2_PROVISIONAL.xlsx`.
+- Toda carga publicada antes de V1_12, como la 410 y la 411 de la vista previa y de Production, queda en 409 hasta declarar, sin excepción por fecha (J-37). Por eso el Front se despliega antes que el Back.
+- La carga nueva de un reemplazo responde 409 hasta que el profesor declare, aunque traiga el texto anterior como borrador.
+- El comando `python -m abet_carga r17` de una carga sin declaración termina con el mismo mensaje y sin escribir ningún archivo.
+
+El Front no ofrece el enlace a la ruta 7 sin declaración, porque P4 es el único lugar que lo muestra y lo deshabilita antes (J-32), y así ningún enlace abre un 409 en JSON.
+
+### 13.7 Lo que esta sección no cubre
+
+1. **Quién declaró, en la hoja «Constancia» del R-17 y en la constancia en JSON** (C-12). La base guarda `declarada_por` y `declarada_en`, pero ninguna respuesta las muestra.
+2. **La marca «Declaración pendiente»** en P2 y en P5 (C-14, parte b), y la descripción del SO en B15 (C-08).
+3. **La reunión de mejora, las acciones con responsable y fecha y la precarga del ciclo siguiente** (N11 a N13), porque las causas y las acciones son texto libre, como en el R-17.
+4. **El resto de N6** (criterios con más dificultades, lista de estudiantes que necesitan apoyo y comparación con el promedio del curso), que espera a D-33.
+5. **La edición de la descripción del instrumento desde una pantalla** (D-34) y la escritura de la declaración por el coordinador.
+6. **Los cambios de la tabla de la sección 2 y de la sección 10**, que se ajustan al aprobar la spec (tarea T011).
