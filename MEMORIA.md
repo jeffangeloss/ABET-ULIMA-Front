@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-18
-- **Rama de trabajo**: `feat/001-corte-2`, que sale de `develop` (7f6c72b) con el corte 2 de la spec 001 del Back (US-18, US-19 y US-21), en el worktree `ABET_SIS_MED/wt/front-corte2`, todavía sin empujar
+- **Rama de trabajo**: `feat/001-corte-2`, con el corte 2 de la spec 001 del Back (US-18, US-19 y US-21), que sale de `develop` (7f6c72b) y se actualiza con `develop` (2a22fb3) después del cierre de la spec 003, en el worktree `ABET_SIS_MED/wt/front-corte2` y con su PR #19 abierto
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: P5 Cargas, el reemplazo y la confirmación de la sección en P3 y las filas del reemplazo en P4 (T085), con 139 pruebas de Vitest y la prueba de humo del reemplazo, que pasa en local contra el Back del corte 2
-- **En curso**: nada en este repositorio; la rama espera el permiso de Jefferson para empujarla y abrir su PR, junto con la del Back
-- **Siguiente paso**: con ese permiso, empujar las dos ramas, abrir los PR a `develop` (el Back primero), fusionarlos con la CI en verde y correr la prueba de humo contra la vista previa de `develop` (T099 del Back)
+- **Último cambio**: la actualización de esta rama con `develop`, que trae el cierre de la spec 003 del Back en este repositorio (PR #17), sobre P5 Cargas, el reemplazo y la confirmación de la sección en P3 y las filas del reemplazo en P4 (T085)
+- **En curso**: el PR #19, que espera la CI en verde y la decisión de Jefferson de fusionarlo después de jeffangeloss/ABET-ULIMA-Back#28. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal. En otra sesión avanza `docs/004-reportes-docente` (spec 004)
+- **Siguiente paso**: con la CI en verde y la decisión de Jefferson, fusionar el PR del Back y después este, y correr la prueba de humo contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la rama `feat/001-corte-2` del mismo corte)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la rama `feat/001-corte-2` del mismo corte, con su PR #28)
 
 ## Plantilla de una entrada
 
@@ -37,6 +37,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-18 07:30 (Lima) · feat/001-corte-2 · Actualización con develop tras el cierre de la spec 003
+- Quién: la sesión principal de Jefferson avisa que `docs/003-cierre` ya está en `develop` (2a22fb3, PR #17), con Jefferson de acuerdo. Claude Code, en la sesión lateral del corte 2 y sin subagentes, fusiona `develop` en esta rama, resuelve el choque de esta memoria, corre las comprobaciones y escribe esta entrada.
+- Qué cambió: la rama trae de `develop` la entrada del cierre de la spec 003 en esta memoria, el único archivo que cambia el PR #17. «Punto actual» queda con el estado de la rama fusionada y su PR #19 abierto, y el «Registro» conserva las entradas de los dos lados en orden de hora, la más reciente primero.
+- Por qué: la regla de actualizar la rama con `develop` antes de fusionar su PR, porque el PR #17 y esta rama cambian las mismas líneas de esta memoria.
+- Lo que debe hacer, cómo se probó: `npm test` da 10 archivos y 139 pruebas aprobadas, `npm run build` compila sin errores, `bash scripts/probar_preflight.sh` da 28 bien y 0 mal y `bash scripts/preflight.sh` no da fallas.
+- Lo que no debe hacer, cómo se probó: fuera de esta memoria, la rama fusionada no difiere de d074842 (`git diff --stat d074842 -- . ':!MEMORIA.md'` sale vacío), y la compilación da los mismos `index-0T_CrYEk.js` e `index-5cA2jNHI.css`, así que la vista previa recibe el mismo código. En el árbol no queda ningún marcador de choque.
+- Correcciones: «Punto actual» decía que la rama seguía sin empujar, y su PR #19 está abierto desde las 06:10 del 2026-11-18.
+- Cómo se reporta: esta entrada y el PR #19, cuando Jefferson autorice empujar la actualización.
+- Pendiente y siguiente paso: fusionar jeffangeloss/ABET-ULIMA-Back#28 y después el PR #19, la prueba de humo contra la vista previa de `develop` (T099), P1 con el código por correo (T083, que espera a T018) y la versión 0.2.0, que publica Jefferson (T089).
+
 ### 2026-11-18 00:15 (Lima) · feat/001-corte-2 · P5 Cargas, reemplazo y confirmación de la sección en P3 (T085 de la spec 001 del Back)
 - Quién: Claude Code, en la sesión lateral del corte 2. Un subagente con el modelo de la sesión y esfuerzo medio implementa T085 con las pruebas de Vitest escritas antes que el código, sobre el contrato del commit anterior, y no hace commit. Claude Code revisa su diff completo, corrige el texto de P4 que el mismo subagente señala como posiblemente falso, cambia el nombre con que la prueba de humo guarda el R-17, corre las comprobaciones y escribe esta entrada. Otro subagente, con el modelo de la sesión y esfuerzo alto, revisa en solo lectura el diff de los dos repositorios y no halla defectos de severidad alta ni media.
 - Qué cambió: `src/pantallas/Cargas.tsx` (P5) es nuevo, y cambian `SubirExport.tsx` (P3, con el modo reemplazo, la pregunta del 409 y la del 422), `ResultadoCarga.tsx` (P4), `App.tsx` (vista de P5 y botones de la cabecera), `servicios/api.ts`, `servicios/tipos.ts` y `servicios/formato.ts`, con sus pruebas en `tests/` y el nuevo `tests/pantallas/Cargas.test.tsx`. `e2e/humo.spec.ts` suma el reemplazo en P5, `docs/01-arquitectura/frontend.md` describe las pantallas del corte 2 y `docs/03-api/contrato.md` precisa que el 200 del mismo archivo manda aunque `reemplaza` nombre otra carga.
@@ -46,6 +56,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Correcciones: el texto de P4 para una carga REEMPLAZADA decía que su sucesora «es la publicada», lo que deja de ser cierto si la sucesora también se reemplaza, y pasa a «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta). La prueba de humo guardaba el R-17 como `R017_reemplazo_410.xlsx`, y `revisar_r17.py` marcaba dos fallas porque coteja la franja PROVISIONAL con el nombre, así que ahora lo guarda con el nombre que fija la API, en `DIR_CAPTURAS/reemplazo/`. La revisión independiente deja un hallazgo de severidad baja aceptado, porque P3 no vuelve a ofrecer el reemplazo si otra persona reemplaza la carga mientras pregunta, y la pantalla muestra el 409 tal cual.
 - Cómo se reporta: esta entrada, el CHANGELOG, la sección «Corte 2» de `specs/001-mvp-carga-r17/audit.md` del Back, las capturas de `ABET_SIS_MED/demo_corte2/` y el PR de esta rama, cuando Jefferson autorice empujar.
 - Pendiente y siguiente paso: P1 con el código por correo (T083, que espera a T018), la prueba de humo contra la vista previa de `develop` después de fusionar las dos ramas (T099) y la versión 0.2.0, que publica Jefferson (T089).
+
+### 2026-11-17 23:30 (Lima) · docs/003-cierre · Cierre de la spec 003 del Back en el Front (T053 y T061)
+- Quién: Jefferson aprueba en el chat empezar a cerrar lo que queda de la versión 0.1.0 («Sí, empieza»). Claude Code corre en un worktree de `develop` la parte del Front de T053 y escribe esta entrada. En el flujo de agentes wf_844270c1-e83, un verificador (Sonnet, esfuerzo medio) corre `tests/pantallas/SubirExport.test.tsx` con `--reporter=verbose` y otro (Sonnet, esfuerzo medio) revisa la memoria y el registro de cambios de los commits de la spec 003 de este repositorio. Claude Code compara sus cifras con los registros de la corrida antes de aceptarlas.
+- Qué cambió: esta memoria, con «Punto actual» al día. El código, las pruebas y `CHANGELOG.md` no cambian.
+- Por qué: T053 y T061 de la spec 003 del Back piden la suite del Front, la revisión previa y la memoria y el registro de cambios de cada repositorio, y «Punto actual» seguía con la rama de Dependabot en curso.
+- Lo que debe hacer, cómo se probó: sobre `develop` (7f6c72b), `npm ci --ignore-scripts --prefer-offline` instala el lockfile, `npm test` da 9 archivos y 85 pruebas aprobadas, `npm run build` compila sin errores, `bash scripts/probar_preflight.sh` da 28 bien y 0 mal y `bash scripts/preflight.sh` no da fallas. `npx vitest run tests/pantallas/SubirExport.test.tsx --reporter=verbose` da 18 de 18, y entre ellas están las tres que cubren los escenarios de US-33. La CI de `develop` termina en verde en 7f6c72b (corrida 44209561524).
+- Lo que no debe hacer, cómo se probó: la compilación da los mismos `index-D0rec67o.js` e `index-5cA2jNHI.css` que la entrada del 2026-11-17 18:25, así que la vista previa y Production no reciben código distinto. Los seis commits de la spec 003 y de su salida a `develop` en este repositorio tocan `MEMORIA.md`, y `CHANGELOG.md` falta solo en b75de56 y 706139d, que no traen un cambio visible.
+- Correcciones: ninguna en este repositorio. En el Back, el verificador del historial encuentra que `[0.1.0]` no nombraba la sección que sale del nombre de un export de texto (US-30), y esa línea se agrega allí.
+- Cómo se reporta: esta entrada, `specs/003-exports-blackboard/audit.md` del Back y el PR de esta rama, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: los escenarios pendientes de US-17 y T062 en `audit.md` del Back, y D-30 (T005 de la spec 003), que espera a Stefanny Montaño o a la Oficina de Calidad.
 
 ### 2026-11-17 23:25 (Lima) · feat/001-corte-2 · Contrato de la API del corte 2 (T080 de la spec 001 del Back)
 - Quién: Claude Code, en una sesión lateral que abre la sesión principal de Jefferson para implementar el corte 2 de la spec 001 (US-18 a US-21, tareas T080 a T088 y T099), sin subagentes en este cambio. La spec 001 ya está aprobada, así que el corte 2 no pide otra aprobación.
