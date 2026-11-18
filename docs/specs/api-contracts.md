@@ -29,6 +29,7 @@ Este archivo es el índice corto del contrato de la API, que sigue el estilo de 
 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | Cargas al alcance del usuario, con `seccion_id` opcional | US-19 | BR-CARGA-20 y BR-ACCESO-07 | 2 |
 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | Reemplazar la carga publicada (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | POST | `/api/sesion/codigo` | No | Pedir el código de acceso al correo | US-20 | BR-ACCESO-09 | 2 |
+| GET | `/api/resultados?periodo=2026-2` | Sí | Logros por SO de las secciones al alcance, ruta 12 del contrato (propuesta, spec 004 en revisión) | US-37 a US-44 (spec 004) | BR-RESULTADOS-NN, BR-ACCESO-07 y BR-ACCESO-10 (propuesta) | spec 004 |
 
 Las reglas que no pertenecen a una sola ruta viven en las mismas specs vivas. BR-ACCESO-01 fija el esquema `acceso` y los usuarios de prueba, BR-PERIODO-03 los datos inventados del periodo 2026-2 y BR-PERIODO-01 y BR-PERIODO-02 la comprobación de la configuración al arrancar la API.
 

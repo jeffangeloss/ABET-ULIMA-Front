@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-18
-- **Rama de trabajo**: `feat/001-corte-2`, con el corte 2 de la spec 001 del Back (US-18, US-19 y US-21), que sale de `develop` (7f6c72b) y se actualiza con `develop` (2a22fb3) después del cierre de la spec 003, en el worktree `ABET_SIS_MED/wt/front-corte2` y con su PR #19 abierto
+- **Rama de trabajo**: `docs/004-reportes-docente`, que sale de `develop` (2a22fb3) y se actualiza con `develop` (f10fdc3) después del corte 2, con la documentación del sistema de la spec 004 del Back, en el PR #18
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: la actualización de esta rama con `develop`, que trae el cierre de la spec 003 del Back en este repositorio (PR #17), sobre P5 Cargas, el reemplazo y la confirmación de la sección en P3 y las filas del reemplazo en P4 (T085)
-- **En curso**: el PR #19, que espera la CI en verde y la decisión de Jefferson de fusionarlo después de jeffangeloss/ABET-ULIMA-Back#28. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal. En otra sesión avanza `docs/004-reportes-docente` (spec 004)
-- **Siguiente paso**: con la CI en verde y la decisión de Jefferson, fusionar el PR del Back y después este, y correr la prueba de humo contra la vista previa de `develop` (T099 del Back)
-- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la rama `feat/001-corte-2` del mismo corte, con su PR #28)
+- **Último cambio**: la aprobación de la spec 004 del Back, que Jefferson da en el chat el 2026-11-18 («Sí, apruébala»), con ADR-008 aceptado y la feature `resultados` aprobada en `feature-index.md`
+- **En curso**: la fusión del PR #18 después del PR #27 del Back, con la CI en verde. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
+- **Siguiente paso**: con las dos fusiones, T011 de la spec 004 deja definitivo el contrato de la ruta 12 en `feat/004-reportes-docente`. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
+- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, el corte 2 fusionado en `develop` con su PR #28 y la spec 004 en su rama `docs/004-reportes-docente`, en el PR #27)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,36 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 14:21 (Lima) · docs/004-reportes-docente · Spec 004 aprobada, con ADR-008 aceptado
+- Quién: Jefferson aprueba la spec 004 en el chat de la sesión principal con «Sí, apruébala», a la pregunta «¿Apruebas la propuesta de los gráficos por profesor?». La sesión principal transmite la cita, y Claude Code la comprueba en el registro de la sesión principal antes de escribir esta entrada, sin subagentes.
+- Qué cambió: ADR-008 pasa a «Aceptada y vigente» con fecha 2026-11-18 y deja de listar la aprobación en «Lo que todavía NO está», el índice de ADR quita su marca de propuesta y su deuda de aprobación, y `feature-index.md` da la feature `resultados` como aprobada. `CHANGELOG.md` deja de dar la documentación como en revisión, y la ruta 12 sigue como propuesta hasta que T011 la deje definitiva.
+- Por qué: el índice de ADR pasa cada ADR a «Aceptada y vigente» con la fusión de su spec, y la escala de `feature-index.md` da «aprobada» a la feature cuyo PR de spec entra a `develop`, lo que ocurre con el PR #27 del Back antes que este.
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff --stat HEAD~1` muestra solo ADR-008, el índice de ADR, `feature-index.md`, `CHANGELOG.md` y esta memoria, así que el contrato, `frontend.md` y `src/` no cambian.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, la descripción del PR #18, que suma la cita, y su fusión con «Create a merge commit» después del PR #27 del Back.
+- Pendiente y siguiente paso: con las dos fusiones, T011 de la spec 004 deja definitivo el contrato de la ruta 12 en `feat/004-reportes-docente`. Los seis ADR del MVP siguen en «Propuesta, pendiente de Jefferson» aunque la spec 001 ya está fusionada, y su cambio de estado queda para otro PR.
+
+### 2026-11-18 14:21 (Lima) · docs/004-reportes-docente · Actualización con develop tras el corte 2
+- Quién: la sesión principal transmite la aprobación de la spec 004 que Jefferson da en su chat y pide poner al día esta rama y la del Back sin forzar el empuje. Claude Code, sin subagentes, integra `origin/develop` (f10fdc3) con un merge, resuelve `CHANGELOG.md` y `MEMORIA.md` y escribe esta entrada.
+- Qué cambió: la rama trae el corte 2 de la spec 001 del Back en este repositorio (PR #19). `CHANGELOG.md` junta la línea de la spec 004 con las del corte 2, y `MEMORIA.md` intercala por fecha las entradas de las dos ramas y junta «Punto actual». La documentación de la spec 004 no cambia.
+- Por qué: `develop` avanza después del rebase de las 07:44, y el PR #18 vuelve a chocar en `CHANGELOG.md` y `MEMORIA.md`. El permiso de empuje forzado de la mañana cubre solo aquel rebase, así que esta vez la rama integra `develop` con un merge.
+- Lo que debe hacer, cómo se probó: `git merge-tree --write-tree origin/develop HEAD` no da conflictos, `git diff --stat origin/develop...HEAD` muestra solo la documentación de la spec 004, `CHANGELOG.md` y esta memoria, y `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff origin/develop HEAD -- docs/` muestra solo la documentación de la spec 004, `contrato.md` y `frontend.md` no repiten ningún número de sección ni de ruta, y cada entrada de `MEMORIA.md` que trae `develop` sigue completa según una comparación bloque por bloque.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR #18, que recibe el merge sin empuje forzado.
+- Pendiente y siguiente paso: registrar la aprobación de la spec 004 y fusionar el PR #18 después del PR #27 del Back, con la CI en verde.
+
+### 2026-11-18 07:44 (Lima) · docs/004-reportes-docente · PR #18 abierto y rama rebasada sobre develop con el cierre de la spec 003
+- Quién: Jefferson autoriza en el chat empujar esta rama y abrir su PR («Sí, empuja y abre») y, después, rebasarla y empujarla con `--force-with-lease` («Sí, rebásalas»). Claude Code, sin subagentes, abre el PR #18, que cita el PR #27 del Back, rebasa el commit de la spec 004 sobre `develop` (2a22fb3), resuelve el conflicto de `MEMORIA.md` y escribe esta entrada.
+- Qué cambió: el commit «Documentación del sistema para la spec 004 de los logros por SO» queda sobre el cierre de la spec 003 del Back en el Front (PR #17) con otro SHA. En `MEMORIA.md`, su entrada queda encima de la del 2026-11-17 23:30 por orden de fecha, y «Punto actual» junta lo pendiente de US-17 que trae `develop` con la spec 004. Ningún archivo de `docs/`, `src/` ni de las pruebas cambia.
+- Por qué: `develop` recibe el PR #17 después de abrir el PR #18, y los dos cambian «Punto actual» y el comienzo del «Registro», así que el PR #18 choca con `develop`. `docs/devops.md` pide fusionar los PR con rebase.
+- Lo que debe hacer, cómo se probó: `git merge-tree --write-tree origin/develop HEAD` no da conflictos, `git diff --stat origin/develop...HEAD` muestra solo la documentación de la spec 004, `CHANGELOG.md` y esta memoria, y `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff eda19d1 HEAD -- docs/ CHANGELOG.md` sale vacío, así que la documentación de la spec 004 no cambia con el rebase, y cada entrada de `MEMORIA.md` que trae `develop` sigue completa, según una comparación bloque por bloque con `git show origin/develop:MEMORIA.md`.
+- Correcciones: «Punto actual» del commit anterior todavía dice que la rama espera el permiso para empujar, y esta entrada lo deja al día.
+- Cómo se reporta: esta entrada y el PR #18, que recibe la rama con `--force-with-lease`, sin cambio en `CHANGELOG.md`.
+- Pendiente y siguiente paso: la aprobación de la spec 004 del Back (T004); con ella, T011 de la spec 004 deja definitivo el contrato de la ruta 12.
 
 ### 2026-11-18 07:30 (Lima) · feat/001-corte-2 · Actualización con develop tras el cierre de la spec 003
 - Quién: la sesión principal de Jefferson avisa que `docs/003-cierre` ya está en `develop` (2a22fb3, PR #17), con Jefferson de acuerdo. Claude Code, en la sesión lateral del corte 2 y sin subagentes, fusiona `develop` en esta rama, resuelve el choque de esta memoria, corre las comprobaciones y escribe esta entrada.
@@ -56,6 +86,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Correcciones: el texto de P4 para una carga REEMPLAZADA decía que su sucesora «es la publicada», lo que deja de ser cierto si la sucesora también se reemplaza, y pasa a «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta). La prueba de humo guardaba el R-17 como `R017_reemplazo_410.xlsx`, y `revisar_r17.py` marcaba dos fallas porque coteja la franja PROVISIONAL con el nombre, así que ahora lo guarda con el nombre que fija la API, en `DIR_CAPTURAS/reemplazo/`. La revisión independiente deja un hallazgo de severidad baja aceptado, porque P3 no vuelve a ofrecer el reemplazo si otra persona reemplaza la carga mientras pregunta, y la pantalla muestra el 409 tal cual.
 - Cómo se reporta: esta entrada, el CHANGELOG, la sección «Corte 2» de `specs/001-mvp-carga-r17/audit.md` del Back, las capturas de `ABET_SIS_MED/demo_corte2/` y el PR de esta rama, cuando Jefferson autorice empujar.
 - Pendiente y siguiente paso: P1 con el código por correo (T083, que espera a T018), la prueba de humo contra la vista previa de `develop` después de fusionar las dos ramas (T099) y la versión 0.2.0, que publica Jefferson (T089).
+
+### 2026-11-17 23:57 (Lima) · docs/004-reportes-docente · Documentación del sistema para la spec 004 de los logros del profesor por SO (en local)
+- Quién: Claude Code, en la misma sesión que escribe la spec 004 del Back. La entrada de la misma fecha en `MEMORIA.md` del Back nombra los subagentes que auditan las historias y las decisiones técnicas. En el Front no participa ningún subagente, y Claude Code escribe los documentos a partir de la spec y de la crítica de arquitectura.
+- Qué cambió: `docs/00-vision/adr/ADR-008-logros-por-pi-en-el-sistema.md` es nuevo, en propuesta, con su fila y su deuda en el índice de ADR. `docs/03-api/contrato.md` suma la fila de la ruta 12, una nota en la sección 3.4, un punto en la sección 9 y la sección 12 con `GET /api/resultados`. `docs/specs/api-contracts.md` suma su fila, `docs/01-arquitectura/frontend.md` suma la sección 9 con P6 «Mis logros por SO» y `docs/specs/feature-index.md` suma la fila `resultados`. Ningún archivo de `src/` ni de las pruebas cambia.
+- Por qué: FR-017 de la spec 004 y el método del proyecto piden el contrato y la pantalla en el Front antes de implementar, y la regla 3 de `AGENTS.md` pide que cada pantalla nombre las historias que la justifican, que son US-37 a US-44.
+- Lo que debe hacer, cómo se probó: la comprobación de la sección 10 del contrato, corrida desde `ABET_SIS_MED/wt` con `BACK=back-004 FRONT=front-004`, da 0 mensajes de los escenarios sin contrato, también con la carpeta de la spec 004 sumada a su lectura. `bash scripts/preflight.sh --staged` termina sin fallas con esta memoria.
+- Lo que no debe hacer, cómo se probó: la misma comprobación da 1 mensaje del contrato sin escenario, el de la marca de entorno de T077, que ya daba `develop` antes del cambio, así que los textos nuevos, todos con la marca (propuesta), no suman ninguno. La ruta 12 y la sección 12 no chocan con la ruta 11 y la sección 11 de la spec 002, ni la sección 9 de `frontend.md` con su sección 8. Las secciones 1 a 7 de `frontend.md`, que edita el corte 2 en otra sesión, no cambian.
+- Correcciones: el borrador numeraba 11 la ruta nueva, que la spec 002 de la rama `docs/002-capstone` ya usa, y pasa a 12.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR de esta rama, que cita el de la spec 004 del Back, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: la aprobación de Jefferson y T011, que deja definitivos la sección 3.4, la cuenta de caminos de OpenAPI de la sección 10 y la lectura de la carpeta de la spec 004 en la comprobación de mensajes. El mensaje de la marca de entorno sin escenario queda para su propia corrección.
 
 ### 2026-11-17 23:30 (Lima) · docs/003-cierre · Cierre de la spec 003 del Back en el Front (T053 y T061)
 - Quién: Jefferson aprueba en el chat empezar a cerrar lo que queda de la versión 0.1.0 («Sí, empieza»). Claude Code corre en un worktree de `develop` la parte del Front de T053 y escribe esta entrada. En el flujo de agentes wf_844270c1-e83, un verificador (Sonnet, esfuerzo medio) corre `tests/pantallas/SubirExport.test.tsx` con `--reporter=verbose` y otro (Sonnet, esfuerzo medio) revisa la memoria y el registro de cambios de los commits de la spec 003 de este repositorio. Claude Code compara sus cifras con los registros de la corrida antes de aceptarlas.
