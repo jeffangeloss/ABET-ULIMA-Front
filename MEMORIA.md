@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-18
-- **Rama de trabajo**: `feat/004-reportes-docente`, que sale de `develop` (e88d6f2, con la documentación de la spec 004 fusionada por el PR #18), con la construcción de la pantalla P6 de la spec 004 del Back
+- **Rama de trabajo**: `feat/004-reportes-docente`, que sale de `develop` (e88d6f2, con la documentación de la spec 004 fusionada por el PR #18), con la construcción de la pantalla P6 de la spec 004 del Back, en el PR #20
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: el cierre de la spec 004 en esta rama, con ADR-008 al día y la auditoría en `specs/004-reportes-docente/audit.md` del Back, después de P6 y su humo (203d822) y del contrato definitivo de la ruta 12 (a5d678c)
-- **En curso**: nada en esta rama. La spec 004 queda construida y auditada en `feat/004-reportes-docente` del Back y del Front, sin empujar. Los escenarios pendientes de US-17 siguen en `audit.md` del Back
-- **Siguiente paso**: el permiso de Jefferson para empujar esta rama y la del Back y abrir sus PR (T070), y después de las dos fusiones el humo de P6 contra la vista previa de `develop` (T071). Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
-- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back); empujar la rama y abrir su PR esperan el permiso de Jefferson (T070 de la spec 004)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, la spec 004 fusionada en `develop` con su PR #27 y su construcción en `feat/004-reportes-docente`, que trae la fase 1 en 55a66b6 y la ruta 12 en 0db6ee3)
+- **Último cambio**: el PR #20 de esta rama hacia `develop`, que cita el PR #31 del Back, sobre el cierre de la spec 004 con ADR-008 al día (b856515), P6 y su humo (203d822) y el contrato definitivo de la ruta 12 (a5d678c)
+- **En curso**: el PR #20 de esta rama y el PR #31 del Back, abiertos hacia `develop` el 2026-11-18 con el permiso de Jefferson en el chat («Sí, empuja y abre»), a la espera de la CI y de la fusión, primero la del Back. Los escenarios pendientes de US-17 siguen en `audit.md` del Back
+- **Siguiente paso**: con la CI en verde, la fusión del PR #31 del Back y después la del PR #20, que decide Jefferson (T070), y luego el humo de P6 contra la vista previa de `develop` (T071). Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
+- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back); la fusión de los PR #31 del Back y #20 de esta rama espera a Jefferson (T070 de la spec 004)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, la spec 004 fusionada en `develop` con su PR #27 y su construcción en `feat/004-reportes-docente`, en el PR #31, con la fase 1 en 55a66b6, la ruta 12 en 0db6ee3 y el cierre en 38f0c9e)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-18 16:35 (Lima) · feat/004-reportes-docente · PR #20 abierto
+- Quién: Jefferson autoriza en el chat empujar las dos ramas y abrir sus PR («Sí, empuja y abre»). Claude Code, sin subagentes, empuja `feat/004-reportes-docente` sin forzar, abre jeffangeloss/ABET-ULIMA-Front#20 hacia `develop` con la referencia a jeffangeloss/ABET-ULIMA-Back#31 y escribe esta entrada.
+- Qué cambió: la rama existe en `origin` y su PR está abierto, y esta memoria deja de dar el empuje como pendiente.
+- Por qué: T070 de la spec 004 del Back, con el permiso de Jefferson para empujar y abrir, que no incluye fusionar.
+- Lo que debe hacer, cómo se probó: `git push -u origin feat/004-reportes-docente` crea la rama remota, y `gh pr view 20` da el PR abierto hacia `develop`, fusionable y con la referencia al PR #31 del Back, que a su vez cita este.
+- Lo que no debe hacer, cómo se probó: `develop` sigue en e88d6f2, y `git log origin/develop..HEAD` da tres commits a nombre de Jeffangeloss, sin `Co-Authored-By` ni firmas de herramientas. Nada se fusiona.
+- Correcciones: «Punto actual» del cierre (b856515) daba el empuje y el PR como pendientes, y «Repos relacionados» no nombraba el cierre del Back (38f0c9e).
+- Cómo se reporta: esta entrada y los dos PR.
+- Pendiente y siguiente paso: la CI de los dos PR, su fusión por Jefferson con el Back primero y, después de las dos fusiones, el humo de P6 contra la vista previa de `develop` (T071).
 
 ### 2026-11-18 15:57 (Lima) · feat/004-reportes-docente · Cierre de la spec 004 en el Front
 - Quién: Claude Code, sin subagentes en este repositorio. En el Back, un verificador (Sonnet, esfuerzo medio) intenta refutar `specs/004-reportes-docente/audit.md` en solo lectura, y su resultado queda en la entrada de cierre del Back.
