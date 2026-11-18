@@ -13,13 +13,13 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-17
-- **Rama de trabajo**: `chore/dependencias-dependabot`, que sale de `develop` (67a04af) con los cuatro saltos de Dependabot
+- **Rama de trabajo**: `feat/001-corte-2`, que sale de `develop` (7f6c72b) con el corte 2 de la spec 001 del Back (US-18, US-19 y US-21), en el worktree `ABET_SIS_MED/wt/front-corte2`
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1 en un solo cambio, que reemplaza los PR de Dependabot #5, #6, #9 y #12, con el bundle de producción idéntico al de `develop`
-- **En curso**: el PR de esta rama, que Jefferson aprueba en el chat fusionar con la CI en verde
-- **Siguiente paso**: al fusionar, cerrar los cuatro PR de Dependabot con su razón y seguir con lo pendiente de US-17 en `audit.md` del Back
-- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`)
+- **Último cambio**: `docs/03-api/contrato.md` fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo, la lista de cargas, la confirmación de la sección y los campos nuevos de la constancia, antes de su código
+- **En curso**: P5 Cargas, el reemplazo y la confirmación de la sección en P3 (T085), con sus pruebas de Vitest y la prueba de humo del reemplazo (T087 del Back)
+- **Siguiente paso**: terminar T085 en esta rama, correr `npm test`, `npm run build` y la prueba de humo contra el Back del corte 2 en local, y abrir el PR solo con el permiso de Jefferson
+- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, y la rama `feat/001-corte-2` del mismo corte)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-17 23:25 (Lima) · feat/001-corte-2 · Contrato de la API del corte 2 (T080 de la spec 001 del Back)
+- Quién: Claude Code, en una sesión lateral que abre la sesión principal de Jefferson para implementar el corte 2 de la spec 001 (US-18 a US-21, tareas T080 a T088 y T099), sin subagentes en este cambio. La spec 001 ya está aprobada, así que el corte 2 no pide otra aprobación.
+- Qué cambió: `docs/03-api/contrato.md` fija las rutas 8 y 9 con su cuerpo, sus casos y sus errores, el campo `confirmar_seccion` de la ruta 5, que solo admite `true`, el 422 con `requiere_confirmacion` y el 409 con `carga_publicada` (sección 3.1), los campos `reemplaza_carga_id` y `reemplazada_por` de la constancia, `sha256_corto` y `motivo` de la lista de cargas y los seis caminos que el esquema OpenAPI debe tener sin US-20. `docs/specs/api-contracts.md` pone al día su estado, sus reglas y lo que todavía no existe.
+- Por qué: T080 y la regla del contrato de `docs/specs/api-contracts.md`, que pide cambiar el contrato antes de implementar la ruta. La pregunta de la sección reemplaza desde el corte 2 al 422 del corte 1 (D-02), así que el contrato ya no cita aquel texto.
+- Lo que debe hacer, cómo se probó: la comprobación de la sección 10 del contrato, contra los `.feature` de la rama `feat/001-corte-2` del Back, da 0 mensajes de los escenarios sin contrato, y todos los textos nuevos del contrato están en un escenario o llevan «(propuesta)». `npx vitest run` sigue en 9 archivos y 85 pruebas aprobadas, porque el cambio es solo de documentos.
+- Lo que no debe hacer, cómo se probó: la misma comprobación da 1 mensaje del contrato sin escenario, el de la marca de entorno de T077 («La base de DATABASE_URL está marcada para production…»), que ya falta en `develop` antes de este cambio, así que no lo trae el corte 2. Ningún ejemplo del contrato usa un dato real, y los correos son de `example.invalid`.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: P5 Cargas y el reemplazo y la confirmación en P3 (T085), con sus pruebas, y el texto de T077 que falta en un escenario, como observación aparte del corte 2.
 
 ### 2026-11-17 18:25 (Lima) · chore/dependencias-dependabot · jsdom, vitest, vite y `@vitejs/plugin-react` en un solo cambio (PR de Dependabot #5, #6, #9 y #12)
 - Quién: Claude Code, por el encargo de la sesión principal de Jefferson del 2026-11-17, aplica los cuatro saltos en un solo cambio, corre las pruebas y escribe esta entrada. Jefferson aprueba en el chat empujar las ramas del Front y del Back, fusionarlas con la CI en verde y cerrar los diez PR de Dependabot. Un subagente (Sonnet, esfuerzo medio) lee en solo lectura las notas de cada versión, las fechas del registro de npm, la base de avisos de GitHub y los diffs de los cuatro PR. Claude Code vuelve a tomar con `npm view` las fechas de los nueve paquetes del lockfile nuevo antes de aceptar su informe.
