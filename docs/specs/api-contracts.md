@@ -2,7 +2,7 @@
 
 > **Regla de oro.** `src/servicios/api.ts` del Front llama solo a estas rutas. Cualquier cambio de una ruta se refleja aquí y en [`docs/03-api/contrato.md`](../03-api/contrato.md) antes de implementarse, en una solicitud de integración (pull request, PR) del Front que cita el PR de la spec viva del Back que la cambia.
 
-> **Estado 2026-10-28.** Contrato escrito antes del código, con las reglas `BR-` numeradas en las specs vivas del Back (fase 1, tareas T011 a T015). Ninguna ruta existe todavía.
+> **Estado 2026-11-17.** Las siete rutas del corte 1 existen en el Back desde el 2026-10-30. La sección 7 de `docs/03-api/contrato.md` fija la forma definitiva del reemplazo, la lista de cargas y la confirmación de la sección del corte 2 (T080), antes de su código, y el código de acceso por correo espera a T018. **Estado 2026-10-28.** Contrato escrito antes del código, con las reglas `BR-` numeradas en las specs vivas del Back (fase 1, tareas T011 a T015).
 
 Este archivo es el índice corto del contrato de la API, que sigue el estilo de transferencia de estado representacional (representational state transfer, REST). Los cuerpos, las respuestas, las reglas y los errores de cada ruta están en [`docs/03-api/contrato.md`](../03-api/contrato.md), y las reglas `BR-` numeradas, en la spec viva de cada funcionalidad del Back. Esas specs son `specs/features/acceso/acceso.spec.md` (BR-ACCESO-01 a BR-ACCESO-09), `specs/features/periodo/periodo.spec.md` (BR-PERIODO-01 a BR-PERIODO-04), `specs/features/carga-export/carga-export.spec.md` (BR-CARGA-01 a BR-CARGA-20) y `specs/features/r17/r17.spec.md` (BR-R17-01 a BR-R17-10).
 
@@ -26,8 +26,8 @@ Este archivo es el índice corto del contrato de la API, que sigue el estilo de 
 | POST | `/api/secciones/{seccion_id}/cargas` | Sí | Subir el export (.xlsx, .csv o .xls) y cargarlo en una transacción (solo el profesor asignado en el corte 1) | US-07 a US-14, US-21, US-27 a US-32 y US-36 (spec 003) | BR-CARGA-01 a BR-CARGA-17, BR-CARGA-18 (corte 2), BR-PERIODO-02 y BR-ACCESO-08 | 1 |
 | GET | `/api/cargas/{carga_id}` | Sí | Constancia de una carga, con `hoja` nula en un export de texto | US-16, US-19, US-34 (spec 003) | BR-R17-10 y BR-ACCESO-08 | 1 |
 | GET | `/api/cargas/{carga_id}/r17.xlsx` | Sí | R-17 con la hoja «Constancia», solo de cargas en estado PUBLICADA | US-15, US-16 | BR-R17-01 a BR-R17-09 y BR-ACCESO-08 | 1 |
-| GET | `/api/cargas?seccion_id={seccion_id}` | Sí | Cargas al alcance del usuario | US-19 | BR-CARGA-20 | 2 |
-| POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | Reemplazar la carga publicada (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 | 2 |
+| GET | `/api/cargas?seccion_id={seccion_id}` | Sí | Cargas al alcance del usuario, con `seccion_id` opcional | US-19 | BR-CARGA-20 y BR-ACCESO-07 | 2 |
+| POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | Reemplazar la carga publicada (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | POST | `/api/sesion/codigo` | No | Pedir el código de acceso al correo | US-20 | BR-ACCESO-09 | 2 |
 
 Las reglas que no pertenecen a una sola ruta viven en las mismas specs vivas. BR-ACCESO-01 fija el esquema `acceso` y los usuarios de prueba, BR-PERIODO-03 los datos inventados del periodo 2026-2 y BR-PERIODO-01 y BR-PERIODO-02 la comprobación de la configuración al arrancar la API.
@@ -45,7 +45,6 @@ Los escenarios de aceptación de estas rutas viven en `specs/001-mvp-carga-r17/a
 
 ## Lo que todavía NO está
 
-1. **El código.** Ninguna ruta existe en el Back ni en `src/servicios/api.ts`, así que la comprobación con el esquema OpenAPI de la sección 10 de `docs/03-api/contrato.md` espera a la fase 3.
-2. **La revisión del contrato.** Las reglas numeradas y este índice esperan la auditoría de la fase 1 (T019) y la revisión de Jefferson en sus PR.
-3. **Los casos que `docs/03-api/contrato.md` deja abiertos** en su sección «Lo que el contrato no cubre todavía», entre ellos las respuestas 403 y 404 para un recurso ajeno (BR-ACCESO-08) y el plazo del reemplazo (D-11).
-4. **Las reglas definitivas del corte 2.** BR-CARGA-18 a BR-CARGA-20 y BR-ACCESO-09 recogen los escenarios del corte 2, y T080 las completa antes de implementarlas.
+1. **La revisión del contrato.** Las reglas numeradas y este índice esperan la auditoría de la fase 1 (T019) y la revisión de Jefferson en sus PR.
+2. **Los casos que `docs/03-api/contrato.md` deja abiertos** en su sección «Lo que el contrato no cubre todavía», entre ellos las respuestas 403 y 404 para un recurso ajeno (BR-ACCESO-08) y el plazo del reemplazo (D-11).
+3. **El código de acceso por correo.** BR-CARGA-18 a BR-CARGA-20 quedan definitivas con T080 (2026-11-17), y BR-ACCESO-09 espera a T018, el dominio y la cuenta de Resend de Jefferson, así que `POST /api/sesion/codigo` todavía no existe.

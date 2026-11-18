@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Cargas } from "./pantallas/Cargas";
 import { Ingreso } from "./pantallas/Ingreso";
 import { MisSecciones } from "./pantallas/MisSecciones";
 import { ResultadoCarga } from "./pantallas/ResultadoCarga";
@@ -9,7 +10,8 @@ import type { Constancia, Seccion, Usuario } from "./servicios/tipos";
 
 type Vista =
   | { pantalla: "secciones" }
-  | { pantalla: "subir"; seccion: Seccion }
+  | { pantalla: "cargas" }
+  | { pantalla: "subir"; seccion: Seccion; reemplaza?: number }
   | { pantalla: "resultado"; cargaId: number; constancia?: Constancia };
 
 /** Sesión actual y pantalla visible. El resto del estado vive en la pantalla que lo usa. */
@@ -45,10 +47,16 @@ export function App() {
 
   return (
     <div className="mx-auto max-w-3xl p-4 text-slate-900">
-      <header className="mb-6 flex items-center justify-between border-b border-slate-300 pb-2">
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-slate-300 pb-2">
         <span className="font-semibold">ABET ULIMA, carga del R-17</span>
         {usuario && (
-          <span className="flex items-center gap-3 text-sm">
+          <span className="flex flex-wrap items-center gap-3 text-sm">
+            <button type="button" className={botonSecundario} onClick={volver}>
+              Mis secciones
+            </button>
+            <button type="button" className={botonSecundario} onClick={() => setVista({ pantalla: "cargas" })}>
+              Cargas
+            </button>
             <span>{usuario.correo}</span>
             <button type="button" className={botonSecundario} onClick={salir}>
               Salir
@@ -75,9 +83,18 @@ export function App() {
             alVerResultado={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
           />
         )}
+        {usuario && vista.pantalla === "cargas" && (
+          <Cargas
+            usuario={usuario}
+            alVerResultado={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
+            alReemplazar={(seccion, cargaId) => setVista({ pantalla: "subir", seccion, reemplaza: cargaId })}
+          />
+        )}
         {usuario && vista.pantalla === "subir" && (
           <SubirExport
+            key={`${vista.seccion.seccion_id}-${vista.reemplaza ?? "nueva"}`}
             seccion={vista.seccion}
+            reemplaza={vista.reemplaza}
             alVolver={volver}
             alVerResultado={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
             alResultado={(constancia) => setVista({ pantalla: "resultado", cargaId: constancia.carga_id, constancia })}
