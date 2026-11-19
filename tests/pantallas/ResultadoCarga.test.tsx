@@ -150,7 +150,7 @@ describe("P4 Resultado de la carga", () => {
 
   it("muestra el rótulo del piloto", () => {
     montar(constanciaConError);
-    expect(screen.getByText("Solo exports con códigos inventados (99000000 a 99999999)")).toBeInTheDocument();
+    expect(screen.queryByText("Solo exports con códigos inventados (99000000 a 99999999)")).not.toBeInTheDocument();
   });
   it("sin reemplazo la constancia no trae las filas de reemplazo", () => {
     montar(constanciaConError);

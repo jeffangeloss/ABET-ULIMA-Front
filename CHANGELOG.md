@@ -21,6 +21,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Cambiado
 
+- Las pantallas ya no muestran «Solo exports con códigos inventados (99000000 a 99999999)», porque D-10 queda decidida el 2026-11-19.
 - El contrato precisa que el 200 del mismo archivo de la carga publicada manda aunque `reemplaza` nombre otra carga, porque la huella se busca antes que la carga vigente (BR-CARGA-19).
 - El contrato de la API fija la forma definitiva de las rutas del corte 2, con el reemplazo de la carga publicada (`?reemplaza=`), la lista de cargas (`GET /api/cargas`), la confirmación de la sección (`confirmar_seccion=true` y `requiere_confirmacion`), `carga_publicada` en el 409 y `reemplaza_carga_id` y `reemplazada_por` en la constancia (T080 de la spec 001 del Back).
 - `docs/05-operacion/entornos-y-despliegue.md` registra la versión 0.1.0 en Production, la decisión J-07 en Hobby y el entrenamiento de IA del equipo de Vercel, que sigue encendido (T079 y T070 de la spec 001 del Back).

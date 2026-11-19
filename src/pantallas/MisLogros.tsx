@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Mensaje } from "../componentes/Mensaje";
-import { RotuloPiloto } from "../componentes/RotuloPiloto";
 import { Titulo } from "../componentes/Titulo";
 import { botonSecundario } from "../componentes/estilos";
 import { ErrorApi, obtenerResultados, urlR17 } from "../servicios/api";
@@ -186,7 +185,6 @@ export function MisLogros({ usuario, alVolver }: Props) {
   return (
     <>
       <Titulo>{titulo}</Titulo>
-      <RotuloPiloto />
       {error && <Mensaje tipo="error">{error}</Mensaje>}
       {!error && resultados === null && <Mensaje tipo="aviso">Cargando sus logros…</Mensaje>}
       {resultados !== null && secciones.length === 0 && <p>No tiene secciones asignadas en este periodo.</p>}

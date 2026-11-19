@@ -102,7 +102,7 @@ describe("P2 Mis secciones", () => {
     simularApi({ "GET /api/secciones": json(200, []) });
     render(<MisSecciones usuario={usuarioProfesor} {...acciones()} />);
     expect(screen.getByRole("heading", { level: 1, name: "Mis secciones" })).toHaveFocus();
-    expect(screen.getByText("Solo exports con códigos inventados (99000000 a 99999999)")).toBeInTheDocument();
+    expect(screen.queryByText("Solo exports con códigos inventados (99000000 a 99999999)")).not.toBeInTheDocument();
     await screen.findByText("No tiene secciones asignadas en este periodo.");
   });
 });

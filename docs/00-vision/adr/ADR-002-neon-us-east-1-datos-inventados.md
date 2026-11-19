@@ -1,5 +1,7 @@
 # ADR-002: La base vive en Neon en us-east-1 y solo admite códigos inventados hasta la autorización
 
+> **2026-11-19.** D-10 queda decidida: la universidad autoriza los datos reales en Neon y en Vercel. La guardia `ck_estudiante_codigo_inventado` sale de las dos ramas de Neon, la API la apaga con `GUARDIA_DATOS_INVENTADOS=0` y las pantallas dejan de mostrar el aviso «Solo exports con códigos inventados». El resto de este ADR queda como registro.
+
 | | |
 |---|---|
 | **Estado** | Propuesta, pendiente de Jefferson (decisión J-02), con la región y la versión corregidas el 2026-11-02 por la decisión J-17 del Back |

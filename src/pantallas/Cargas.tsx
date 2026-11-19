@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Mensaje } from "../componentes/Mensaje";
-import { RotuloPiloto } from "../componentes/RotuloPiloto";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, listarCargas, listarSecciones, urlR17 } from "../servicios/api";
@@ -53,7 +52,6 @@ export function Cargas({ usuario, alVerResultado, alReemplazar }: Props) {
   return (
     <>
       <Titulo>Cargas</Titulo>
-      <RotuloPiloto />
       {error && <Mensaje tipo="error">{error}</Mensaje>}
       {!error && datos === null && <Mensaje tipo="aviso">Cargando las cargas</Mensaje>}
       {!error && datos !== null && datos.secciones.length === 0 && <p>No tiene secciones asignadas en este periodo.</p>}

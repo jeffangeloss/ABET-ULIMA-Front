@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { AvisosCarga } from "../componentes/AvisosCarga";
 import { Mensaje } from "../componentes/Mensaje";
-import { RotuloPiloto } from "../componentes/RotuloPiloto";
 import { TablaRechazos } from "../componentes/TablaRechazos";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
@@ -46,7 +45,6 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver, alVerLogr
   return (
     <>
       <Titulo>Resultado de la carga</Titulo>
-      <RotuloPiloto />
       {error && <Mensaje tipo="error">{error}</Mensaje>}
       {!error && !constancia && <Mensaje tipo="aviso">Cargando la constancia</Mensaje>}
       {constancia && (
