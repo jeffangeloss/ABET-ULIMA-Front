@@ -43,7 +43,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Por qué: D-10 queda decidida y el sistema recibe exports reales.
 - Lo que debe hacer, cómo se probó: `npx vitest run` da 164 passed en 11 archivos y `npx tsc -b --noEmit` termina sin errores.
 - Lo que no debe hacer, cómo se probó: el mensaje del 422 de la guardia sigue en Subir export, porque el Back la vuelve a encender si falta `GUARDIA_DATOS_INVENTADOS`.
-- Correcciones: ninguna.
+- Correcciones: el primer commit sube por error `tsconfig.tsbuildinfo`, que deja `tsc -b`; el segundo lo saca y lo suma a `.gitignore`.
 - Cómo se reporta: esta entrada y el PR de esta rama.
 - Pendiente y siguiente paso: `GUARDIA_DATOS_INVENTADOS=0` en Vercel, que pone Jefferson, y una versión hacia `main` para que la página oficial pierda el aviso.
 
