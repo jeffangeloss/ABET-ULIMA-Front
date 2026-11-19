@@ -14,6 +14,10 @@ interface Props {
   /** Constancia que P3 ya recibió con el 201, para no pedirla de nuevo. */
   constanciaInicial?: Constancia;
   alVolver: () => void;
+  /** Spec 004. Abre P6 desde una carga PUBLICADA. */
+  alVerLogros?: () => void;
+  /** Texto del enlace a P6, el mismo de la cabecera. */
+  rotuloLogros?: string;
 }
 
 const ETIQUETA_ESTADO: Record<EstadoCarga, string> = {
@@ -24,7 +28,7 @@ const ETIQUETA_ESTADO: Record<EstadoCarga, string> = {
 };
 
 /** P4. Estado y conteos, rechazos, avisos aparte, constancia y descarga. Nunca un valor leído ni un nombre. */
-export function ResultadoCarga({ cargaId, constanciaInicial, alVolver }: Props) {
+export function ResultadoCarga({ cargaId, constanciaInicial, alVolver, alVerLogros, rotuloLogros = "Ver mis logros por SO" }: Props) {
   const [constancia, setConstancia] = useState<Constancia | null>(constanciaInicial ?? null);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,10 +100,15 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver }: Props) 
           )}
         </>
       )}
-      <div className="mt-4">
+      <div className="mt-4 flex flex-wrap gap-2">
         <button type="button" className={botonSecundario} onClick={alVolver}>
           Volver a mis secciones
         </button>
+        {alVerLogros && constancia?.estado === "PUBLICADA" && (
+          <button type="button" className={botonSecundario} onClick={alVerLogros}>
+            {rotuloLogros}
+          </button>
+        )}
       </div>
     </>
   );

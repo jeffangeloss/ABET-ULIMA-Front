@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { horaDeLima, resumenFilas } from "../../src/servicios/formato";
+import { fraccion, horaDeLima, meta, porcentaje, resumenFilas } from "../../src/servicios/formato";
 
 describe("horaDeLima", () => {
   it("conserva la hora cuando ya viene con el desfase de Lima", () => {
@@ -29,5 +29,23 @@ describe("resumenFilas", () => {
     expect(resumenFilas({ filas_leidas: 0, filas_aceptadas: 0, filas_rechazadas: 0 })).toBe(
       "0 filas leídas, 0 aceptadas y 0 rechazadas",
     );
+  });
+});
+
+describe("cifras de P6 (spec 004)", () => {
+  it("el porcentaje lleva un decimal con coma y un espacio antes del signo", () => {
+    expect(porcentaje(81.8)).toBe("81,8 %");
+    expect(porcentaje(80)).toBe("80,0 %");
+    expect(porcentaje(100)).toBe("100,0 %");
+    expect(porcentaje(0)).toBe("0,0 %");
+  });
+  it("la meta va sin decimal cuando es entera y con coma cuando no", () => {
+    expect(meta(80)).toBe("80 %");
+    expect(meta(70)).toBe("70 %");
+    expect(meta(75.5)).toBe("75,5 %");
+  });
+  it("la fracción dice cuántos logran de cuántos", () => {
+    expect(fraccion(9, 11)).toBe("9 de 11");
+    expect(fraccion(0, 10)).toBe("0 de 10");
   });
 });

@@ -45,7 +45,7 @@ Antes de la ruta 12, cada router con datos declara la dependencia de sesión, y 
 
 ## Consecuencias
 
-- La sección 3.4 del contrato cambia cuando Jefferson apruebe la spec 004, y su sección 10 suma `/api/resultados` a la cuenta de caminos de OpenAPI.
+- La sección 3.4 del contrato cambia con la aprobación de la spec 004 (T011, 2026-11-18), y su sección 10 suma `/api/resultados` a la cuenta de caminos de OpenAPI y la carpeta `specs/004-reportes-docente/aceptacion/` a la comprobación de mensajes.
 - El Back gana una función pura de la meta, que `abet_carga/r17.py` también usa, y un router más con la dependencia de sesión.
 - `abet_app` no gana permisos, porque ya lee la vista, `abet.so`, `abet.pi`, `abet.instrumento` y `abet.plan_medicion`.
 - El coordinador recibe del orden de 150 secciones y 450 indicadores, que P6 agrupa por asignatura y nunca ordena por resultado, para no armar el ranking de docentes que critica H05.
@@ -85,6 +85,6 @@ node -e "const p = require('./package.json'); const d = { ...p.dependencies, ...
 
 ## Lo que todavía NO está
 
-1. **El código.** La ruta 12, P6 y la guardia de sesión por router no existen todavía, así que los criterios 1 a 3 esperan a la implementación.
+1. **Los criterios 2 y 3 en la vista previa de `develop`.** La ruta 12, P6 y la guardia de sesión por router existen desde el 2026-11-18 en `feat/004-reportes-docente` del Back y del Front, y sus pruebas cubren los cuatro criterios en la base desechable, en Vitest y en el humo local (`specs/004-reportes-docente/audit.md` del Back). Los criterios 2 y 3 corren contra la vista previa de `develop` después de fusionar los dos PR (T071).
 2. **Las decisiones de la carrera.** D-32 (consolidado y cifra por SO), D-33 (agregado del curso o de la carrera) y D-34 (descripción del instrumento) siguen abiertas.
 3. **Power BI para la coordinación**, con sus licencias, la región de su inquilino y una vista sin códigos de estudiante.

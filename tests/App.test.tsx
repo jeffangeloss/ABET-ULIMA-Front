@@ -7,9 +7,13 @@ import {
   cargasDe410,
   constanciaConError,
   constanciaReemplazada,
+  constanciaSinColumna,
   constanciaVigenteQueReemplaza,
+  resultados410,
+  resultadosDelCoordinador,
   seccionPublicada,
   seccionSinCarga,
+  usuarioCoordinador,
   usuarioProfesor,
 } from "./respuestas";
 
@@ -157,5 +161,89 @@ describe("App", () => {
     const li = (await screen.findByText("Carga 10")).closest("li") as HTMLElement;
     await u.click(within(li).getByRole("button", { name: "Ver constancia" }));
     expect(await screen.findByText("La carga 11 la reemplaza, así que esta carga no tiene R-17.")).toBeInTheDocument();
+  });
+
+  // Spec 004, la pantalla P6 y sus enlaces (escenarios @delegado_a_vitest de resultados.feature del Back).
+
+  it("la cabecera ofrece una sola vez «Ver mis logros por SO», que abre P6, y P6 vuelve a P2 con «Volver»", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/resultados": json(200, resultados410),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    const fila = (await screen.findAllByRole("listitem"))[0];
+    expect(within(fila).getByRole("button", { name: "Subir export" })).toBeInTheDocument();
+    expect(within(fila).getByRole("button", { name: "Ver resultado" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Ver mis logros por SO" })).toHaveLength(1);
+    await u.click(within(screen.getByRole("banner")).getByRole("button", { name: "Ver mis logros por SO" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Mis logros por SO" })).toBeInTheDocument();
+    expect(await screen.findByRole("region", { name: "SO 5" })).toBeInTheDocument();
+    expect(llamadas.map((l) => l.clave)).toContain("GET /api/resultados");
+    await u.click(screen.getByRole("button", { name: "Volver" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Mis secciones" })).toBeInTheDocument();
+  });
+
+  it("P4 de una carga publicada ofrece también el enlace a P6", async () => {
+    simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/cargas/7": json(200, constanciaConError),
+      "GET /api/resultados": json(200, resultados410),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    const fila = (await screen.findAllByRole("listitem"))[0];
+    await u.click(within(fila).getByRole("button", { name: "Ver resultado" }));
+    await screen.findByText("11 filas leídas, 10 aceptadas y 1 rechazada");
+    const enP4 = within(screen.getByRole("main")).getByRole("button", { name: "Ver mis logros por SO" });
+    // P4 sigue sin porcentajes, que solo muestran P6 y el R-17 (invariante 8 de ADR-008).
+    expect(screen.getByRole("main").textContent).not.toContain("%");
+    await u.click(enP4);
+    expect(await screen.findByRole("heading", { level: 1, name: "Mis logros por SO" })).toBeInTheDocument();
+  });
+
+  it("P4 de una carga que no está publicada no ofrece el enlace a P6", async () => {
+    simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [{ ...seccionPublicada, carga_id: 8 }]),
+      "GET /api/cargas/8": json(200, constanciaSinColumna),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    const fila = (await screen.findAllByRole("listitem"))[0];
+    await u.click(within(fila).getByRole("button", { name: "Ver resultado" }));
+    await screen.findByText("No hay una carga publicada para esta sección");
+    expect(within(screen.getByRole("main")).queryByRole("button", { name: "Ver mis logros por SO" })).toBeNull();
+  });
+
+  it("un 401 en P6 vuelve a P1 con el aviso de sesión vencida", async () => {
+    simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/resultados": json(401, { detail: "La sesión venció. Ingrese otra vez." }),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { level: 1, name: "Mis secciones" });
+    await u.click(screen.getByRole("button", { name: "Ver mis logros por SO" }));
+    expect(await screen.findByRole("heading", { name: "Ingreso" })).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("La sesión venció. Ingrese otra vez.");
+  });
+
+  it("el coordinador abre P6 con «Ver los logros por SO de la carrera»", async () => {
+    simularApi({
+      "GET /api/sesion": json(200, usuarioCoordinador),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/resultados": json(200, resultadosDelCoordinador),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { level: 1, name: "Mis secciones" });
+    expect(screen.queryByRole("button", { name: "Ver mis logros por SO" })).toBeNull();
+    await u.click(within(screen.getByRole("banner")).getByRole("button", { name: "Ver los logros por SO de la carrera" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Logros por SO de la carrera" })).toBeInTheDocument();
+    expect(await screen.findByRole("region", { name: "Secciones" })).toBeInTheDocument();
   });
 });

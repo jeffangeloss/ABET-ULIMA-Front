@@ -7,14 +7,34 @@ import {
   listarCargas,
   listarSecciones,
   obtenerCarga,
+  obtenerResultados,
   sesionActual,
   subirExport,
   urlR17,
 } from "../../src/servicios/api";
 import { simularApi, json } from "../ayudas";
-import { cargasDe410, constanciaConError, usuarioProfesor } from "../respuestas";
+import { cargasDe410, constanciaConError, resultadosDeVarias, usuarioProfesor } from "../respuestas";
 
 describe("api.ts", () => {
+  it("obtenerResultados pide GET /api/resultados, con el periodo solo si llega, y devuelve el cuerpo tal cual", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/resultados": json(200, resultadosDeVarias),
+      "GET /api/resultados?periodo=2026-2": json(200, resultadosDeVarias),
+    });
+    expect(await obtenerResultados()).toEqual(resultadosDeVarias);
+    expect(await obtenerResultados("2026-2")).toEqual(resultadosDeVarias);
+    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/resultados", "GET /api/resultados?periodo=2026-2"]);
+    expect(llamadas.every((l) => (l.init?.method ?? "GET") === "GET" && l.init?.body === undefined)).toBe(true);
+  });
+
+  it("obtenerResultados convierte el 422 del periodo en ErrorApi con su detail", async () => {
+    simularApi({ "GET /api/resultados?periodo=2026-13": json(422, { detail: "El periodo no tiene la forma AAAA-C." }) });
+    await expect(obtenerResultados("2026-13")).rejects.toMatchObject({
+      status: 422,
+      detail: "El periodo no tiene la forma AAAA-C.",
+    });
+  });
+
   it("llama solo a rutas /api y manda la cookie con credentials", async () => {
     const { llamadas } = simularApi({ "GET /api/sesion": json(200, usuarioProfesor) });
     await sesionActual();
