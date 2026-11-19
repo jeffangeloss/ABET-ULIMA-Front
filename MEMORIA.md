@@ -12,10 +12,10 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-18
-- **Rama de trabajo**: `docs/004-memoria-tras-fusion`, que sale de `develop` (778ae23, con P6 y el contrato definitivo de la ruta 12 de la spec 004 fusionados por el PR #20), con esta memoria y el estado de `resultados` al día después de la fusión
+- **Fecha**: 2026-11-19
+- **Rama de trabajo**: `fix/d10-sin-rotulo-piloto`, que sale de `develop` y quita el aviso de códigos inventados
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: la fusión del PR #20 en `develop` (778ae23), después de la del PR #31 del Back (f403d52), que Jefferson autoriza en el chat el 2026-11-18 («Sí, fusiónalos»), y los dos proyectos de ABET públicos en SonarCloud desde el mismo día, también con su permiso («Sí, pásalos»), porque la organización `jeffangeloss` llegaba al tope de 50 000 líneas de código privadas
+- **Último cambio**: D-10 queda decidida el 2026-11-19 y las seis pantallas que mostraban «Solo exports con códigos inventados (99000000 a 99999999)» dejan de hacerlo; `RotuloPiloto.tsx` se borra y ADR-002 lo anota. En el Back, el PR #37 lo registra y la guardia sale de las dos ramas de Neon
 - **En curso**: el PR de esta rama y el del Back con el mismo nombre, que ponen al día la memoria de `develop`. Su fusión da el primer análisis de SonarCloud de `develop` desde que el proyecto es público. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
 - **Siguiente paso**: T071 del Back, el humo de P6 contra la vista previa de `develop`, que corre Jefferson con `ABET_SIS_MED/herramientas_neon/humo_preview.sh` después de restablecer la rama `develop` de Neon. La spec 005 sigue con T011, que deja definitivos el contrato de las rutas 13 a 16, ADR-009 y las enmiendas de ADR-005 y ADR-008. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-19 10:25 (Lima) · fix/d10-sin-rotulo-piloto · Sin aviso de códigos inventados
+- Quién: Jefferson pide en el chat quitar las restricciones de datos reales, con la autorización de la universidad («quita estas restricciones»). Claude Code, sin subagentes, escribe el cambio.
+- Qué cambió: `src/componentes/RotuloPiloto.tsx` se borra y sale de Ingreso, Mis secciones, Subir export, Resultado de la carga, Cargas y Mis logros. Las pruebas de esas pantallas exigen ahora que el aviso no aparezca, y ADR-002 suma una nota fechada.
+- Por qué: D-10 queda decidida y el sistema recibe exports reales.
+- Lo que debe hacer, cómo se probó: `npx vitest run` da 164 passed en 11 archivos y `npx tsc -b --noEmit` termina sin errores.
+- Lo que no debe hacer, cómo se probó: el mensaje del 422 de la guardia sigue en Subir export, porque el Back la vuelve a encender si falta `GUARDIA_DATOS_INVENTADOS`.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR de esta rama.
+- Pendiente y siguiente paso: `GUARDIA_DATOS_INVENTADOS=0` en Vercel, que pone Jefferson, y una versión hacia `main` para que la página oficial pierda el aviso.
 
 ### 2026-11-18 19:25 (Lima) · docs/004-memoria-tras-fusion · Memoria al día tras la fusión de la spec 004
 - Quién: Jefferson autoriza en el chat abrir un PR por repositorio que ponga al día la memoria de `develop` («Sí, ábrelos»). Claude Code, sin subagentes, crea esta rama desde `develop` (778ae23), hace el cambio y escribe esta entrada. Antes, con el permiso de Jefferson en el chat, fusiona el PR #31 del Back y el PR #20 («Sí, fusiónalos») y pasa a públicos los dos proyectos de ABET en SonarCloud con la sesión de Jefferson en el navegador del app («Sí, pásalos»).

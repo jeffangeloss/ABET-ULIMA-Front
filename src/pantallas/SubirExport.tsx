@@ -1,6 +1,5 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Mensaje } from "../componentes/Mensaje";
-import { RotuloPiloto } from "../componentes/RotuloPiloto";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, subirExport, type OpcionesSubida } from "../servicios/api";
@@ -76,7 +75,6 @@ export function SubirExport({ seccion, alResultado, alVerResultado, alVolver, re
   return (
     <>
       <Titulo>Subir export</Titulo>
-      <RotuloPiloto />
       <p className="mb-4 font-medium">{etiquetaSeccion(seccion)}</p>
       {reemplaza !== undefined && <p className="mb-4">Reemplaza a la carga {reemplaza}, la publicada de esta sección.</p>}
       <form onSubmit={enviar} className="max-w-md space-y-4">

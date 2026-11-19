@@ -49,7 +49,7 @@ describe("P3 Subir export", () => {
     expect(campo).toHaveAttribute("type", "file");
     expect(campo).toHaveAttribute("accept", ".xlsx,.csv,.xls");
     expect(screen.getByRole("button", { name: "Subir" })).toBeEnabled();
-    expect(screen.getByText("Solo exports con códigos inventados (99000000 a 99999999)")).toBeInTheDocument();
+    expect(screen.queryByText("Solo exports con códigos inventados (99000000 a 99999999)")).not.toBeInTheDocument();
     expect(screen.queryByRole("combobox")).toBeNull();
   });
 

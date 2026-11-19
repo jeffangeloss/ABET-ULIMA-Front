@@ -43,7 +43,7 @@ describe("P5 Cargas", () => {
     const titulos = await screen.findAllByRole("heading", { level: 2 });
     expect(titulos.map((t) => t.textContent)).toEqual([TITULO_410, TITULO_412]);
     expect(llamadas.map((l) => l.clave).sort()).toEqual(["GET /api/cargas", "GET /api/secciones"]);
-    expect(screen.getByText("Solo exports con códigos inventados (99000000 a 99999999)")).toBeInTheDocument();
+    expect(screen.queryByText("Solo exports con códigos inventados (99000000 a 99999999)")).not.toBeInTheDocument();
   });
 
   it("las cargas de una sección van en el orden de la API, de la más reciente a la más antigua", async () => {

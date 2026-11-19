@@ -290,7 +290,7 @@ describe("P6 Mis logros por SO", () => {
   it("vuelve a P2 con «Volver» y muestra el rótulo del piloto con el foco en el título", async () => {
     const { alVolver } = await abrir(resultados410, usuarioProfesor);
     expect(screen.getByRole("heading", { level: 1, name: "Mis logros por SO" })).toHaveFocus();
-    expect(screen.getByText("Solo exports con códigos inventados (99000000 a 99999999)")).toBeInTheDocument();
+    expect(screen.queryByText("Solo exports con códigos inventados (99000000 a 99999999)")).not.toBeInTheDocument();
     await screen.findByRole("region", { name: "SO 5" });
     screen.getByRole("button", { name: "Volver" }).click();
     expect(alVolver).toHaveBeenCalledTimes(1);
