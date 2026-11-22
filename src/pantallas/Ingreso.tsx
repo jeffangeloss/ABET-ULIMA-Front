@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { AvisoSesion } from "./AvisoSesion";
 import { Mensaje } from "../componentes/Mensaje";
-import { RotuloPiloto } from "../componentes/RotuloPiloto";
 import { Titulo } from "../componentes/Titulo";
 import { boton, campo } from "../componentes/estilos";
 import { ErrorApi, iniciarSesion } from "../servicios/api";
@@ -37,7 +36,6 @@ export function Ingreso({ alIngresar, aviso }: Props) {
   return (
     <>
       <Titulo>Ingreso</Titulo>
-      <RotuloPiloto />
       <AvisoSesion texto={aviso} />
       <form onSubmit={enviar} className="max-w-sm space-y-4">
         <div>

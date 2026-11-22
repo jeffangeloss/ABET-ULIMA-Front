@@ -21,7 +21,7 @@ describe("P1 Ingreso", () => {
     expect(screen.getByLabelText("Correo")).toHaveAttribute("type", "email");
     expect(screen.getByLabelText("Contraseña")).toHaveAttribute("type", "password");
     expect(screen.getByRole("button", { name: "Ingresar" })).toBeEnabled();
-    expect(screen.getByText(ROTULO)).toBeInTheDocument();
+    expect(screen.queryByText(ROTULO)).not.toBeInTheDocument();
   });
 
   it("con credenciales válidas llama a alIngresar con el usuario de la API", async () => {

@@ -4,16 +4,37 @@ import {
   cerrarSesion,
   ErrorApi,
   iniciarSesion,
+  listarCargas,
   listarSecciones,
   obtenerCarga,
+  obtenerResultados,
   sesionActual,
   subirExport,
   urlR17,
 } from "../../src/servicios/api";
 import { simularApi, json } from "../ayudas";
-import { constanciaConError, usuarioProfesor } from "../respuestas";
+import { cargasDe410, constanciaConError, resultadosDeVarias, usuarioProfesor } from "../respuestas";
 
 describe("api.ts", () => {
+  it("obtenerResultados pide GET /api/resultados, con el periodo solo si llega, y devuelve el cuerpo tal cual", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/resultados": json(200, resultadosDeVarias),
+      "GET /api/resultados?periodo=2026-2": json(200, resultadosDeVarias),
+    });
+    expect(await obtenerResultados()).toEqual(resultadosDeVarias);
+    expect(await obtenerResultados("2026-2")).toEqual(resultadosDeVarias);
+    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/resultados", "GET /api/resultados?periodo=2026-2"]);
+    expect(llamadas.every((l) => (l.init?.method ?? "GET") === "GET" && l.init?.body === undefined)).toBe(true);
+  });
+
+  it("obtenerResultados convierte el 422 del periodo en ErrorApi con su detail", async () => {
+    simularApi({ "GET /api/resultados?periodo=2026-13": json(422, { detail: "El periodo no tiene la forma AAAA-C." }) });
+    await expect(obtenerResultados("2026-13")).rejects.toMatchObject({
+      status: 422,
+      detail: "El periodo no tiene la forma AAAA-C.",
+    });
+  });
+
   it("llama solo a rutas /api y manda la cookie con credentials", async () => {
     const { llamadas } = simularApi({ "GET /api/sesion": json(200, usuarioProfesor) });
     await sesionActual();
@@ -85,7 +106,7 @@ describe("api.ts", () => {
     expect(init.body).toBeInstanceOf(FormData);
     expect((init.body as FormData).get("archivo")).toBeInstanceOf(File);
     expect(init.headers).toBeUndefined();
-    expect(resultado).toEqual({ yaCargada: false, constancia: constanciaConError });
+    expect(resultado).toEqual({ yaCargada: false, constancia: constanciaConError, aviso: null });
   });
 
   it("subirExport distingue el 200 del mismo archivo ya publicado", async () => {
@@ -125,5 +146,83 @@ describe("api.ts", () => {
     await iniciarSesion("a@example.invalid", "x").catch(() => undefined);
     quitar();
     expect(oyente).not.toHaveBeenCalled();
+  });
+  it("subirExport sin opciones no manda reemplaza ni confirmar_seccion", async () => {
+    const { llamadas } = simularApi({ "POST /api/secciones/1/cargas": json(201, constanciaConError) });
+    await subirExport(1, new File(["x"], "export.xlsx"));
+    expect(llamadas[0].clave).toBe("POST /api/secciones/1/cargas");
+    expect((llamadas[0].init?.body as FormData).get("confirmar_seccion")).toBeNull();
+  });
+
+  it("subirExport con reemplaza agrega el parámetro a la ruta y no toca el cuerpo", async () => {
+    const { llamadas } = simularApi({ "POST /api/secciones/1/cargas?reemplaza=7": json(201, constanciaConError) });
+    await subirExport(1, new File(["x"], "export.xlsx"), { reemplaza: 7 });
+    expect(llamadas[0].clave).toBe("POST /api/secciones/1/cargas?reemplaza=7");
+    const cuerpo = llamadas[0].init?.body as FormData;
+    expect([...cuerpo.keys()]).toEqual(["archivo"]);
+  });
+
+  it("subirExport con confirmarSeccion manda el campo confirmar_seccion con el texto true", async () => {
+    const { llamadas } = simularApi({ "POST /api/secciones/1/cargas?reemplaza=7": json(201, constanciaConError) });
+    await subirExport(1, new File(["x"], "notas.xlsx"), { reemplaza: 7, confirmarSeccion: true });
+    const cuerpo = llamadas[0].init?.body as FormData;
+    expect(cuerpo.get("confirmar_seccion")).toBe("true");
+    expect((cuerpo.get("archivo") as File).name).toBe("notas.xlsx");
+  });
+
+  it("subirExport separa el aviso del 200 de la constancia", async () => {
+    const aviso = "Es el mismo archivo de la carga publicada. No se reemplazó.";
+    simularApi({ "POST /api/secciones/1/cargas?reemplaza=7": json(200, { ...constanciaConError, aviso }) });
+    const resultado = await subirExport(1, new File(["x"], "export.xlsx"), { reemplaza: 7 });
+    expect(resultado).toEqual({ yaCargada: true, constancia: constanciaConError, aviso });
+    expect(resultado.constancia).not.toHaveProperty("aviso");
+  });
+
+  it("el 409 con carga_publicada lo lleva en ErrorApi sin pedir confirmación", async () => {
+    const detail = "La sección 410 ya tiene una carga publicada. No se cargó el archivo.";
+    simularApi({ "POST /api/secciones/1/cargas": json(409, { detail, carga_publicada: 7 }) });
+    const error = await subirExport(1, new File(["x"], "a.xlsx")).catch((e) => e);
+    expect(error).toBeInstanceOf(ErrorApi);
+    expect(error).toMatchObject({ status: 409, detail, cargaPublicada: 7, requiereConfirmacion: false });
+  });
+
+  it("el 422 con requiere_confirmacion true lo lleva en ErrorApi", async () => {
+    const detail = "El archivo no indica su sección. ¿Confirma que es de la sección 410 de 450002 en 2026-2?";
+    simularApi({ "POST /api/secciones/1/cargas": json(422, { detail, requiere_confirmacion: true }) });
+    const error = await subirExport(1, new File(["x"], "notas.xlsx")).catch((e) => e);
+    expect(error).toMatchObject({ status: 422, detail, requiereConfirmacion: true, cargaPublicada: null });
+  });
+
+  it.each([
+    ["el texto true", { requiere_confirmacion: "true", carga_publicada: "7" }],
+    ["sin los campos", {}],
+    ["con null", { requiere_confirmacion: null, carga_publicada: null }],
+  ])("ErrorApi no pide confirmación ni nombra carga %s", async (_caso, extra) => {
+    simularApi({ "POST /api/secciones/1/cargas": json(422, { detail: "x", ...extra }) });
+    const error = await subirExport(1, new File(["x"], "a.xlsx")).catch((e) => e);
+    expect(error).toMatchObject({ requiereConfirmacion: false, cargaPublicada: null });
+  });
+
+  it("un error que no es JSON trae requiereConfirmacion falso y cargaPublicada nula", async () => {
+    simularApi({ "POST /api/secciones/1/cargas": { status: 413, texto: "<html>Too Large</html>" } });
+    const error = await subirExport(1, new File(["x"], "a.xlsx")).catch((e) => e);
+    expect(error).toMatchObject({ requiereConfirmacion: false, cargaPublicada: null });
+  });
+
+  it("listarCargas sin sección pide /api/cargas y devuelve la lista en el orden de la API", async () => {
+    const { llamadas } = simularApi({ "GET /api/cargas": json(200, cargasDe410) });
+    const lista = await listarCargas();
+    expect(llamadas[0].clave).toBe("GET /api/cargas");
+    expect(lista.map((c) => c.carga_id)).toEqual([11, 10, 9]);
+  });
+
+  it("listarCargas con sección filtra por seccion_id y propaga el 403", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/cargas?seccion_id=1": json(200, cargasDe410),
+      "GET /api/cargas?seccion_id=2": json(403, { detail: "La sección no está a su cargo." }),
+    });
+    await listarCargas(1);
+    expect(llamadas[0].clave).toBe("GET /api/cargas?seccion_id=1");
+    await expect(listarCargas(2)).rejects.toMatchObject({ status: 403, detail: "La sección no está a su cargo." });
   });
 });

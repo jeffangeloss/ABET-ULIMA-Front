@@ -30,3 +30,4 @@ test-results/
 # Sistema y registros
 .DS_Store
 *.log
+tsconfig.tsbuildinfo

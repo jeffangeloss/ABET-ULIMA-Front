@@ -4,6 +4,32 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+## [0.2.0] - 2026-11-23
+
+### Agregado
+
+- Documentación del sistema de la spec 005 del Back, las oportunidades de mejora en la carga, aprobada por Jefferson en el chat el 2026-11-18. Son ADR-009, las rutas 13 a 16 en la sección 13 de `docs/03-api/contrato.md` y en `docs/specs/api-contracts.md`, P4 con el semáforo, el formulario de causas y acciones y la navegación con el botón atrás en la sección 10 de `docs/01-arquitectura/frontend.md` y la fila `mejora` de `docs/specs/feature-index.md`. Ningún código cambia.
+- P6 «Mis logros por SO» con los logros de cada PI de las secciones del usuario agrupados por SO, la barra de cada fila en HTML con `aria-hidden` y la meta marcada con una línea y con texto, el reparto por nivel, la marca provisional por sección, el R-17 de cada sección publicada y lo que no se mide escrito con texto. La abre el enlace «Ver mis logros por SO» de la cabecera y de P4, o «Ver los logros por SO de la carrera» para el coordinador (US-37 a US-44 de la spec 004, T040 a T042).
+- `obtenerResultados()` en `api.ts` para `GET /api/resultados`, con sus tipos y las cifras con coma decimal de `formato.ts`.
+- La prueba de humo `e2e/humo.spec.ts` suma P6, que compara sus cifras con el R-17 de la misma carga de la 410, y comprueba que el profesor ajeno no ve la 410 en su P6 (T043).
+- Contrato definitivo de la ruta 12 `GET /api/resultados` de la spec 004 del Back (T011), con sus reglas BR-RESULTADOS-01 a BR-RESULTADOS-11 y BR-ACCESO-10, la sección 3.4 que reserva los porcentajes a la ruta 12, la cuenta de 7 caminos de OpenAPI y la carpeta de la spec 004 en la comprobación de mensajes, y la forma definitiva de P6 en la sección 9 de `docs/01-arquitectura/frontend.md`.
+- Documentación del sistema de la spec 004 del Back, los logros del profesor por SO, aprobada por Jefferson en el chat el 2026-11-18. Son ADR-008, la ruta 12 `GET /api/resultados` en la sección 12 de `docs/03-api/contrato.md` y en `docs/specs/api-contracts.md`, la pantalla P6 «Mis logros por SO» en la sección 9 de `docs/01-arquitectura/frontend.md` y la fila `resultados` de `docs/specs/feature-index.md`. Ningún código cambia.
+- P5 Cargas, con las secciones del usuario y sus cargas de la más reciente a la más antigua, la marca de la vigente y de la reemplazada, la huella corta, quién sube cada carga, «Ver constancia», «Descargar R-17» y «Reemplazar carga» en la publicada, para el profesor en su sección y el coordinador en cualquiera (US-18 y US-19, T085).
+- P3 pregunta «La sección 410 ya tiene una carga publicada. ¿Desea reemplazarla?» ante el 409 con `carga_publicada` y reenvía el archivo con `?reemplaza=`, entra en modo reemplazo desde P5 y muestra el aviso del mismo archivo (US-18).
+- P3 muestra la pregunta del 422 con `requiere_confirmacion` y reenvía el archivo con `confirmar_seccion=true` cuando el profesor confirma la sección (US-21).
+- P4 muestra a qué carga reemplaza la carga y cuál la reemplaza, y la cabecera suma los botones «Mis secciones» y «Cargas».
+- `api.ts` suma `listarCargas()`, las opciones `reemplaza` y `confirmarSeccion` de `subirExport()` y los campos `requiereConfirmacion` y `cargaPublicada` de `ErrorApi`.
+- La prueba de humo `e2e/humo.spec.ts` suma el reemplazo en P5 de la carga con el error por el export correcto, con el R-17 guardado con el nombre que fija la API (T087 del Back).
+
+### Cambiado
+
+- El contrato de las rutas 13 a 16 y la pantalla P4 pasan a un registro por indicador, con oportunidades de mejora y buenas prácticas, en borrador para la aprobación de Jefferson.
+- Las pantallas ya no muestran «Solo exports con códigos inventados (99000000 a 99999999)», porque D-10 queda decidida el 2026-11-19.
+- El contrato precisa que el 200 del mismo archivo de la carga publicada manda aunque `reemplaza` nombre otra carga, porque la huella se busca antes que la carga vigente (BR-CARGA-19).
+- El contrato de la API fija la forma definitiva de las rutas del corte 2, con el reemplazo de la carga publicada (`?reemplaza=`), la lista de cargas (`GET /api/cargas`), la confirmación de la sección (`confirmar_seccion=true` y `requiere_confirmacion`), `carga_publicada` en el 409 y `reemplaza_carga_id` y `reemplazada_por` en la constancia (T080 de la spec 001 del Back).
+- `docs/05-operacion/entornos-y-despliegue.md` registra la versión 0.1.0 en Production, la decisión J-07 en Hobby y el entrenamiento de IA del equipo de Vercel, que sigue encendido (T079 y T070 de la spec 001 del Back).
+- jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1, todos con al menos 14 días publicados, en un solo cambio que reemplaza los PR de Dependabot #5, #6, #9 y #12. El bundle de producción sale idéntico al de `develop`.
+
 ## [0.1.0] - 2026-11-17
 
 ### Cambiado

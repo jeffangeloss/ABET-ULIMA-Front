@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Mensaje } from "../componentes/Mensaje";
-import { RotuloPiloto } from "../componentes/RotuloPiloto";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, listarSecciones, urlR17 } from "../servicios/api";
@@ -39,7 +38,6 @@ export function MisSecciones({ usuario, alSubir, alVerResultado }: Props) {
   return (
     <>
       <Titulo>Mis secciones</Titulo>
-      <RotuloPiloto />
       {error && <Mensaje tipo="error">{error}</Mensaje>}
       {!error && secciones === null && <Mensaje tipo="aviso">Cargando secciones</Mensaje>}
       {secciones !== null && secciones.length === 0 && <p>No tiene secciones asignadas en este periodo.</p>}

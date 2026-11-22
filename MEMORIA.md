@@ -12,14 +12,14 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-17
-- **Rama de trabajo**: `chore/version-0.1.0`, que sale de `develop` (f1c469f) con la versión 0.1.0
-- **Versión publicada**: ninguna todavía; la 0.1.0 está en preparación (`VERSION` = 0.1.0)
-- **Último cambio**: `VERSION` en 0.1.0 y la sección [0.1.0] del CHANGELOG (T076 de la spec 001 del Back)
-- **En curso**: la versión 0.1.0, que llega a `main` después de la del Back
-- **Siguiente paso**: el PR «Versión 0.1.0» de `develop` a `main` del Front, una vez que el Back sirva la 0.1.0 en Production; después, la reescritura de `/api` en Production y el ingreso sin cargas (T079 de la spec 001 del Back)
-- **Bloqueos**: Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); los PR de Dependabot esperan a que salga la versión, por decisión de Jefferson del 2026-11-17
-- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (API, specs y base, con la versión 0.1.0 en `chore/version-0.1.0` y V1_10 en la rama principal de Neon)
+- **Fecha**: 2026-11-21
+- **Rama de trabajo**: `docs/005-om-bp-y-006`, que sale de `develop` (90694ac) con el contrato y P4 por indicador
+- **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
+- **Último cambio**: el contrato y la pantalla P4 siguen el cambio de la spec 005 del Back (OM y BP por indicador), en borrador para la aprobación de Jefferson. Antes, el 2026-11-19, las pantallas dejan de mostrar el aviso de códigos inventados (PR #23)
+- **En curso**: la fusión del PR de esta rama, aprobado por Jefferson el 2026-11-21 («Sí, apruébalas»), y después la construcción de la spec 006 y de la spec 005 en el orden de J-41. La carrera debe responder D-43 y D-44 antes de la capacitación de la semana 14. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
+- **Siguiente paso**: T071 del Back, el humo de P6 contra la vista previa de `develop`, que corre Jefferson con `ABET_SIS_MED/herramientas_neon/humo_preview.sh` después de restablecer la rama `develop` de Neon. La spec 005 sigue con T011, que deja definitivos el contrato de las rutas 13 a 16, ADR-009 y las enmiendas de ADR-005 y ADR-008. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
+- **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
+- **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, las specs 004 y 005 fusionadas en `develop` con sus PR #27 y #32 y la construcción de la spec 004 con el PR #31, en f403d52)
 
 ## Plantilla de una entrada
 
@@ -36,6 +36,227 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-22 13:40 (Lima) · chore/version-0.2.0 · Número de versión 0.2.0
+- Quién: Jefferson pide publicar la versión nueva («si por favor»). Claude Code, sin subagentes, sube el número de versión. Antes, un workflow de tres subagentes arma y prueba en local `ABET_SIS_MED/herramientas_neon/comprobar_version_020.sh`, la prueba final de la vista previa, que exige VERSION 0.2.0 en `develop`.
+- Qué cambió: `VERSION` pasa a 0.2.0 y `CHANGELOG.md` abre «[0.2.0] - 2026-11-23» con todo lo que estaba en «Sin publicar».
+- Por qué: la 0.2.0 lleva a Production el corte 2, el cierre de la spec 003, la spec 004, US-51 y el retiro de la guardia de datos inventados, para la capacitación de la semana 14 (23 al 28-11-2026).
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --staged` pasa y la CI del PR corre la suite.
+- Lo que no debe hacer, cómo se probó: el commit no cambia código ni escenarios, solo el número de versión, el CHANGELOG y esta memoria.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR de esta rama.
+- Pendiente y siguiente paso: la prueba final de Jefferson con `comprobar_version_020.sh`, V1_11 en la rama principal de Neon y el PR «Versión 0.2.0» de `develop` a `main`, con su permiso.
+
+### 2026-11-21 22:01 (Lima) · docs/005-om-bp-y-006 · Cambio del contrato y de P4 aprobado
+- Quién: Jefferson aprueba en el chat el cambio de la spec 005 y la spec 006 («Sí, apruébalas»). Claude Code, sin subagentes, registra la aprobación.
+- Qué cambió: las notas del cambio del 2026-11-21 en `contrato.md`, `frontend.md` y `api-contracts.md` pasan de propuesta pendiente a aprobado.
+- Por qué: la aprobación es la fusión del PR o el «apruebo» explícito de Jefferson, que queda registrado aquí y en el PR.
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --staged` pasa en el commit.
+- Lo que no debe hacer, cómo se probó: el commit cambia solo líneas de estado y esta memoria, sin tocar escenarios ni código.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR de esta rama.
+- Pendiente y siguiente paso: la fusión con la CI en verde y después la construcción de la spec 006.
+
+### 2026-11-21 21:15 (Lima) · docs/005-om-bp-y-006 · Contrato y P4 por indicador para el cambio de la spec 005
+- Quién: Jefferson pide en el chat el 2026-11-21 actualizar la spec 005 con los correos de Claudia León y Mechelle Prado y aprueba el alcance («Sí, escríbelo»). Claude Code arma dos workflows. En el primero, tres subagentes proponen 21 candidatas desde el profesor, la coordinación y la base, y tres lentes y un crítico de arquitectura las auditan. En el segundo, cuatro redactores escriben la spec 005, su plan y tareas, la spec 006 y el contrato del Front, un revisor encuentra 20 problemas (uno bloqueante, el cuerpo de la ruta 15) y un corrector los aplica. Claude Code revisa el resultado y escribe esta entrada.
+- Qué cambió: `docs/03-api/contrato.md` describe las rutas 13 a 16 por indicador, con los mismos textos literales que los .feature del Back; `docs/01-arquitectura/frontend.md` describe P4 con «Análisis por indicador»; ADR-009, `docs/specs/api-contracts.md` y `docs/specs/feature-index.md` lo registran.
+- Por qué: el cambio de la spec 005 del Back (rama del mismo nombre) pasa la declaración a un registro por PI con OM y BP.
+- Lo que debe hacer, cómo se probó: el revisor del workflow compara el contrato con spec.md y los .feature del Back, y el corrector alinea los siete textos que diferían y el cuerpo de la ruta 15.
+- Lo que no debe hacer, cómo se probó: `git diff --stat origin/develop -- src tests` no muestra cambios, así que ninguna pantalla cambia todavía.
+- Correcciones: el contrato daba un cuerpo de la ruta 15 sin `tipo`, contra la spec del Back.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama.
+- Pendiente y siguiente paso: la aprobación de Jefferson junto con el PR del Back, y la construcción de P4 por indicador en el orden de J-41.
+
+### 2026-11-19 10:25 (Lima) · fix/d10-sin-rotulo-piloto · Sin aviso de códigos inventados
+- Quién: Jefferson pide en el chat quitar las restricciones de datos reales, con la autorización de la universidad («quita estas restricciones»). Claude Code, sin subagentes, escribe el cambio.
+- Qué cambió: `src/componentes/RotuloPiloto.tsx` se borra y sale de Ingreso, Mis secciones, Subir export, Resultado de la carga, Cargas y Mis logros. Las pruebas de esas pantallas exigen ahora que el aviso no aparezca, y ADR-002 suma una nota fechada.
+- Por qué: D-10 queda decidida y el sistema recibe exports reales.
+- Lo que debe hacer, cómo se probó: `npx vitest run` da 164 passed en 11 archivos y `npx tsc -b --noEmit` termina sin errores.
+- Lo que no debe hacer, cómo se probó: el mensaje del 422 de la guardia sigue en Subir export, porque el Back la vuelve a encender si falta `GUARDIA_DATOS_INVENTADOS`.
+- Correcciones: el primer commit sube por error `tsconfig.tsbuildinfo`, que deja `tsc -b`; el segundo lo saca y lo suma a `.gitignore`.
+- Cómo se reporta: esta entrada y el PR de esta rama.
+- Pendiente y siguiente paso: `GUARDIA_DATOS_INVENTADOS=0` en Vercel, que pone Jefferson, y una versión hacia `main` para que la página oficial pierda el aviso.
+
+### 2026-11-18 19:25 (Lima) · docs/004-memoria-tras-fusion · Memoria al día tras la fusión de la spec 004
+- Quién: Jefferson autoriza en el chat abrir un PR por repositorio que ponga al día la memoria de `develop` («Sí, ábrelos»). Claude Code, sin subagentes, crea esta rama desde `develop` (778ae23), hace el cambio y escribe esta entrada. Antes, con el permiso de Jefferson en el chat, fusiona el PR #31 del Back y el PR #20 («Sí, fusiónalos») y pasa a públicos los dos proyectos de ABET en SonarCloud con la sesión de Jefferson en el navegador del app («Sí, pásalos»).
+- Qué cambió: «Punto actual» deja de dar los PR #31 y #20 como abiertos y el análisis de SonarCloud como bloqueado, y la fila `resultados` de `docs/specs/feature-index.md` da su código en `develop`.
+- Por qué: la fusión del PR #20 deja en `develop` la memoria de la rama, que todavía daba los PR como abiertos, y la próxima sesión lee primero «Punto actual».
+- Lo que debe hacer, cómo se probó: `gh pr view` da MERGED para el #20 (778ae23) y el #31 del Back (f403d52), y `api/components/show` de SonarCloud, sin sesión, da `public` para los dos proyectos de ABET. `bash scripts/preflight.sh --pr origin/develop` no da fallas.
+- Lo que no debe hacer, cómo se probó: `git diff --stat origin/develop` muestra solo `MEMORIA.md` y `docs/specs/feature-index.md`, sin cambios en `src/`, `tests/` ni `e2e/`, y cada entrada anterior del «Registro» coincide letra por letra con la de `develop`.
+- Correcciones: la entrada de la actualización con `develop` (cd1c16f) dejaba la decisión sobre SonarCloud como pendiente, y Jefferson la toma el mismo día.
+- Cómo se reporta: esta entrada y el PR de esta rama, que cita el del Back.
+- Pendiente y siguiente paso: T071 del Back, T011 de la spec 005 y el primer análisis de SonarCloud de `develop` sin el tope, con la fusión de este PR.
+
+### 2026-11-18 18:54 (Lima) · feat/004-reportes-docente · Rama actualizada con develop tras la spec 005 (PR #21)
+- Quién: Jefferson autoriza en el chat actualizar las dos ramas con `develop` y resolver sus choques («Sí, actualízalas»). Claude Code, sin subagentes, fusiona `origin/develop` (a787f16) en esta rama, resuelve los choques y escribe esta entrada.
+- Qué cambió: la rama trae la documentación de la spec 005, con ADR-009, la sección 13 de `docs/03-api/contrato.md`, la sección 10 de `docs/01-arquitectura/frontend.md`, las rutas 13 a 16 de `api-contracts.md` y la fila `mejora` de `feature-index.md`. Los choques de `CHANGELOG.md`, `api-contracts.md`, `feature-index.md` y esta memoria conservan los dos lados, con la fila definitiva de la ruta 12 y la de `resultados` de esta rama, y las entradas del «Registro» de las dos ramas quedan intactas y en orden de hora.
+- Por qué: el PR #20 queda CONFLICTING después de la fusión del PR #21 en `develop` a las 18:01, y T070 de la spec 004 pide fusionarlo con la CI en verde.
+- Lo que debe hacer, cómo se probó: `npm test` da 11 archivos y 164 pruebas aprobadas, `npm run build` termina sin errores y la comprobación de mensajes de la sección 10, con `BACK=back-004-feat FRONT=front-004-feat` sobre las dos ramas ya actualizadas, da «0 mensajes de los escenarios sin contrato».
+- Lo que no debe hacer, cómo se probó: la misma comprobación sigue con «1 mensajes del contrato sin escenario», el de T077 que ya da `develop`, `git diff --cached --stat HEAD -- src tests e2e` no muestra cambios y cada entrada anterior del «Registro» coincide letra por letra con la de una de las dos ramas.
+- Correcciones: «Punto actual» de `develop` todavía da la spec 005 en su rama y sin PR, y aquí figura ya fusionada por el PR #21. «Bloqueos» suma el análisis de SonarCloud de `develop`, que falla desde el corte 2 porque la organización `jeffangeloss` llega al tope de 50 000 líneas de código privadas.
+- Cómo se reporta: esta entrada y el PR #20.
+- Pendiente y siguiente paso: la CI del PR #20 y su fusión por Jefferson después de la del PR #31 del Back, y luego el humo de P6 contra la vista previa de `develop` (T071).
+
+### 2026-11-18 16:35 (Lima) · feat/004-reportes-docente · PR #20 abierto
+- Quién: Jefferson autoriza en el chat empujar las dos ramas y abrir sus PR («Sí, empuja y abre»). Claude Code, sin subagentes, empuja `feat/004-reportes-docente` sin forzar, abre jeffangeloss/ABET-ULIMA-Front#20 hacia `develop` con la referencia a jeffangeloss/ABET-ULIMA-Back#31 y escribe esta entrada.
+- Qué cambió: la rama existe en `origin` y su PR está abierto, y esta memoria deja de dar el empuje como pendiente.
+- Por qué: T070 de la spec 004 del Back, con el permiso de Jefferson para empujar y abrir, que no incluye fusionar.
+- Lo que debe hacer, cómo se probó: `git push -u origin feat/004-reportes-docente` crea la rama remota, y `gh pr view 20` da el PR abierto hacia `develop`, fusionable y con la referencia al PR #31 del Back, que a su vez cita este.
+- Lo que no debe hacer, cómo se probó: `develop` sigue en e88d6f2, y `git log origin/develop..HEAD` da tres commits a nombre de Jeffangeloss, sin `Co-Authored-By` ni firmas de herramientas. Nada se fusiona.
+- Correcciones: «Punto actual» del cierre (b856515) daba el empuje y el PR como pendientes, y «Repos relacionados» no nombraba el cierre del Back (38f0c9e).
+- Cómo se reporta: esta entrada y los dos PR.
+- Pendiente y siguiente paso: la CI de los dos PR, su fusión por Jefferson con el Back primero y, después de las dos fusiones, el humo de P6 contra la vista previa de `develop` (T071).
+
+### 2026-11-18 16:31 (Lima) · docs/005-oportunidades-de-mejora · Spec 005 aprobada, con ADR-009 aceptado
+- Quién: Jefferson aprueba la spec 005 del Back en el chat de esta sesión («Sí, apruébala»), con J-29 a J-37 en el valor que propone la spec. Claude Code registra la aprobación en este repositorio sin subagentes.
+- Qué cambió: ADR-009 pasa a «Aceptada y vigente» y deja de listar la aprobación entre lo pendiente. `docs/00-vision/adr/README.md` lo da por aceptado, con la enmienda de ADR-005 y de ADR-008 para T011. La feature `mejora` de `docs/specs/feature-index.md` pasa a «aprobada», `frontend.md` deja de esperar la aprobación en la sección 10.5 y en las líneas de P4 y P6, y el CHANGELOG da la documentación por aprobada. La sección 13 del contrato sigue en propuesta hasta T011, como la sección 12 de la spec 004.
+- Por qué: la aprobación de la spec 005 del Back, que se registra aquí como la de la spec 004 en edc58e4.
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --staged` pasa en el commit.
+- Lo que no debe hacer, cómo se probó: `git diff --stat HEAD~1` muestra solo `docs/`, `CHANGELOG.md` y esta memoria, así que ningún código, prueba ni configuración cambia, y ADR-005 y ADR-008 no se editan antes de T011.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y, con el permiso de Jefferson, el PR de esta rama a `develop`, que cita el de la spec 005 del Back.
+- Pendiente y siguiente paso: empujar la rama y abrir su PR con el permiso de Jefferson, y T011 de la spec 005.
+
+### 2026-11-18 16:05 (Lima) · docs/005-oportunidades-de-mejora · Documentación en propuesta de la spec 005 del Back
+- Quién: Jefferson pide en el chat el semáforo de la sección en P4 después de la subida, el formulario de causas y acciones con su borrador en la base, el R-17 solo con los dos campos y el botón atrás dentro de la aplicación. Un subagente con Sonnet redacta esta documentación desde la síntesis de la spec 005 del Back, sin tocar `src/`, `tests/` ni `e2e/`. Claude Code la revisa contra la síntesis y fija lo que el subagente dejó pendiente.
+- Qué cambió: `docs/01-arquitectura/frontend.md` suma la sección 10 (P4 con el semáforo y el formulario, la navegación por el fragmento de la dirección y P2, P5 y P6 que llevan a P4) y una línea en P4 y en la sección 9.2. `docs/03-api/contrato.md` suma la sección 13 con las rutas 13 a 16 y el 409 nuevo de la ruta 7. ADR-009 es nuevo y propone enmendar ADR-005 y el invariante 8 de ADR-008. `docs/00-vision/adr/README.md`, `docs/specs/api-contracts.md` y `docs/specs/feature-index.md` suman sus filas en propuesta.
+- Por qué: la regla 3 de AGENTS.md pide que cada pantalla nombre las historias que la justifican, y la spec 005 del Back cambia P4, P2, P5, P6 y `App.tsx`.
+- Lo que debe hacer, cómo se probó: una revisión con expresiones regulares de las secciones nuevas no encuentra «han + participio», guiones largos, dos puntos en la prosa ni oraciones de más de 55 palabras. Los textos nuevos entre «» de la sección 13 llevan «(propuesta)», y `bash scripts/preflight.sh --staged` pasa en el commit.
+- Lo que no debe hacer, cómo se probó: `git diff --stat` muestra solo `docs/`, `CHANGELOG.md` y esta memoria, así que ningún código, prueba ni configuración cambia, y la tabla resumen de rutas de la sección 2 y la comprobación de la sección 10 del contrato quedan como están hasta T011.
+- Correcciones: el borrador dejaba sin fijar el texto del 409 de una carga no publicada en las rutas 15 y 16, la forma del 409 por versión, la respuesta 200 del guardado y la versión vieja al declarar. También dejaba pendientes los enunciados literales de B28 y B33 y el enlace de P2 y P5, y esta revisión los fija como propuesta.
+- Cómo se reporta: esta entrada, el CHANGELOG y, con el permiso de Jefferson, el PR de esta rama a `develop`, que cita el de la spec 005 del Back.
+- Pendiente y siguiente paso: la aprobación de la spec 005 (T004 del Back) y después T011, que deja definitivo el contrato.
+
+### 2026-11-18 15:57 (Lima) · feat/004-reportes-docente · Cierre de la spec 004 en el Front
+- Quién: Claude Code, sin subagentes en este repositorio. En el Back, un verificador (Sonnet, esfuerzo medio) intenta refutar `specs/004-reportes-docente/audit.md` en solo lectura, y su resultado queda en la entrada de cierre del Back.
+- Qué cambió: ADR-008 ya no dice que la ruta 12, P6 y la guardia de sesión por router no existen, y deja pendientes solo los criterios 2 y 3 contra la vista previa de `develop` (T071).
+- Por qué: T060 de la spec 004, que pide `MEMORIA.md` y `CHANGELOG.md` de los dos repositorios al día con la auditoría.
+- Lo que debe hacer, cómo se probó: el criterio 4 de ADR-008, `node -e …` sobre `package.json`, da «0» bibliotecas de gráficos, y las pruebas que cubren los criterios 1 a 3 en la base desechable, en Vitest y en el humo local están aprobadas (`npm test` con 164 pruebas y 5 passed en el humo).
+- Lo que no debe hacer, cómo se probó: `git diff --stat` muestra solo ADR-008 y esta memoria, sin cambios en `src/`, `tests/` ni `e2e/`, así que el CHANGELOG no cambia.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, `audit.md` del Back y el PR de esta rama, que se abre con el permiso de Jefferson.
+- Pendiente y siguiente paso: el permiso de Jefferson para empujar las dos ramas y abrir sus PR (T070) y, después de las dos fusiones, el humo de P6 contra la vista previa de `develop` (T071).
+
+### 2026-11-18 15:50 (Lima) · feat/004-reportes-docente · P6 Mis logros por SO y su prueba de humo
+- Quién: Claude Code, sin subagentes, escribe primero las pruebas de Vitest y del humo con `superpowers:test-driven-development` y después la pantalla. Los nombres de las pruebas son los que anotan los pasos `@delegado_a_vitest` del Back (0db6ee3).
+- Qué cambió: `src/pantallas/MisLogros.tsx` (P6) muestra las secciones por asignatura, con su estado, su marca provisional y el R-17 de cada sección publicada, y un grupo por SO con una fila por PI y sección, su barra de HTML con `aria-hidden`, la línea de la meta y el reparto por nivel. `App.tsx` suma la vista `logros` y el enlace de la cabecera, «Ver mis logros por SO» o «Ver los logros por SO de la carrera», y `ResultadoCarga.tsx` el mismo enlace en una carga PUBLICADA. `api.ts` suma `obtenerResultados`, `tipos.ts` sus tipos y `formato.ts` las cifras con coma decimal. Las pruebas suman `tests/pantallas/MisLogros.test.tsx` y casos en `App.test.tsx`, `api.test.ts` y `formato.test.ts`, y `e2e/humo.spec.ts` dos casos de P6 con un lector mínimo del R-17 en `e2e/comun.ts`. `frontend.md` y `feature-index.md` quedan al día.
+- Por qué: US-37 a US-44 de la spec 004, FR-011 a FR-016 y FR-021, BR-RESULTADOS-11 y T040 a T043.
+- Lo que debe hacer, cómo se probó: `npm test` da 11 archivos y 164 pruebas aprobadas, y `npm run build` termina sin errores. Con `bash scripts/api_local.sh --sin-https` del Back y Vite, `npx playwright test e2e/humo.spec.ts` da 5 passed. P6 de docente410 escribe en cada PI el porcentaje de la celda E del bloque II del R-17 de la misma carga, la meta de la celda G y el estado de la celda H.
+- Lo que no debe hacer, cómo se probó: las pruebas comprueban que P6 no dibuja una barra para un PI sin calificaciones ni escribe «0 %», no ofrece «Subir export», no muestra correos, no ordena por resultado, no compara cifras (con un `en_meta` contrario a las cifras escribe el de la API), no escribe en `localStorage` ni en `sessionStorage`, y que P4 de una carga que no está publicada no ofrece el enlace ni muestra porcentajes. En el humo, docente.varias, el profesor ajeno de la corrida local, no ve la 410 en su P6 ni en `GET /api/resultados`.
+- Correcciones: la barra de niveles usaba rojo y verde, que con un nivel esperado 2 sugeriría lo contrario de la regla, y pasa a una escala azul con el contraste de 4,5 a 1 para su texto blanco que comprueba la prueba. El `tsc` del build también revisa las pruebas, y la ayuda `abrir()` de `MisLogros.test.tsx` declara su usuario como `Usuario`.
+- Cómo se reporta: esta entrada, `CHANGELOG.md`, `audit.md` de la spec 004 del Back y el PR de esta rama, que se abre con el permiso de Jefferson.
+- Pendiente y siguiente paso: T060 en el Back, el permiso de Jefferson para empujar y abrir los PR (T070) y el humo de P6 contra la vista previa de `develop` después de las dos fusiones (T071).
+
+### 2026-11-18 15:45 (Lima) · feat/004-reportes-docente · Contrato definitivo de la ruta 12 de la spec 004
+- Quién: la sesión principal encarga la construcción de la spec 004, que Jefferson aprueba en el chat el 2026-11-18 («Sí, apruébala»). Claude Code, sin subagentes, escribe T011 con la skill `specs-back-front` desde su paso 6 y aplica a la prosa la skill `redaccion-ieee-q1`.
+- Qué cambió: la sección 12 de `docs/03-api/contrato.md` deja de ser propuesta y cita BR-RESULTADOS-01 a BR-RESULTADOS-11 y BR-ACCESO-10, la 3.4 reserva los porcentajes a la ruta 12 (ADR-008 y J-22), la 10 cuenta 7 caminos de OpenAPI con `/api/resultados` y suma la carpeta de la spec 004 a la comprobación de mensajes, y la 9 deja de listar la ruta 12 como pendiente. `api-contracts.md`, la sección 9 de `frontend.md` con la forma definitiva de P6, `feature-index.md` con `resultados` en «contrato listo» y ADR-008 quedan al día.
+- Por qué: T011 de la spec 004 y FR-017, porque el contrato de la API se fija en el Front antes de implementar la ruta.
+- Lo que debe hacer, cómo se probó: la comprobación de mensajes de la sección 10, corrida con `BACK=back-004-feat FRONT=front-004-feat` desde `ABET_SIS_MED/wt`, da «0 mensajes de los escenarios sin contrato», ya con los dos `.feature` de la spec 004.
+- Lo que no debe hacer, cómo se probó: la misma comprobación da «1 mensajes del contrato sin escenario», el de la marca de entorno de T077, que ya daba en `develop` antes de la spec 004, así que la ruta 12 no suma ningún mensaje sin escenario. `git diff --stat` muestra solo `docs/`, esta memoria y el CHANGELOG, sin cambios en `src/`.
+- Correcciones: el ejemplo de la sección 12 ordenaba `parametros_pendientes` por orden alfabético, y ahora sigue el orden de la constancia (TRATO_SIN_EVIDENCIA, CORTE_ROJO y CONVERSION_NIVEL_0_1), el que usa la ruta 12 por BR-RESULTADOS-08. La sección 9 de `frontend.md` ya no duda entre la cabecera de P2 y la de `App.tsx`, porque el corte 2 trae la barra de navegación.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR de esta rama, que se abre con el permiso de Jefferson y cita el del Back.
+- Pendiente y siguiente paso: P6 y sus pruebas (T040 a T043) en esta rama.
+
+
+### 2026-11-18 14:21 (Lima) · docs/004-reportes-docente · Spec 004 aprobada, con ADR-008 aceptado
+- Quién: Jefferson aprueba la spec 004 en el chat de la sesión principal con «Sí, apruébala», a la pregunta «¿Apruebas la propuesta de los gráficos por profesor?». La sesión principal transmite la cita, y Claude Code la comprueba en el registro de la sesión principal antes de escribir esta entrada, sin subagentes.
+- Qué cambió: ADR-008 pasa a «Aceptada y vigente» con fecha 2026-11-18 y deja de listar la aprobación en «Lo que todavía NO está», el índice de ADR quita su marca de propuesta y su deuda de aprobación, y `feature-index.md` da la feature `resultados` como aprobada. `CHANGELOG.md` deja de dar la documentación como en revisión, y la ruta 12 sigue como propuesta hasta que T011 la deje definitiva.
+- Por qué: el índice de ADR pasa cada ADR a «Aceptada y vigente» con la fusión de su spec, y la escala de `feature-index.md` da «aprobada» a la feature cuyo PR de spec entra a `develop`, lo que ocurre con el PR #27 del Back antes que este.
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff --stat HEAD~1` muestra solo ADR-008, el índice de ADR, `feature-index.md`, `CHANGELOG.md` y esta memoria, así que el contrato, `frontend.md` y `src/` no cambian.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, la descripción del PR #18, que suma la cita, y su fusión con «Create a merge commit» después del PR #27 del Back.
+- Pendiente y siguiente paso: con las dos fusiones, T011 de la spec 004 deja definitivo el contrato de la ruta 12 en `feat/004-reportes-docente`. Los seis ADR del MVP siguen en «Propuesta, pendiente de Jefferson» aunque la spec 001 ya está fusionada, y su cambio de estado queda para otro PR.
+
+### 2026-11-18 14:21 (Lima) · docs/004-reportes-docente · Actualización con develop tras el corte 2
+- Quién: la sesión principal transmite la aprobación de la spec 004 que Jefferson da en su chat y pide poner al día esta rama y la del Back sin forzar el empuje. Claude Code, sin subagentes, integra `origin/develop` (f10fdc3) con un merge, resuelve `CHANGELOG.md` y `MEMORIA.md` y escribe esta entrada.
+- Qué cambió: la rama trae el corte 2 de la spec 001 del Back en este repositorio (PR #19). `CHANGELOG.md` junta la línea de la spec 004 con las del corte 2, y `MEMORIA.md` intercala por fecha las entradas de las dos ramas y junta «Punto actual». La documentación de la spec 004 no cambia.
+- Por qué: `develop` avanza después del rebase de las 07:44, y el PR #18 vuelve a chocar en `CHANGELOG.md` y `MEMORIA.md`. El permiso de empuje forzado de la mañana cubre solo aquel rebase, así que esta vez la rama integra `develop` con un merge.
+- Lo que debe hacer, cómo se probó: `git merge-tree --write-tree origin/develop HEAD` no da conflictos, `git diff --stat origin/develop...HEAD` muestra solo la documentación de la spec 004, `CHANGELOG.md` y esta memoria, y `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff origin/develop HEAD -- docs/` muestra solo la documentación de la spec 004, `contrato.md` y `frontend.md` no repiten ningún número de sección ni de ruta, y cada entrada de `MEMORIA.md` que trae `develop` sigue completa según una comparación bloque por bloque.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR #18, que recibe el merge sin empuje forzado.
+- Pendiente y siguiente paso: registrar la aprobación de la spec 004 y fusionar el PR #18 después del PR #27 del Back, con la CI en verde.
+
+### 2026-11-18 07:44 (Lima) · docs/004-reportes-docente · PR #18 abierto y rama rebasada sobre develop con el cierre de la spec 003
+- Quién: Jefferson autoriza en el chat empujar esta rama y abrir su PR («Sí, empuja y abre») y, después, rebasarla y empujarla con `--force-with-lease` («Sí, rebásalas»). Claude Code, sin subagentes, abre el PR #18, que cita el PR #27 del Back, rebasa el commit de la spec 004 sobre `develop` (2a22fb3), resuelve el conflicto de `MEMORIA.md` y escribe esta entrada.
+- Qué cambió: el commit «Documentación del sistema para la spec 004 de los logros por SO» queda sobre el cierre de la spec 003 del Back en el Front (PR #17) con otro SHA. En `MEMORIA.md`, su entrada queda encima de la del 2026-11-17 23:30 por orden de fecha, y «Punto actual» junta lo pendiente de US-17 que trae `develop` con la spec 004. Ningún archivo de `docs/`, `src/` ni de las pruebas cambia.
+- Por qué: `develop` recibe el PR #17 después de abrir el PR #18, y los dos cambian «Punto actual» y el comienzo del «Registro», así que el PR #18 choca con `develop`. `docs/devops.md` pide fusionar los PR con rebase.
+- Lo que debe hacer, cómo se probó: `git merge-tree --write-tree origin/develop HEAD` no da conflictos, `git diff --stat origin/develop...HEAD` muestra solo la documentación de la spec 004, `CHANGELOG.md` y esta memoria, y `bash scripts/preflight.sh --pr origin/develop` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: `git diff eda19d1 HEAD -- docs/ CHANGELOG.md` sale vacío, así que la documentación de la spec 004 no cambia con el rebase, y cada entrada de `MEMORIA.md` que trae `develop` sigue completa, según una comparación bloque por bloque con `git show origin/develop:MEMORIA.md`.
+- Correcciones: «Punto actual» del commit anterior todavía dice que la rama espera el permiso para empujar, y esta entrada lo deja al día.
+- Cómo se reporta: esta entrada y el PR #18, que recibe la rama con `--force-with-lease`, sin cambio en `CHANGELOG.md`.
+- Pendiente y siguiente paso: la aprobación de la spec 004 del Back (T004); con ella, T011 de la spec 004 deja definitivo el contrato de la ruta 12.
+
+### 2026-11-18 07:30 (Lima) · feat/001-corte-2 · Actualización con develop tras el cierre de la spec 003
+- Quién: la sesión principal de Jefferson avisa que `docs/003-cierre` ya está en `develop` (2a22fb3, PR #17), con Jefferson de acuerdo. Claude Code, en la sesión lateral del corte 2 y sin subagentes, fusiona `develop` en esta rama, resuelve el choque de esta memoria, corre las comprobaciones y escribe esta entrada.
+- Qué cambió: la rama trae de `develop` la entrada del cierre de la spec 003 en esta memoria, el único archivo que cambia el PR #17. «Punto actual» queda con el estado de la rama fusionada y su PR #19 abierto, y el «Registro» conserva las entradas de los dos lados en orden de hora, la más reciente primero.
+- Por qué: la regla de actualizar la rama con `develop` antes de fusionar su PR, porque el PR #17 y esta rama cambian las mismas líneas de esta memoria.
+- Lo que debe hacer, cómo se probó: `npm test` da 10 archivos y 139 pruebas aprobadas, `npm run build` compila sin errores, `bash scripts/probar_preflight.sh` da 28 bien y 0 mal y `bash scripts/preflight.sh` no da fallas.
+- Lo que no debe hacer, cómo se probó: fuera de esta memoria, la rama fusionada no difiere de d074842 (`git diff --stat d074842 -- . ':!MEMORIA.md'` sale vacío), y la compilación da los mismos `index-0T_CrYEk.js` e `index-5cA2jNHI.css`, así que la vista previa recibe el mismo código. En el árbol no queda ningún marcador de choque.
+- Correcciones: «Punto actual» decía que la rama seguía sin empujar, y su PR #19 está abierto desde las 06:10 del 2026-11-18.
+- Cómo se reporta: esta entrada y el PR #19, cuando Jefferson autorice empujar la actualización.
+- Pendiente y siguiente paso: fusionar jeffangeloss/ABET-ULIMA-Back#28 y después el PR #19, la prueba de humo contra la vista previa de `develop` (T099), P1 con el código por correo (T083, que espera a T018) y la versión 0.2.0, que publica Jefferson (T089).
+
+### 2026-11-18 00:15 (Lima) · feat/001-corte-2 · P5 Cargas, reemplazo y confirmación de la sección en P3 (T085 de la spec 001 del Back)
+- Quién: Claude Code, en la sesión lateral del corte 2. Un subagente con el modelo de la sesión y esfuerzo medio implementa T085 con las pruebas de Vitest escritas antes que el código, sobre el contrato del commit anterior, y no hace commit. Claude Code revisa su diff completo, corrige el texto de P4 que el mismo subagente señala como posiblemente falso, cambia el nombre con que la prueba de humo guarda el R-17, corre las comprobaciones y escribe esta entrada. Otro subagente, con el modelo de la sesión y esfuerzo alto, revisa en solo lectura el diff de los dos repositorios y no halla defectos de severidad alta ni media.
+- Qué cambió: `src/pantallas/Cargas.tsx` (P5) es nuevo, y cambian `SubirExport.tsx` (P3, con el modo reemplazo, la pregunta del 409 y la del 422), `ResultadoCarga.tsx` (P4), `App.tsx` (vista de P5 y botones de la cabecera), `servicios/api.ts`, `servicios/tipos.ts` y `servicios/formato.ts`, con sus pruebas en `tests/` y el nuevo `tests/pantallas/Cargas.test.tsx`. `e2e/humo.spec.ts` suma el reemplazo en P5, `docs/01-arquitectura/frontend.md` describe las pantallas del corte 2 y `docs/03-api/contrato.md` precisa que el 200 del mismo archivo manda aunque `reemplaza` nombre otra carga.
+- Por qué: T085 y T087 de la spec 001 del Back, para US-18 (reemplazo), US-19 (lista de cargas) y US-21 (confirmación de la sección), con BR-CARGA-18 a 20. P1 no cambia, porque el código por correo (US-20) espera a T018.
+- Lo que debe hacer, cómo se probó: `npx vitest run` da 10 archivos y 139 pruebas aprobadas, frente a 9 y 85 en `develop`. Las tres pruebas que citan los pasos de aceptación del Back existen con su nombre exacto. `npx tsc --noEmit` y `npm run build` terminan sin errores y `bash scripts/preflight.sh` sin fallas. La prueba de humo, con `bash scripts/e2e.sh e2e/humo.spec.ts` contra `scripts/api_local.sh --sin-https` del Back y Vite en 5173, da 3 passed, y en P5 la carga nueva queda «Vigente, reemplaza a la carga 1» y la anterior «Reemplazada por la carga 2». El R-17 que descarga pasa `herramientas_neon/revisar_r17.py` con 0 fallas, 33 filas y 63,6 %, 63,6 % y 72,7 %.
+- Lo que no debe hacer, cómo se probó: P5 no muestra el código de `motivo`, nombres de estudiantes, valores leídos ni rutas, aunque la respuesta simulada los traiga de más («no muestra nombres de estudiantes, valores leídos ni rutas locales»). «No» cierra cada pregunta sin ninguna petición, un 409 sin `carga_publicada` no pregunta por el reemplazo y P3 nunca ofrece escribir el número de la sección confirmada. Ningún archivo de `src/` guarda nada en el navegador ni llama a `fetch` fuera de `api.ts`.
+- Correcciones: el texto de P4 para una carga REEMPLAZADA decía que su sucesora «es la publicada», lo que deja de ser cierto si la sucesora también se reemplaza, y pasa a «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta). La prueba de humo guardaba el R-17 como `R017_reemplazo_410.xlsx`, y `revisar_r17.py` marcaba dos fallas porque coteja la franja PROVISIONAL con el nombre, así que ahora lo guarda con el nombre que fija la API, en `DIR_CAPTURAS/reemplazo/`. La revisión independiente deja un hallazgo de severidad baja aceptado, porque P3 no vuelve a ofrecer el reemplazo si otra persona reemplaza la carga mientras pregunta, y la pantalla muestra el 409 tal cual.
+- Cómo se reporta: esta entrada, el CHANGELOG, la sección «Corte 2» de `specs/001-mvp-carga-r17/audit.md` del Back, las capturas de `ABET_SIS_MED/demo_corte2/` y el PR de esta rama, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: P1 con el código por correo (T083, que espera a T018), la prueba de humo contra la vista previa de `develop` después de fusionar las dos ramas (T099) y la versión 0.2.0, que publica Jefferson (T089).
+
+### 2026-11-17 23:57 (Lima) · docs/004-reportes-docente · Documentación del sistema para la spec 004 de los logros del profesor por SO (en local)
+- Quién: Claude Code, en la misma sesión que escribe la spec 004 del Back. La entrada de la misma fecha en `MEMORIA.md` del Back nombra los subagentes que auditan las historias y las decisiones técnicas. En el Front no participa ningún subagente, y Claude Code escribe los documentos a partir de la spec y de la crítica de arquitectura.
+- Qué cambió: `docs/00-vision/adr/ADR-008-logros-por-pi-en-el-sistema.md` es nuevo, en propuesta, con su fila y su deuda en el índice de ADR. `docs/03-api/contrato.md` suma la fila de la ruta 12, una nota en la sección 3.4, un punto en la sección 9 y la sección 12 con `GET /api/resultados`. `docs/specs/api-contracts.md` suma su fila, `docs/01-arquitectura/frontend.md` suma la sección 9 con P6 «Mis logros por SO» y `docs/specs/feature-index.md` suma la fila `resultados`. Ningún archivo de `src/` ni de las pruebas cambia.
+- Por qué: FR-017 de la spec 004 y el método del proyecto piden el contrato y la pantalla en el Front antes de implementar, y la regla 3 de `AGENTS.md` pide que cada pantalla nombre las historias que la justifican, que son US-37 a US-44.
+- Lo que debe hacer, cómo se probó: la comprobación de la sección 10 del contrato, corrida desde `ABET_SIS_MED/wt` con `BACK=back-004 FRONT=front-004`, da 0 mensajes de los escenarios sin contrato, también con la carpeta de la spec 004 sumada a su lectura. `bash scripts/preflight.sh --staged` termina sin fallas con esta memoria.
+- Lo que no debe hacer, cómo se probó: la misma comprobación da 1 mensaje del contrato sin escenario, el de la marca de entorno de T077, que ya daba `develop` antes del cambio, así que los textos nuevos, todos con la marca (propuesta), no suman ninguno. La ruta 12 y la sección 12 no chocan con la ruta 11 y la sección 11 de la spec 002, ni la sección 9 de `frontend.md` con su sección 8. Las secciones 1 a 7 de `frontend.md`, que edita el corte 2 en otra sesión, no cambian.
+- Correcciones: el borrador numeraba 11 la ruta nueva, que la spec 002 de la rama `docs/002-capstone` ya usa, y pasa a 12.
+- Cómo se reporta: esta entrada, `CHANGELOG.md` y el PR de esta rama, que cita el de la spec 004 del Back, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: la aprobación de Jefferson y T011, que deja definitivos la sección 3.4, la cuenta de caminos de OpenAPI de la sección 10 y la lectura de la carpeta de la spec 004 en la comprobación de mensajes. El mensaje de la marca de entorno sin escenario queda para su propia corrección.
+
+### 2026-11-17 23:30 (Lima) · docs/003-cierre · Cierre de la spec 003 del Back en el Front (T053 y T061)
+- Quién: Jefferson aprueba en el chat empezar a cerrar lo que queda de la versión 0.1.0 («Sí, empieza»). Claude Code corre en un worktree de `develop` la parte del Front de T053 y escribe esta entrada. En el flujo de agentes wf_844270c1-e83, un verificador (Sonnet, esfuerzo medio) corre `tests/pantallas/SubirExport.test.tsx` con `--reporter=verbose` y otro (Sonnet, esfuerzo medio) revisa la memoria y el registro de cambios de los commits de la spec 003 de este repositorio. Claude Code compara sus cifras con los registros de la corrida antes de aceptarlas.
+- Qué cambió: esta memoria, con «Punto actual» al día. El código, las pruebas y `CHANGELOG.md` no cambian.
+- Por qué: T053 y T061 de la spec 003 del Back piden la suite del Front, la revisión previa y la memoria y el registro de cambios de cada repositorio, y «Punto actual» seguía con la rama de Dependabot en curso.
+- Lo que debe hacer, cómo se probó: sobre `develop` (7f6c72b), `npm ci --ignore-scripts --prefer-offline` instala el lockfile, `npm test` da 9 archivos y 85 pruebas aprobadas, `npm run build` compila sin errores, `bash scripts/probar_preflight.sh` da 28 bien y 0 mal y `bash scripts/preflight.sh` no da fallas. `npx vitest run tests/pantallas/SubirExport.test.tsx --reporter=verbose` da 18 de 18, y entre ellas están las tres que cubren los escenarios de US-33. La CI de `develop` termina en verde en 7f6c72b (corrida 44209561524).
+- Lo que no debe hacer, cómo se probó: la compilación da los mismos `index-D0rec67o.js` e `index-5cA2jNHI.css` que la entrada del 2026-11-17 18:25, así que la vista previa y Production no reciben código distinto. Los seis commits de la spec 003 y de su salida a `develop` en este repositorio tocan `MEMORIA.md`, y `CHANGELOG.md` falta solo en b75de56 y 706139d, que no traen un cambio visible.
+- Correcciones: ninguna en este repositorio. En el Back, el verificador del historial encuentra que `[0.1.0]` no nombraba la sección que sale del nombre de un export de texto (US-30), y esa línea se agrega allí.
+- Cómo se reporta: esta entrada, `specs/003-exports-blackboard/audit.md` del Back y el PR de esta rama, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: los escenarios pendientes de US-17 y T062 en `audit.md` del Back, y D-30 (T005 de la spec 003), que espera a Stefanny Montaño o a la Oficina de Calidad.
+
+### 2026-11-17 23:25 (Lima) · feat/001-corte-2 · Contrato de la API del corte 2 (T080 de la spec 001 del Back)
+- Quién: Claude Code, en una sesión lateral que abre la sesión principal de Jefferson para implementar el corte 2 de la spec 001 (US-18 a US-21, tareas T080 a T088 y T099), sin subagentes en este cambio. La spec 001 ya está aprobada, así que el corte 2 no pide otra aprobación.
+- Qué cambió: `docs/03-api/contrato.md` fija las rutas 8 y 9 con su cuerpo, sus casos y sus errores, el campo `confirmar_seccion` de la ruta 5, que solo admite `true`, el 422 con `requiere_confirmacion` y el 409 con `carga_publicada` (sección 3.1), los campos `reemplaza_carga_id` y `reemplazada_por` de la constancia, `sha256_corto` y `motivo` de la lista de cargas y los seis caminos que el esquema OpenAPI debe tener sin US-20. `docs/specs/api-contracts.md` pone al día su estado, sus reglas y lo que todavía no existe.
+- Por qué: T080 y la regla del contrato de `docs/specs/api-contracts.md`, que pide cambiar el contrato antes de implementar la ruta. La pregunta de la sección reemplaza desde el corte 2 al 422 del corte 1 (D-02), así que el contrato ya no cita aquel texto.
+- Lo que debe hacer, cómo se probó: la comprobación de la sección 10 del contrato, contra los `.feature` de la rama `feat/001-corte-2` del Back, da 0 mensajes de los escenarios sin contrato, y todos los textos nuevos del contrato están en un escenario o llevan «(propuesta)». `npx vitest run` sigue en 9 archivos y 85 pruebas aprobadas, porque el cambio es solo de documentos.
+- Lo que no debe hacer, cómo se probó: la misma comprobación da 1 mensaje del contrato sin escenario, el de la marca de entorno de T077 («La base de DATABASE_URL está marcada para production…»), que ya falta en `develop` antes de este cambio, así que no lo trae el corte 2. Ningún ejemplo del contrato usa un dato real, y los correos son de `example.invalid`.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama, cuando Jefferson autorice empujar.
+- Pendiente y siguiente paso: P5 Cargas y el reemplazo y la confirmación en P3 (T085), con sus pruebas, y el texto de T077 que falta en un escenario, como observación aparte del corte 2.
+
+### 2026-11-17 18:25 (Lima) · chore/dependencias-dependabot · jsdom, vitest, vite y `@vitejs/plugin-react` en un solo cambio (PR de Dependabot #5, #6, #9 y #12)
+- Quién: Claude Code, por el encargo de la sesión principal de Jefferson del 2026-11-17, aplica los cuatro saltos en un solo cambio, corre las pruebas y escribe esta entrada. Jefferson aprueba en el chat empujar las ramas del Front y del Back, fusionarlas con la CI en verde y cerrar los diez PR de Dependabot. Un subagente (Sonnet, esfuerzo medio) lee en solo lectura las notas de cada versión, las fechas del registro de npm, la base de avisos de GitHub y los diffs de los cuatro PR. Claude Code vuelve a tomar con `npm view` las fechas de los nueve paquetes del lockfile nuevo antes de aceptar su informe.
+- Qué cambió: `package.json` fija jsdom 30.1.3, vitest 5.0.5, vite 8.3.5 y `@vitejs/plugin-react` 6.2.1. En `package-lock.json` cambian además cinco dependencias que solo usan las pruebas, `@asamuzakjp/dom-selector` de 9.2.4 a 10.0.5, porque jsdom 30.1.3 pide ^10.0.3, `@vitest/mocker` y `@vitest/spy` a 5.0.5, magic-string a 1.4.5 dentro de `@vitest/mocker` y `@types/estree` a 1.0.10, que pide su estree-walker.
+- Por qué: los PR de Dependabot #5, #6, #9 y #12, que Jefferson deja para después de la versión 0.1.0. Van juntos porque #9 choca con #6 y #12 con #5 en `package.json` y `package-lock.json`. Cada lockfile de Dependabot agrega además los mismos seis paquetes anidados de `@tailwindcss/oxide-wasm32-wasi`, que el npm local no escribe, así que un solo cambio evita cuatro rebases y las entradas sobrantes.
+- Lo que debe hacer, cómo se probó: `npm ci --ignore-scripts` instala el lockfile nuevo, `npm test` da 9 archivos y 85 pruebas aprobadas, igual que en `develop`, y `npm run build` compila sin errores. El bundle sale idéntico al de `develop`, con los mismos `index-D0rec67o.js` e `index-5cA2jNHI.css`, así que la vista previa y Production no reciben código distinto.
+- Lo que no debe hacer, cómo se probó: `npm install --before=2026-11-03T23:00:00Z` no admite ninguna versión con menos de 14 días, y `npm view` fecha los nueve paquetes entre el 2026-10-15 y el 2026-11-02. La base de avisos de GitHub no trae avisos vigentes para las versiones nuevas ni para las dependencias de `package.json`, de modo que ningún salto corrige una vulnerabilidad conocida.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama, que reemplaza los PR #5, #6, #9 y #12.
+- Pendiente y siguiente paso: al fusionar el PR, se cierran los cuatro PR de Dependabot con un comentario que remite a él. Como el bundle no cambia, la prueba de la vista previa de `develop` hace falta solo por el Back.
+
+### 2026-11-17 17:45 (Lima) · docs/001-version-0.1.0 · Versión 0.1.0 en Production (T076 y T079 de la spec 001 del Back)
+- Quién: Jefferson autoriza en el chat empujar y fusionar cada PR con la CI en verde, y corre `ABET_SIS_MED/herramientas_neon/comprobar_version.sh`, que le pide las contraseñas. Claude Code fusiona el PR de versión, comprueba Production y escribe esta entrada. El subagente revisor del registro del Back (Sonnet, esfuerzo medio) revisa también este cambio en solo lectura y marca la sección 2.2 de `entornos-y-despliegue.md`, que daba el entrenamiento de IA por desactivado, y la fuente de los términos de marzo de 2026, y las dos se corrigen.
+- Qué cambió: `main` recibe la versión 0.1.0 (PR #14, 0d693b9), `release.yml` crea el tag `v0.1.0` y su Release, y Production del Front sale de `main`. En este repositorio, `docs/05-operacion/entornos-y-despliegue.md` registra la versión en Production, J-07 en Hobby y el entrenamiento de IA del equipo, que sigue encendido.
+- Por qué: T076 y T079 de la spec 001 del Back.
+- Lo que debe hacer, cómo se probó: el despliegue de Production `dpl_EjScFgZmaZ8AugUs458zYHfeA92v` sale de `main` en iad1 con el alias `abet-ulima-front.vercel.app`. `GET /` responde 200 sin la protección de Vercel, y `GET /api/sesion` sin cookie da por la reescritura el 401 en JSON del Back, que antes de la versión era 404. `produccion.spec.ts` da 3 passed, con el ingreso de docente410 en P1 y la cookie `abet_sesion` guardada solo para `abet-ulima-front.vercel.app`, HttpOnly, Secure y SameSite=Lax.
+- Lo que no debe hacer, cómo se probó: la respuesta de `/api/sesion` no trae `Access-Control-Allow-Origin`, localStorage y sessionStorage no tienen ningún valor, `document.cookie` no muestra `abet_sesion` y ninguna prueba sube un export en Production.
+- Correcciones: la sección 7 decía que Jefferson aún no aceptaba desplegar en Hobby, y ahora registra la versión 0.1.0 en Hobby con la consulta a soporte todavía pendiente.
+- Cómo se reporta: esta entrada, el CHANGELOG, el PR de esta rama y `audit.md` del Back.
+- Pendiente y siguiente paso: los PR de Dependabot (#5, #6, #9 y #12) y el entrenamiento de IA del equipo de Vercel (T070 del Back).
 
 ### 2026-11-17 17:25 (Lima) · chore/version-0.1.0 · Versión 0.1.0 del Front (T076 de la spec 001 del Back)
 - Quién: Claude Code prepara la versión por el encargo de la sesión principal de Jefferson del 2026-11-17. Jefferson decide en el chat no fusionar los PR de Dependabot antes de la versión y autoriza empujar y fusionar cada PR con la CI en verde.
