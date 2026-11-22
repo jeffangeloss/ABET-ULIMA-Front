@@ -797,3 +797,61 @@ El Front no ofrece el enlace a la ruta 7 sin declaración, porque P4 es el únic
 8. **El resto de N6** (criterios con más dificultades, lista de estudiantes que necesitan apoyo y comparación con el promedio del curso), que espera a D-33.
 9. **La edición de la descripción del instrumento desde una pantalla** (D-34) y la escritura de la declaración por el coordinador.
 10. **Los cambios de la tabla de la sección 2 y de la sección 10**, que se ajustan al reaprobar la spec (tarea T011).
+
+## 14. Ruta de la spec 007, avance del registro para la coordinación (propuesta)
+
+> **Propuesta del 2026-11-22, pendiente de aprobación de Jefferson.** Esta sección traslada la ruta 17 de la spec 007 del Back (`specs/007-experiencia-por-cuenta/`, US-64 a US-66, J-47 y J-48) y no rige hasta su aprobación y su fase de contrato (T011 y T012). Los nombres de la ruta, de los campos y los textos son propuestas. La etapa A de la spec 007 no agrega rutas ni cambia las rutas 4, 6, 8 y 9, que P2, P3 y P4 leen como hoy.
+
+### 14.1 Resumen
+
+| # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Corte |
+|---|---|---|---|---|---|---|---|---|
+| 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de la carrera en el periodo, el conteo por etapa y, con D-47, los correos de los profesores de las secciones que faltan | US-64 a US-66 (spec 007) | BR-AVANCE-NN (propuesta), BR-ACCESO-07 y BR-ACCESO-12 (propuesta) | spec 007, etapa B |
+
+El número 17 y la pantalla P7 son los que AD-47 de la revisión de la spec 005 nombra para una idea fuera de alcance, la rúbrica de la sección, que recibe otros números cuando entre (J-47).
+
+### 14.2 `GET /api/avance?periodo=2026-2`: etapa de cada sección de la carrera (propuesta)
+
+Solo un usuario activo con rol COORDINADOR la lee, por `puede_ver_avance()` de `app/permisos.py`, y su alcance sale de `secciones_visibles()`, el mismo de la ruta 4 para el coordinador. Sin `periodo`, la API usa `PERIODO_VIGENTE`.
+
+```jsonc
+// Respuesta 200 para coordinacion@example.invalid, con datos inventados
+{
+  "periodo": "2026-2",
+  "conteo": { "secciones": 5, "PUBLICADA": 1, "CON_RECHAZO": 1, "SIN_CARGA": 1, "SIN_PROFESOR": 1, "SIN_PLAN": 1 },
+  "secciones": [
+    { "seccion_id": 1, "asignatura": { "codigo": "450002", "nombre": "Principios de Ingeniería Sostenible" },
+      "numero": "410", "etapa": "PUBLICADA", "carga_id": 7, "profesores": [] },
+    { "seccion_id": 2, "asignatura": { "codigo": "450002", "nombre": "Principios de Ingeniería Sostenible" },
+      "numero": "411", "etapa": "CON_RECHAZO", "carga_id": null, "profesores": ["docente411@example.invalid"] },
+    { "seccion_id": 3, "asignatura": { "codigo": "450010", "nombre": "Gestión Sostenible de Residuos" },
+      "numero": "412", "etapa": "SIN_CARGA", "carga_id": null, "profesores": ["docente410@example.invalid"] },
+    { "seccion_id": 4, "asignatura": { "codigo": "450010", "nombre": "Gestión Sostenible de Residuos" },
+      "numero": "413", "etapa": "SIN_PROFESOR", "carga_id": null, "profesores": [] },
+    { "seccion_id": 5, "asignatura": { "codigo": "450020", "nombre": "Evaluación del Impacto Ambiental" },
+      "numero": "414", "etapa": "SIN_PLAN", "carga_id": null, "profesores": [] }
+  ]
+}
+```
+
+Reglas y por qué existen.
+
+- La etapa la decide el Back en cada lectura y no se guarda en ninguna tabla (J-48, valor provisional). Una sección es SIN_PLAN si `abet.plan_medicion` no tiene filas de su asignatura en el periodo, la misma condición de `tiene_plan` de la ruta 4. Si no, es PUBLICADA con una carga PUBLICADA, aunque ya no tenga un profesor activo. Si no, es SIN_PROFESOR si ningún usuario activo con rol PROFESOR la tiene en `acceso.docente_seccion`, la condición de `secciones_sin_docente.sql` de la spec 006. Si no, es CON_RECHAZO con al menos una carga RECHAZADA, y SIN_CARGA en otro caso, también con una carga EN_CURSO. El Front muestra la etapa y nunca la calcula.
+- `carga_id` es el de la carga PUBLICADA de la sección, y `null` sin ella. Con la alternativa de J-48, que pone SIN_PROFESOR antes de PUBLICADA, también lo trae una sección SIN_PROFESOR. P7 abre con él P4, el único lugar del R-17 (J-32 de la spec 005).
+- `profesores` trae, en orden alfabético, los correos de los usuarios activos con rol PROFESOR de `acceso.docente_seccion` solo en las secciones CON_RECHAZO y SIN_CARGA, y `[]` en las demás. Depende de D-47, y si la Coordinación responde que no, el campo no existe.
+- La respuesta no trae porcentajes, niveles, cifras del R-17, códigos ni nombres de estudiantes, nombres de profesores ni datos de `acceso.credencial`.
+- Las secciones van por código de asignatura y número, el orden de `secciones_visibles()`, sin un orden por resultado (J-28 de la spec 004).
+- La ruta responde con `Cache-Control: no-store`, como toda `/api`, y entra en la prueba que recorre las rutas registradas (BR-ACCESO-10).
+- Los campos que la spec 007 deja para después, el bloque de reglas pendientes (C-C04) y la división de PUBLICADA en POR_DECLARAR y DECLARADA (C-C06), llegan como campos o valores nuevos que no cambian los de esta sección.
+
+Errores, en el orden 401, 403 y 422 y todos sin rastro en la base.
+
+- 401 sin sesión, con el texto de las demás rutas.
+- 403 con «Esta página es de la Coordinación.» (propuesta) para un usuario con rol PROFESOR, antes de revisar el periodo.
+- 422 con «El periodo no tiene la forma AAAA-C.» (propuesta) para un periodo con otra forma, como en la ruta 4.
+
+### 14.3 Lo que esta sección no cubre
+
+1. **Los cambios de la tabla de la sección 2 y de la sección 10**, que suman la ruta 17 y su camino `/api/avance` en la fase de contrato de la spec 007 (T012).
+2. **El envío de correos desde la aplicación.** La coordinación copia la lista en P7 y escribe desde su propio correo.
+3. **El campo aditivo `ultima_rechazada_id` de la ruta 4** (J-45), que reemplaza la combinación de las rutas 4 y 8 en P2 del profesor cuando la ruta 17 esté construida.

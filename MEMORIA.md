@@ -13,7 +13,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-22
-- **Rama de trabajo**: `docs/registro-version-0.2.0`, que registra la versión 0.2.0 en Production
+- **Rama de trabajo**: `docs/007-experiencia-por-cuenta`, con la spec 007 en borrador
 - **Versión publicada**: 0.2.0, con el tag `v0.2.0` sobre 6eb421c de `main` (PR #26) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.1.0 del 2026-11-17
 - **Último cambio**: el contrato y la pantalla P4 siguen el cambio de la spec 005 del Back (OM y BP por indicador), en borrador para la aprobación de Jefferson. Antes, el 2026-11-19, las pantallas dejan de mostrar el aviso de códigos inventados (PR #23)
 - **En curso**: la fusión del PR de esta rama, aprobado por Jefferson el 2026-11-21 («Sí, apruébalas»), y después la construcción de la spec 006 y de la spec 005 en el orden de J-41. La carrera debe responder D-43 y D-44 antes de la capacitación de la semana 14. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-22 18:18 (Lima) · docs/007-experiencia-por-cuenta · Spec 007 en borrador, lo importante para cada cuenta en cada momento
+- Quién: Jefferson pide en el chat mejorar la experiencia con specs en Gherkin que muestren lo importante para cada cuenta y en cada momento («también mejora la UX…», «Sí, sigue»). Claude Code arma un workflow de diez subagentes: tres proponen 18 candidatas (profesor, coordinación y lo transversal), tres lentes y un crítico de arquitectura las auditan, un redactor escribe la spec y un revisor y un corrector arreglan 13 problemas, uno bloqueante sobre el orden de construcción.
+- Qué cambió: en el Front, `docs/01-arquitectura/frontend.md` (sección 11, propuesta), `docs/03-api/contrato.md` (ruta 17, propuesta) y `docs/specs/feature-index.md`.
+- Por qué: la capacitación de los profesores empieza el 2026-11-23 y el registro va del 30-11 al 12-12, así que cada cuenta necesita ver qué le falta y qué hacer en cada pantalla.
+- Lo que debe hacer, cómo se probó: el analizador de Gherkin del Back lee los cinco .feature (5, 12, 8, 4 y 6 escenarios) y `bash scripts/preflight.sh` no encuentra fallas.
+- Lo que no debe hacer, cómo se probó: ningún código, escenario de otra spec ni la base cambian; la spec 007 cita la 005 y la 006 sin repetirlas.
+- Correcciones: el revisor encuentra que el orden de construcción no ponía primero la spec 006, y el corrector fija spec 006, etapa A de la 007, núcleo de la 005 y etapa B.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama.
+- Pendiente y siguiente paso: la aprobación de Jefferson y las decisiones D-46 y D-47 de la carrera (a quién acude un profesor sin secciones y si la coordinación ve los correos de los profesores atrasados).
 
 ### 2026-11-22 17:30 (Lima) · docs/registro-version-0.2.0 · Versión 0.2.0 en Production
 - Quién: Jefferson autoriza publicar en el chat («Sí, publícala») después de correr la prueba final. Claude Code migra la rama principal de Neon a V1_11, abre y junta los PR «Versión 0.2.0» de los dos repositorios, comprueba Production y escribe este registro.

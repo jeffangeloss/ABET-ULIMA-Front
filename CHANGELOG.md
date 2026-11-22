@@ -4,6 +4,10 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+### Agregado
+
+- La documentación del sistema suma la propuesta de la spec 007 del Back: P2 a P4 con el siguiente paso, «Antes de subir» y «Qué corregir», rótulos por rol, la ruta 17 y P7 «Avance del registro» de la coordinación, en borrador para la aprobación de Jefferson.
+
 ## [0.2.0] - 2026-11-23
 
 ### Agregado
