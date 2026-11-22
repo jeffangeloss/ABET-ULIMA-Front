@@ -7,6 +7,8 @@
 | **Enmienda** | ADR-005 (su frase «El profesor escribe a mano las causas, las acciones y el comentario.» y su invariante 2) y ADR-008 (su invariante 8), a partir de la aprobación de la spec 005 |
 | **Ámbito** | Las rutas 13 a 16 de `docs/03-api/contrato.md` (sección 13), `abet.mejora_borrador`, `abet.mejora_declaracion`, `abet.plan_medicion.descripcion_instrumento`, `abet_carga/r17.py`, `abet_carga/resultados.py`, `app/permisos.py`, `src/pantallas/ResultadoCarga.tsx` (P4), `src/App.tsx` y `src/servicios/api.ts` |
 
+> **Cambio del 2026-11-21 (propuesta, pendiente de reaprobación de Jefferson).** El cambio de la spec 005 del Back (Clarification «Session 2026-11-21») enmienda este ADR. La declaración deja de ser un par de textos por carga y pasa a un registro por indicador de desempeño (performance indicator, PI), con una causa y una acción que el semáforo rotula como oportunidad de mejora o como buena práctica (D-39). V1_12 crea cuatro tablas en lugar de dos (J-38), cada campo admite hasta 800 puntos de código (J-39) y el R-17 compone los recuadros A y B con un párrafo por PI (D-41). Las secciones 13.2 a 13.6 del contrato traen la forma propuesta. El texto de abajo, la consulta 1 de «Cómo se verifica» y las columnas `causas` y `acciones` siguen la versión del 2026-11-18 hasta que la tarea T011 de la spec 005 los reescriba. La versión del borrador que evita que dos pestañas se pisen es AD-19.
+
 ## Decisión
 
 Hoy el R-17 sale con los recuadros A (causas) y B (acciones) vacíos, y el profesor los completa a mano en el archivo descargado. Ese texto no pasa por el sistema, así que la base no lo guarda, nadie comprueba que exista y el reporte que llega a la acreditación puede salir sin él. La spec 005 propone que el profesor declare las causas y las acciones en P4, que la base las guarde y que el R-17 las escriba en B29 y B34 desde la última declaración (US-47 y US-50, J-30).
@@ -19,7 +21,7 @@ La spec 005 suma además el semáforo de la carga en P4. La ruta 13 entrega los 
 
 Como la declaración es texto libre, el riesgo de datos personales cambia. La ruta 15, la ruta 16 y dos restricciones CHECK de la base usan el mismo patrón ASCII para rechazar códigos de estudiante y correos, y P4 recuerda no escribir nombres. Un nombre no se detecta, y Jefferson acepta que BR-R17-07 y la regla 6 de `AGENTS.md` se cumplan en estos dos campos por aviso y no por construcción (US-53, J-36).
 
-Las decisiones de arquitectura de la spec 005 que esta decisión recoge son AD-05 (versión del borrador), AD-10 (normalización del texto), AD-11 (códigos y correos), AD-13 y AD-14 (navegación por el fragmento) y AD-24 (P4 único lugar del R-17).
+Las decisiones de arquitectura de la spec 005 que esta decisión recoge son AD-05 (borrador en la base con guardado automático), AD-19 (versión del borrador), AD-10 (normalización del texto), AD-11 (códigos y correos), AD-13 y AD-14 (navegación por el fragmento) y AD-24 (P4 único lugar del R-17).
 
 ## Enmiendas a ADR-005 y ADR-008
 
