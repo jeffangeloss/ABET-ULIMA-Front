@@ -341,6 +341,57 @@ Vitest con Testing Library prueba cada escenario `@delegado_a_vitest` de `specs/
 
 La spec 006 del Back (`specs/006-programacion-docente/`, propuesta del 2026-11-21) carga la programación docente post-matrícula del ciclo con un guion que corre desde el Windows de Jefferson, sin ruta ni pantalla nuevas. El Front no cambia con ella. Su efecto se ve en P2, donde cada profesor real encuentra su sección antes de la capacitación de la semana 14.
 
+## 11. Spec 007, lo importante para cada cuenta y en cada momento (propuesta)
+
+> **Aprobada por Jefferson el 2026-11-22 («Sí, apruébala»).** Esta sección traslada la spec 007 del Back (`specs/007-experiencia-por-cuenta/`, EP-07, US-59 a US-66) y no rige hasta su aprobación. Mientras tanto mandan las secciones 3, 4, 9 y 10. Al aprobarla, la sección 3 cambia «con sesión muestra P2» por la página de llegada de cada rol en la etapa B, y la sección 4 cambia «No hay una carga publicada para esta sección» por «Esta carga no tiene R-17.». Todos los textos de esta sección son propuestas, salvo los que ya existen y se citan como tales.
+
+La spec responde al pedido de Jefferson del 2026-11-22 de mostrar lo importante para cada cuenta y en cada momento del registro, con la capacitación en la semana 14 y el registro en la semana 15 o, a más tardar, en la 16. Llega en dos etapas. La etapa A (US-59 a US-63) cambia el código del Front, sin rutas nuevas, y se construye justo después de la spec 006 y antes del núcleo de la spec 005. Su mínimo antes del registro del 30-11-2026 son US-60, US-59 y US-61, y US-62 y US-63 entran como extras si caben. La etapa B (US-64 a US-66) agrega la ruta 17 `GET /api/avance` (contrato, sección 14) y la pantalla P7 «Avance del registro», solo para la coordinación, en la semana 16, si cabe. La spec no toca las secciones «Cómo va su sección» ni «Análisis por indicador» que la sección 10 agrega a P4.
+
+### 11.1 Qué cambia en `src/`
+
+- `servicios/` suma una función que combina la ruta 4 con una sola petición a la ruta 8 sin `seccion_id` para P2 del profesor (J-45), y un módulo con las líneas de «Antes de subir» (J-44) y la tabla «Qué corregir» por motivo RECHAZA_CARGA (J-43). En la etapa B, `api.ts` y `tipos.ts` suman la ruta 17.
+- `App.tsx` pasa la cabecera a un nav con aria-label «Menú principal» y `aria-current="page"` en el botón de la pantalla a la vista, y rotula «Secciones de la carrera» al coordinador. En la etapa B suma la vista «avance», con el fragmento `#/avance` (propuesta), el botón «Avance del registro» del coordinador y `pantallaDeLlegada(usuario)`, que lleva al coordinador a P7 y al profesor a P2 (J-46). US-52 de la spec 005 la reutiliza para el fragmento vacío o desconocido, y la tabla de la sección 10.3 recibe `#/avance` cuando entre US-52. Con esa navegación, atrás desde P4 abierta con «Ver la carga» vuelve a P7, y una recarga en `#/avance` deja al coordinador en P7.
+- `pantallas/Avance.tsx` es P7, nueva en la etapa B.
+
+### 11.2 P2 Mis secciones del profesor (US-59)
+
+Cada fila conserva su texto de hoy («Sin carga», «Publicada, 11 de 11 filas aceptadas» o «La carrera aún no registra el plan de medición de esta sección»), porque lo citan los `.feature` de la spec 001, y suma debajo, en un párrafo propio, la línea de lo que falta, que el botón «Subir export» anuncia con `aria-describedby`. Las líneas son «Falta subir el export de Blackboard de esta sección.», «La última carga se rechazó y no se publicó. Falta subir un export corregido.», «Revise el resultado de la carga para completar lo que falte y descargar el R-17.» y «Por ahora no hay nada que hacer. La Coordinación de la carrera registra el plan de medición.». Una sección en SIN_CARGA con una carga RECHAZADA en la ruta 8 ofrece además «Ver por qué se rechazó», que abre P4 de la más reciente. Si la ruta 8 falla, P2 sigue con la ruta 4 y no muestra error. La lista vacía conserva «No tiene secciones asignadas en este periodo.» y suma «Si dicta una sección con medición ABET en este periodo, escriba a la Coordinación de la carrera.» (D-46). El coordinador no recibe estas líneas y P2 no le pide la ruta 8.
+
+### 11.3 P3 Subir export (US-60 y US-62)
+
+Antes del campo de archivo, P3 muestra el apartado «Antes de subir» con cuatro líneas armadas con `Seccion.pi`, también en el modo reemplazo, como «En Blackboard, una columna por PI, con el nombre ABET SO5.1, ABET SO5.2 y ABET SO5.3.», la del nivel entero de 1 a 4 con el puntaje máximo de 4 que solo avisa, «Conserve la columna Username y no cambie el nombre de las columnas.» y la del nombre que pone Blackboard. Los nombres siguen el valor provisional de D-43 de la spec 005, y el apartado no lee el archivo ni hace peticiones. En el modo reemplazo, P3 conserva «Reemplaza a la carga 7, la publicada de esta sección.» y suma en un párrafo propio «Si la carga nueva queda rechazada, la carga 7 sigue publicada.».
+
+### 11.4 P4 Resultado de la carga (US-61 y US-62)
+
+En una carga RECHAZADA, P4 conserva el mensaje de la API sin reescribirlo y suma debajo «Qué corregir. …», con el texto de su motivo, o el de la carga sin filas aceptadas, «Corrija en Blackboard cada fila de la tabla de rechazos, exporte otra vez y suba el archivo nuevo.». Un motivo desconocido no muestra consejo, y una prueba recorre los siete motivos RECHAZA_CARGA de la sección 6 del contrato. El consejo de SECCION_NO_COINCIDE no remite a ninguna pantalla, y el coordinador, a quien `permisos.puede_subir()` no deja una carga nueva, lee en su lugar «El archivo no es de 450002, sección 410. Pida al profesor de esa sección que exporte su Centro de calificaciones y lo suba otra vez.». La línea de conteos y la constancia completa no cambian. El párrafo final de una carga que no está PUBLICADA ni REEMPLAZADA con sucesora conocida pasa de «No hay una carga publicada para esta sección», falso tras un reemplazo rechazado, a «Esta carga no tiene R-17.».
+
+### 11.5 Rótulos por cuenta (US-63)
+
+| Lugar | PROFESOR | COORDINADOR |
+| --- | --- | --- |
+| Botón de P2 y título de P2 | «Mis secciones» (sin cambios) | «Secciones de la carrera» |
+| Lista vacía de P2, P5, P6 y P7 | «No tiene secciones asignadas en este periodo.» (sin cambios) | «La carrera no tiene secciones en este periodo.» |
+| Espera de P6 | «Cargando sus logros…» (sin cambios) | «Cargando los logros de la carrera…» |
+| Página de llegada (etapa B) | P2 «Mis secciones» | P7 «Avance del registro» |
+
+P3 y P4 no marcan ningún botón con `aria-current`, porque ninguno nombra la pantalla a la vista. El coordinador ve marcado «Secciones de la carrera» en P2 y, en la etapa B, «Avance del registro» en P7. Los botones «Volver a mis secciones» de P3 y P4 y «Volver» de P6 no cambian su texto ni su destino P2, también para el coordinador, porque los buscan las pruebas de Vitest. Ese texto y el regreso del coordinador a P7 quedan como deuda en «Fuera de alcance» de la spec.
+
+### 11.6 P7 Avance del registro (US-65 y US-66, etapa B)
+
+P7 es solo del coordinador y lee la ruta 17. Dice con `role="status"` un resumen como «1 de 5 secciones con carga publicada.», la línea «1 sección sin plan de medición, en la que su profesor no puede subir el export.» cuando la hay, y una fila por sección bajo su asignatura, en el orden de la API (J-28 de la spec 004), con la etapa en texto además de cualquier color, como «411 · La última carga se rechazó» o «413 · Sin profesor asignado». La etapa la decide el Back (J-48), y P7 no la deriva. Con el valor provisional de J-48, una sección publicada cuyo profesor se da de baja sigue en «Publicada» y cuenta en el resumen. La casilla «Mostrar solo las secciones que faltan» deja las secciones que no están en PUBLICADA sin cambiar el resumen. Una sección con `carga_id` ofrece «Ver la carga», que abre P4, el único lugar del R-17 (J-32 de la spec 005).
+
+Con D-47 a favor, cada fila CON_RECHAZO o SIN_CARGA muestra el correo de sus profesores activos, y «Copiar los correos de los profesores que faltan» copia la lista única, en orden alfabético y separada por «; », con «Se copiaron N correos.». Si el navegador rechaza el portapapeles, P7 muestra la lista en un cuadro de texto de solo lectura y seleccionado. Esta regla es propia de P7 y no cambia la de P6 (sección 9.2), que no muestra correos de profesores. P7 no envía correos y no escribe en `localStorage` ni en `sessionStorage`.
+
+### 11.7 Pruebas
+
+Cada escenario `@delegado_a_vitest` de los cinco `.feature` de `specs/007-experiencia-por-cuenta/aceptacion/` del Back tiene su prueba de Vitest. Cambian las pruebas que buscan «No hay una carga publicada para esta sección» (`ResultadoCarga.test.tsx`, líneas 91, 178 y 184, y `App.test.tsx`, línea 217), las que esperan «Mis secciones» al coordinador y, en la etapa B, las de `App.test.tsx` que esperan el título «Mis secciones» después del ingreso del coordinador (J-46). La prueba de humo con Playwright suma en la etapa A la línea de P2 y el apartado de P3 del profesor, y en la etapa B la llegada del coordinador a P7, con `ingresar()` de `e2e/comun.ts` que espera la página de llegada de cada rol.
+
+### 11.8 Lo que todavía NO está
+
+1. **Todo el código de esta sección**, que espera la aprobación de la spec 007. La etapa A llega justo después de la spec 006 y antes del núcleo de la spec 005, y la etapa B, en la semana 16, si cabe (FR-016 de la spec 007).
+2. **Las decisiones** D-46 (a quién remite P2 al profesor sin secciones), D-47 (los correos en P7) y D-43 de la spec 005 (el nombre de la actividad de Blackboard).
+3. **Lo que la spec deja para después**, que es el bloque de reglas pendientes en P7 (C-C04), la carga publicada sin declarar (C-C06), el texto y el botón de reemplazo en P4 de una carga publicada (C-P04), el pliegue de la constancia y las explicaciones de cada estado (C-T05), el reintento y el mensaje sin conexión (C-T03), P6 sin cargas (C-P06), el filtro de P6 de la carrera (C-C05) y la tabla desplazable, la prueba a 375 px y axe-core (C-T06), que mantiene abierto el punto 3 de la sección 7.
+
 ## Referencias
 
 - [`03-api/contrato.md`](../03-api/contrato.md), las rutas que consume cada pantalla, con sus errores y sus mensajes literales. La sección 10 del contrato comprueba que esos mensajes coinciden con los de los escenarios.
