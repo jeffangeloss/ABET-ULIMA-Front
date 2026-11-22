@@ -21,6 +21,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Cambiado
 
+- El contrato de las rutas 13 a 16 y la pantalla P4 pasan a un registro por indicador, con oportunidades de mejora y buenas prácticas, en borrador para la aprobación de Jefferson.
 - Las pantallas ya no muestran «Solo exports con códigos inventados (99000000 a 99999999)», porque D-10 queda decidida el 2026-11-19.
 - El contrato precisa que el 200 del mismo archivo de la carga publicada manda aunque `reemplaza` nombre otra carga, porque la huella se busca antes que la carga vigente (BR-CARGA-19).
 - El contrato de la API fija la forma definitiva de las rutas del corte 2, con el reemplazo de la carga publicada (`?reemplaza=`), la lista de cargas (`GET /api/cargas`), la confirmación de la sección (`confirmar_seccion=true` y `requiere_confirmacion`), `carga_publicada` en el 409 y `reemplaza_carga_id` y `reemplazada_por` en la constancia (T080 de la spec 001 del Back).

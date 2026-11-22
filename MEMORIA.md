@@ -12,10 +12,10 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-19
-- **Rama de trabajo**: `fix/d10-sin-rotulo-piloto`, que sale de `develop` y quita el aviso de códigos inventados
+- **Fecha**: 2026-11-21
+- **Rama de trabajo**: `docs/005-om-bp-y-006`, que sale de `develop` (90694ac) con el contrato y P4 por indicador
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
-- **Último cambio**: D-10 queda decidida el 2026-11-19 y las seis pantallas que mostraban «Solo exports con códigos inventados (99000000 a 99999999)» dejan de hacerlo; `RotuloPiloto.tsx` se borra y ADR-002 lo anota. En el Back, el PR #37 lo registra y la guardia sale de las dos ramas de Neon
+- **Último cambio**: el contrato y la pantalla P4 siguen el cambio de la spec 005 del Back (OM y BP por indicador), en borrador para la aprobación de Jefferson. Antes, el 2026-11-19, las pantallas dejan de mostrar el aviso de códigos inventados (PR #23)
 - **En curso**: el PR de esta rama y el del Back con el mismo nombre, que ponen al día la memoria de `develop`. Su fusión da el primer análisis de SonarCloud de `develop` desde que el proyecto es público. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
 - **Siguiente paso**: T071 del Back, el humo de P6 contra la vista previa de `develop`, que corre Jefferson con `ABET_SIS_MED/herramientas_neon/humo_preview.sh` después de restablecer la rama `develop` de Neon. La spec 005 sigue con T011, que deja definitivos el contrato de las rutas 13 a 16, ADR-009 y las enmiendas de ADR-005 y ADR-008. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-21 21:15 (Lima) · docs/005-om-bp-y-006 · Contrato y P4 por indicador para el cambio de la spec 005
+- Quién: Jefferson pide en el chat el 2026-11-21 actualizar la spec 005 con los correos de Claudia León y Mechelle Prado y aprueba el alcance («Sí, escríbelo»). Claude Code arma dos workflows. En el primero, tres subagentes proponen 21 candidatas desde el profesor, la coordinación y la base, y tres lentes y un crítico de arquitectura las auditan. En el segundo, cuatro redactores escriben la spec 005, su plan y tareas, la spec 006 y el contrato del Front, un revisor encuentra 20 problemas (uno bloqueante, el cuerpo de la ruta 15) y un corrector los aplica. Claude Code revisa el resultado y escribe esta entrada.
+- Qué cambió: `docs/03-api/contrato.md` describe las rutas 13 a 16 por indicador, con los mismos textos literales que los .feature del Back; `docs/01-arquitectura/frontend.md` describe P4 con «Análisis por indicador»; ADR-009, `docs/specs/api-contracts.md` y `docs/specs/feature-index.md` lo registran.
+- Por qué: el cambio de la spec 005 del Back (rama del mismo nombre) pasa la declaración a un registro por PI con OM y BP.
+- Lo que debe hacer, cómo se probó: el revisor del workflow compara el contrato con spec.md y los .feature del Back, y el corrector alinea los siete textos que diferían y el cuerpo de la ruta 15.
+- Lo que no debe hacer, cómo se probó: `git diff --stat origin/develop -- src tests` no muestra cambios, así que ninguna pantalla cambia todavía.
+- Correcciones: el contrato daba un cuerpo de la ruta 15 sin `tipo`, contra la spec del Back.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama.
+- Pendiente y siguiente paso: la aprobación de Jefferson junto con el PR del Back, y la construcción de P4 por indicador en el orden de J-41.
 
 ### 2026-11-19 10:25 (Lima) · fix/d10-sin-rotulo-piloto · Sin aviso de códigos inventados
 - Quién: Jefferson pide en el chat quitar las restricciones de datos reales, con la autorización de la universidad («quita estas restricciones»). Claude Code, sin subagentes, escribe el cambio.
