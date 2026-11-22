@@ -12,9 +12,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-21
-- **Rama de trabajo**: `docs/005-om-bp-y-006`, que sale de `develop` (90694ac) con el contrato y P4 por indicador
-- **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
+- **Fecha**: 2026-11-22
+- **Rama de trabajo**: `docs/registro-version-0.2.0`, que registra la versión 0.2.0 en Production
+- **Versión publicada**: 0.2.0, con el tag `v0.2.0` sobre 6eb421c de `main` (PR #26) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.1.0 del 2026-11-17
 - **Último cambio**: el contrato y la pantalla P4 siguen el cambio de la spec 005 del Back (OM y BP por indicador), en borrador para la aprobación de Jefferson. Antes, el 2026-11-19, las pantallas dejan de mostrar el aviso de códigos inventados (PR #23)
 - **En curso**: la fusión del PR de esta rama, aprobado por Jefferson el 2026-11-21 («Sí, apruébalas»), y después la construcción de la spec 006 y de la spec 005 en el orden de J-41. La carrera debe responder D-43 y D-44 antes de la capacitación de la semana 14. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
 - **Siguiente paso**: T071 del Back, el humo de P6 contra la vista previa de `develop`, que corre Jefferson con `ABET_SIS_MED/herramientas_neon/humo_preview.sh` después de restablecer la rama `develop` de Neon. La spec 005 sigue con T011, que deja definitivos el contrato de las rutas 13 a 16, ADR-009 y las enmiendas de ADR-005 y ADR-008. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-22 17:30 (Lima) · docs/registro-version-0.2.0 · Versión 0.2.0 en Production
+- Quién: Jefferson autoriza publicar en el chat («Sí, publícala») después de correr la prueba final. Claude Code migra la rama principal de Neon a V1_11, abre y junta los PR «Versión 0.2.0» de los dos repositorios, comprueba Production y escribe este registro.
+- Qué cambió: la rama principal de Neon pasa a V1_11 con `migrar_neon.sh principal … --confirmo-principal`, con la descripción del instrumento vacía y Q01 a Q14 en 0. `main` recibe `develop` en el Back (PR #41, 138dd80) y en el Front (PR #26, 6eb421c), y `release.yml` crea los tags `v0.2.0` y sus Release. T071 y T072 de la spec 004 quedan hechas.
+- Por qué: la capacitación de los profesores empieza en la semana 14 (23 al 28-11-2026), y Production lleva ahora el reemplazo, P5, P6, los exports .csv y .xls, la descripción del instrumento y las pantallas sin el aviso de códigos inventados.
+- Lo que debe hacer, cómo se probó: `ABET_SIS_MED/herramientas_neon/comprobar_version_020.sh` da 14 de 14 en ok contra la vista previa de `develop` (Back ec33606 y Front 8b11436). Después de publicar, Vercel da READY en Production con 138dd80 y 6eb421c, `GET /` del Front oficial responde 200 y `GET /api/sesion` sin cookie responde 401 en JSON con `Cache-Control: no-store`.
+- Lo que no debe hacer, cómo se probó: durante la prueba final la huella de la rama principal no cambia, y los textos de prueba de la descripción no van a Production.
+- Correcciones: la primera corrida de la prueba final se detiene antes de escribir por una variable pegada a «»» en el guion, que se corrige con ${MARCA}.
+- Cómo se reporta: esta entrada, los Release v0.2.0 y los PR #41 y #26.
+- Pendiente y siguiente paso: el análisis de SonarCloud del PR #41 falla sin ser obligatorio y queda por revisar. Siguen la lista de profesores con sus correos para la spec 006, la construcción de la spec 005 y la spec de experiencia por cuenta.
 
 ### 2026-11-22 13:40 (Lima) · chore/version-0.2.0 · Número de versión 0.2.0
 - Quién: Jefferson pide publicar la versión nueva («si por favor»). Claude Code, sin subagentes, sube el número de versión. Antes, un workflow de tres subagentes arma y prueba en local `ABET_SIS_MED/herramientas_neon/comprobar_version_020.sh`, la prueba final de la vista previa, que exige VERSION 0.2.0 en `develop`.
