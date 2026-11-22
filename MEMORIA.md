@@ -16,7 +16,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Rama de trabajo**: `docs/005-om-bp-y-006`, que sale de `develop` (90694ac) con el contrato y P4 por indicador
 - **Versión publicada**: 0.1.0, con el tag `v0.1.0` sobre 0d693b9 de `main` y su Release, en Production de Vercel desde el 2026-11-17
 - **Último cambio**: el contrato y la pantalla P4 siguen el cambio de la spec 005 del Back (OM y BP por indicador), en borrador para la aprobación de Jefferson. Antes, el 2026-11-19, las pantallas dejan de mostrar el aviso de códigos inventados (PR #23)
-- **En curso**: el PR de esta rama y el del Back con el mismo nombre, que ponen al día la memoria de `develop`. Su fusión da el primer análisis de SonarCloud de `develop` desde que el proyecto es público. Los escenarios pendientes de US-17 siguen en `audit.md` del Back, y el del humo con el 5 en la fila 3 corre `e2e/humo.spec.ts` de este repositorio contra la vista previa de `develop` con `ABET_SIS_MED/herramientas_neon/humo_preview_con_error.sh`, que Jefferson corre en su terminal
+- **En curso**: la fusión del PR de esta rama, aprobado por Jefferson el 2026-11-21 («Sí, apruébalas»), y después la construcción de la spec 006 y de la spec 005 en el orden de J-41. La carrera debe responder D-43 y D-44 antes de la capacitación de la semana 14. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
 - **Siguiente paso**: T071 del Back, el humo de P6 contra la vista previa de `develop`, que corre Jefferson con `ABET_SIS_MED/herramientas_neon/humo_preview.sh` después de restablecer la rama `develop` de Neon. La spec 005 sigue con T011, que deja definitivos el contrato de las rutas 13 a 16, ADR-009 y las enmiendas de ADR-005 y ADR-008. Sigue la prueba de humo del corte 2 contra la vista previa de `develop` (T099 del Back)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.1.0, con el tag `v0.1.0` sobre 7325231 de `main`, las specs 004 y 005 fusionadas en `develop` con sus PR #27 y #32 y la construcción de la spec 004 con el PR #31, en f403d52)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-21 22:01 (Lima) · docs/005-om-bp-y-006 · Cambio del contrato y de P4 aprobado
+- Quién: Jefferson aprueba en el chat el cambio de la spec 005 y la spec 006 («Sí, apruébalas»). Claude Code, sin subagentes, registra la aprobación.
+- Qué cambió: las notas del cambio del 2026-11-21 en `contrato.md`, `frontend.md` y `api-contracts.md` pasan de propuesta pendiente a aprobado.
+- Por qué: la aprobación es la fusión del PR o el «apruebo» explícito de Jefferson, que queda registrado aquí y en el PR.
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --staged` pasa en el commit.
+- Lo que no debe hacer, cómo se probó: el commit cambia solo líneas de estado y esta memoria, sin tocar escenarios ni código.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR de esta rama.
+- Pendiente y siguiente paso: la fusión con la CI en verde y después la construcción de la spec 006.
 
 ### 2026-11-21 21:15 (Lima) · docs/005-om-bp-y-006 · Contrato y P4 por indicador para el cambio de la spec 005
 - Quién: Jefferson pide en el chat el 2026-11-21 actualizar la spec 005 con los correos de Claudia León y Mechelle Prado y aprueba el alcance («Sí, escríbelo»). Claude Code arma dos workflows. En el primero, tres subagentes proponen 21 candidatas desde el profesor, la coordinación y la base, y tres lentes y un crítico de arquitectura las auditan. En el segundo, cuatro redactores escriben la spec 005, su plan y tareas, la spec 006 y el contrato del Front, un revisor encuentra 20 problemas (uno bloqueante, el cuerpo de la ruta 15) y un corrector los aplica. Claude Code revisa el resultado y escribe esta entrada.
