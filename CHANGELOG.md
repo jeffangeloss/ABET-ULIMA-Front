@@ -4,6 +4,8 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+## [0.2.0] - 2026-11-23
+
 ### Agregado
 
 - Documentación del sistema de la spec 005 del Back, las oportunidades de mejora en la carga, aprobada por Jefferson en el chat el 2026-11-18. Son ADR-009, las rutas 13 a 16 en la sección 13 de `docs/03-api/contrato.md` y en `docs/specs/api-contracts.md`, P4 con el semáforo, el formulario de causas y acciones y la navegación con el botón atrás en la sección 10 de `docs/01-arquitectura/frontend.md` y la fila `mejora` de `docs/specs/feature-index.md`. Ningún código cambia.
