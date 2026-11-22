@@ -800,7 +800,7 @@ El Front no ofrece el enlace a la ruta 7 sin declaración, porque P4 es el únic
 
 ## 14. Ruta de la spec 007, avance del registro para la coordinación (propuesta)
 
-> **Propuesta del 2026-11-22, pendiente de aprobación de Jefferson.** Esta sección traslada la ruta 17 de la spec 007 del Back (`specs/007-experiencia-por-cuenta/`, US-64 a US-66, J-47 y J-48) y no rige hasta su aprobación y su fase de contrato (T011 y T012). Los nombres de la ruta, de los campos y los textos son propuestas. La etapa A de la spec 007 no agrega rutas ni cambia las rutas 4, 6, 8 y 9, que P2, P3 y P4 leen como hoy.
+> **Aprobada por Jefferson el 2026-11-22 («Sí, apruébala»).** Esta sección traslada la ruta 17 de la spec 007 del Back (`specs/007-experiencia-por-cuenta/`, US-64 a US-66, J-47 y J-48) y no rige hasta su aprobación y su fase de contrato (T011 y T012). Los nombres de la ruta, de los campos y los textos son propuestas. La etapa A de la spec 007 no agrega rutas ni cambia las rutas 4, 6, 8 y 9, que P2, P3 y P4 leen como hoy.
 
 ### 14.1 Resumen
 
