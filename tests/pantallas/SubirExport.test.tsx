@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { SubirExport } from "../../src/pantallas/SubirExport";
@@ -40,7 +40,50 @@ const AVISO_MISMO = "Es el mismo archivo de la carga publicada. No se reemplazó
 const exportCorrecto = () => new File(["contenido inventado"], "sintetico_20262_450002_410.xlsx");
 const cuerpoDe = (init: RequestInit | undefined) => init?.body as FormData;
 
+const lineasAntesDeSubir410 = [
+  "En Blackboard, una columna por PI, con el nombre ABET SO5.1, ABET SO5.2 y ABET SO5.3.",
+  "En cada columna, un nivel entero de 1 a 4 por estudiante. El puntaje máximo de la columna es 4, y otro puntaje máximo solo deja un aviso.",
+  "Conserve la columna Username y no cambie el nombre de las columnas.",
+  "Suba el export completo del Centro de calificaciones sin cambiarle el nombre, porque la hoja o el nombre que le pone Blackboard indican la sección.",
+];
+
 describe("P3 Subir export", () => {
+  it.each([
+    { modo: "primera subida", reemplaza: undefined },
+    { modo: "reemplazo", reemplaza: 7 },
+  ])("US-60: en $modo, Antes de subir presenta las cuatro líneas en orden antes del campo de archivo", ({ reemplaza }) => {
+    montar({ seccion: seccionPublicada, reemplaza });
+    const apartado = screen.getByRole("region", { name: "Antes de subir" });
+    expect(within(apartado).getByRole("heading", { name: "Antes de subir" })).toBeInTheDocument();
+    const lineas = within(apartado).getAllByRole("listitem");
+    expect(lineas.map((linea) => linea.textContent)).toEqual(lineasAntesDeSubir410);
+    const campo = screen.getByLabelText("Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)");
+    expect(lineas.at(-1)).toAppearBefore(campo);
+  });
+
+  it.each([
+    { pi: ["5.1"], nombres: "ABET SO5.1" },
+    { pi: ["6.1", "6.10"], nombres: "ABET SO6.1 y ABET SO6.10" },
+  ])("US-60: la primera línea usa los PI de la sección y dice $nombres", ({ pi, nombres }) => {
+    montar({ seccion: { ...seccionPublicada, pi } });
+    const apartado = screen.getByRole("region", { name: "Antes de subir" });
+    expect(within(apartado).getAllByRole("listitem")[0].textContent).toBe(
+      `En Blackboard, una columna por PI, con el nombre ${nombres}.`,
+    );
+  });
+
+  it("US-60: elegir un archivo conserva el apartado del plan y no envía peticiones hasta Subir", async () => {
+    const { llamadas } = simularApi({ [RUTA_410]: json(201, constanciaLimpia) });
+    montar({ seccion: seccionPublicada });
+    const apartado = () => screen.getByRole("region", { name: "Antes de subir" });
+    const antes = apartado().textContent;
+    await userEvent.upload(screen.getByLabelText(/Export de Blackboard/), archivo());
+    expect(apartado().textContent).toBe(antes);
+    expect(llamadas).toHaveLength(0);
+    await userEvent.click(screen.getByRole("button", { name: "Subir" }));
+    expect(llamadas.map((llamada) => llamada.clave)).toEqual([RUTA_410]);
+  });
+
   it("muestra la sección elegida fija, el campo de .xlsx, .csv y .xls, el botón Subir y el rótulo del piloto", () => {
     montar();
     expect(screen.getByRole("heading", { level: 1, name: "Subir export" })).toHaveFocus();
@@ -217,6 +260,7 @@ describe("P3 Subir export", () => {
     const { llamadas } = simularApi({ [RUTA_410_REEMPLAZA]: json(201, constanciaVigenteQueReemplaza) });
     const p = montar({ seccion: seccionPublicada, reemplaza: 7 });
     expect(screen.getByText("Reemplaza a la carga 7, la publicada de esta sección.")).toBeInTheDocument();
+    expect(screen.getByText("Si la carga nueva queda rechazada, la carga 7 sigue publicada.", { selector: "p" })).toBeInTheDocument();
     await subir(exportCorrecto());
     await waitFor(() => expect(p.alResultado).toHaveBeenCalledWith(constanciaVigenteQueReemplaza));
     expect(llamadas.map((l) => l.clave)).toEqual([RUTA_410_REEMPLAZA]);
@@ -226,6 +270,7 @@ describe("P3 Subir export", () => {
     const { llamadas } = simularApi({ [RUTA]: json(201, constanciaConError) });
     montar();
     expect(screen.queryByText(/Reemplaza a la carga/)).toBeNull();
+    expect(screen.queryByText(/Si la carga nueva queda rechazada/)).toBeNull();
     await subir();
     await waitFor(() => expect(llamadas).toHaveLength(1));
     expect(llamadas[0].clave).toBe(RUTA);

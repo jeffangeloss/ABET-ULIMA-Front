@@ -7,6 +7,7 @@ import { ResultadoCarga } from "./pantallas/ResultadoCarga";
 import { SubirExport } from "./pantallas/SubirExport";
 import { botonSecundario } from "./componentes/estilos";
 import { alSesionVencida, cerrarSesion, sesionActual } from "./servicios/api";
+import { rotuloDeLogros, rotuloDeSecciones } from "./servicios/rotulos";
 import type { Constancia, Seccion, Usuario } from "./servicios/tipos";
 
 type Vista =
@@ -16,10 +17,15 @@ type Vista =
   | { pantalla: "resultado"; cargaId: number; constancia?: Constancia }
   | { pantalla: "logros" };
 
-/** Texto del enlace a P6, que no se parece a «Ver resultado», el de P4 (spec 004, AD-11). */
-function rotuloDeLogros(usuario: Usuario): string {
-  return usuario.rol === "COORDINADOR" ? "Ver los logros por SO de la carrera" : "Ver mis logros por SO";
+type Pantalla = Vista["pantalla"];
+
+/** Botón del menú que lleva aria-current en la pantalla a la vista. P3 y P4 no marcan ninguno (spec 007, US-63). */
+function actual(vista: Pantalla, del: Pantalla): "page" | undefined {
+  return vista === del ? "page" : undefined;
 }
+
+/** El botón de la pantalla actual se distingue también a la vista, no solo para el lector de pantalla. */
+const botonDelMenu = `${botonSecundario} aria-[current=page]:border-slate-800 aria-[current=page]:bg-slate-200 aria-[current=page]:font-semibold`;
 
 /** Sesión actual y pantalla visible. El resto del estado vive en la pantalla que lo usa. */
 export function App() {
@@ -58,21 +64,28 @@ export function App() {
       <header className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-slate-300 pb-2">
         <span className="font-semibold">ABET ULIMA, carga del R-17</span>
         {usuario && (
-          <span className="flex flex-wrap items-center gap-3 text-sm">
-            <button type="button" className={botonSecundario} onClick={volver}>
-              Mis secciones
-            </button>
-            <button type="button" className={botonSecundario} onClick={() => setVista({ pantalla: "cargas" })}>
-              Cargas
-            </button>
-            <button type="button" className={botonSecundario} onClick={verLogros}>
-              {rotuloDeLogros(usuario)}
-            </button>
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <nav aria-label="Menú principal" className="flex flex-wrap items-center gap-3">
+              <button type="button" className={botonDelMenu} aria-current={actual(vista.pantalla, "secciones")} onClick={volver}>
+                {rotuloDeSecciones(usuario)}
+              </button>
+              <button
+                type="button"
+                className={botonDelMenu}
+                aria-current={actual(vista.pantalla, "cargas")}
+                onClick={() => setVista({ pantalla: "cargas" })}
+              >
+                Cargas
+              </button>
+              <button type="button" className={botonDelMenu} aria-current={actual(vista.pantalla, "logros")} onClick={verLogros}>
+                {rotuloDeLogros(usuario)}
+              </button>
+            </nav>
             <span>{usuario.correo}</span>
             <button type="button" className={botonSecundario} onClick={salir}>
               Salir
             </button>
-          </span>
+          </div>
         )}
       </header>
       <main>
@@ -114,6 +127,7 @@ export function App() {
         {usuario && vista.pantalla === "resultado" && (
           <ResultadoCarga
             cargaId={vista.cargaId}
+            rol={usuario.rol}
             constanciaInicial={vista.constancia}
             alVolver={volver}
             alVerLogros={verLogros}

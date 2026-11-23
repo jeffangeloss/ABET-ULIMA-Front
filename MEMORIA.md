@@ -13,7 +13,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-22
-- **Rama de trabajo**: `docs/007-experiencia-por-cuenta`, con la spec 007 en borrador
+- **Rama de trabajo**: `feat/007-experiencia-por-cuenta`, con la etapa A de la spec 007
 - **Versión publicada**: 0.2.0, con el tag `v0.2.0` sobre 6eb421c de `main` (PR #26) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.1.0 del 2026-11-17
 - **Último cambio**: el contrato y la pantalla P4 siguen el cambio de la spec 005 del Back (OM y BP por indicador), en borrador para la aprobación de Jefferson. Antes, el 2026-11-19, las pantallas dejan de mostrar el aviso de códigos inventados (PR #23)
 - **En curso**: la fusión del PR de esta rama, aprobado por Jefferson el 2026-11-21 («Sí, apruébalas»), y después la construcción de la spec 006 y de la spec 005 en el orden de J-41. La carrera debe responder D-43 y D-44 antes de la capacitación de la semana 14. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-22 19:12 (Lima) · feat/007-experiencia-por-cuenta · Etapa A de la spec 007
+- Quién: Jefferson pide construir la etapa A y juntarla con la versión de pruebas («Sí, apruébala», «Sí, júntala»). Codex (CLI con la cuenta de Jefferson) escribe las primeras 33 pruebas del Front y se detiene por el límite de uso; un workflow de Claude Code las revisa contra los .feature, suma 13, escribe el código, y un revisor y un corrector arreglan 6 detalles menores. Un subagente hace T013 y T030 en el Back. Claude Code revisa, corre las pruebas y escribe esta entrada.
+- Qué cambió: `src/servicios/secciones_del_profesor.ts`, `ayudas.ts` y `rotulos.ts` (nuevos), P2, P3, P4, P5, P6 y `App.tsx`, sus pruebas de Vitest y la sección 11 de `docs/01-arquitectura/frontend.md` (T010 y T040 a T044).
+- Por qué: la capacitación de los profesores empieza el 2026-11-23 y el registro va del 30-11 al 12-12, así que cada pantalla debe decir qué falta y qué hacer.
+- Lo que debe hacer, cómo se probó: `npx vitest run` da 212 passed en 12 archivos (antes del código fallaban 46, por los textos y elementos que aún no existían), `npx tsc -b --noEmit` termina sin errores y `npm run build` compila.
+- Lo que no debe hacer, cómo se probó: la etapa B (ruta 17 y P7) y la parte de P4 de la spec 005 no cambian, y ninguna ruta del Back cambia.
+- Correcciones: el revisor del Front encuentra un nav dentro de un span y el mismo fondo para la pantalla actual y el paso del ratón, y el corrector los arregla con prueba primero.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama.
+- Pendiente y siguiente paso: la prueba de humo con Playwright de la etapa A (T052), su publicación antes del 30-11 con el permiso de Jefferson y la decisión menor sobre una sección sin plan con una carga rechazada.
 
 ### 2026-11-22 18:27 (Lima) · docs/007-experiencia-por-cuenta · Spec 007 aprobada
 - Quién: Jefferson aprueba en el chat la spec 007 («Sí, apruébala»). Claude Code, sin subagentes, registra la aprobación.

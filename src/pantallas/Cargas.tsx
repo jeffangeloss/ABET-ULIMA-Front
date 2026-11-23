@@ -4,6 +4,7 @@ import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, listarCargas, listarSecciones, urlR17 } from "../servicios/api";
 import { etiquetaSeccion, horaDeLima, resumenFilas } from "../servicios/formato";
+import { sinSecciones } from "../servicios/rotulos";
 import type { CargaResumida, EstadoCarga, Seccion, Usuario } from "../servicios/tipos";
 
 interface Props {
@@ -54,7 +55,7 @@ export function Cargas({ usuario, alVerResultado, alReemplazar }: Props) {
       <Titulo>Cargas</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
       {!error && datos === null && <Mensaje tipo="aviso">Cargando las cargas</Mensaje>}
-      {!error && datos !== null && datos.secciones.length === 0 && <p>No tiene secciones asignadas en este periodo.</p>}
+      {!error && datos !== null && datos.secciones.length === 0 && <p>{sinSecciones(usuario)}</p>}
       {!error &&
         datos !== null &&
         datos.secciones.map((s) => {
