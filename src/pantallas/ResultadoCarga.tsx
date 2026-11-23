@@ -6,7 +6,7 @@ import { TablaRechazos } from "../componentes/TablaRechazos";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, obtenerCarga, urlR17 } from "../servicios/api";
-import { queCorregir } from "../servicios/ayudas";
+import { consejosDeAvisos, queCorregir, REMISION_AL_REEMPLAZO } from "../servicios/ayudas";
 import { horaDeLima, resumenFilas } from "../servicios/formato";
 import type { Constancia, EstadoCarga, Rol } from "../servicios/tipos";
 
@@ -46,8 +46,12 @@ export function ResultadoCarga({ cargaId, rol, constanciaInicial, alVolver, alVe
     };
   }, [cargaId, constanciaInicial]);
 
-  // Spec 007, US-61. Solo una carga RECHAZADA con un motivo de la tabla de J-43 trae consejo.
+  // Spec 007, US-61, y spec 008, US-77. Una carga RECHAZADA o PUBLICADA con un motivo de la tabla de J-43 trae
+  // consejo, y el de cada aviso va arriba, antes del estado y de la constancia.
   const consejo = constancia ? queCorregir(constancia, rol) : null;
+  const consejosArriba = constancia ? consejosDeAvisos(constancia) : [];
+  // J-53. Una carga PUBLICADA con algo que corregir remite al reemplazo de P5, sin botón en P4.
+  const remitirAlReemplazo = constancia?.estado === "PUBLICADA" && (consejo !== null || consejosArriba.length > 0);
 
   return (
     <>
@@ -56,12 +60,18 @@ export function ResultadoCarga({ cargaId, rol, constanciaInicial, alVolver, alVe
       {!error && !constancia && <Espera>Cargando la constancia</Espera>}
       {constancia && (
         <>
+          {consejosArriba.map((texto) => (
+            <Mensaje key={texto} tipo="aviso">
+              {texto}
+            </Mensaje>
+          ))}
           <p>
             Estado de la carga: <strong>{ETIQUETA_ESTADO[constancia.estado]}</strong>
           </p>
           <p className="mt-1">{resumenFilas(constancia)}</p>
           {constancia.mensaje && <Mensaje tipo={constancia.estado === "PUBLICADA" ? "aviso" : "error"}>{constancia.mensaje}</Mensaje>}
           {consejo !== null && <p className="my-3 text-sm font-medium">{`Qué corregir. ${consejo}`}</p>}
+          {remitirAlReemplazo && <p className="my-3 text-sm">{REMISION_AL_REEMPLAZO}</p>}
           <TablaRechazos rechazos={constancia.rechazos} />
           <AvisosCarga avisos={constancia.avisos} />
           <section aria-labelledby="titulo-constancia" className="my-4">
