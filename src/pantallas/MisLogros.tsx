@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
-import { botonSecundario } from "../componentes/estilos";
+import { botonSecundario, tarjeta } from "../componentes/estilos";
 import { ErrorApi, obtenerResultados, urlR17 } from "../servicios/api";
 import { fraccion, meta, porcentaje } from "../servicios/formato";
 import { esperaDeLogros, sinSecciones, tituloDeLogros } from "../servicios/rotulos";
@@ -77,20 +77,35 @@ function franjaProvisional(s: SeccionConLogros): string | null {
   );
 }
 
+/**
+ * Spec 008, US-78. Lo que dice la barra del logro a un lector de pantalla, con el porcentaje, la meta y el resultado
+ * escritos, como «Logro 76,5 %, meta 80 %, debajo de la meta» (propuesta).
+ */
+function etiquetaDeLaBarra(i: Indicador): string {
+  const resultado = i.en_meta ? "en la meta" : "debajo de la meta";
+  return `Logro ${porcentaje(i.pct_sobre_calificados!)}, meta ${meta(i.meta_pct!)}, ${resultado}`;
+}
+
+/**
+ * La barra del logro. El dibujo sigue con aria-hidden (US-41 de la spec 004) y el elemento que lo envuelve, con
+ * role="img", le da al lector de pantalla su aria-label (US-78 de la spec 008).
+ */
 function BarraDelLogro({ indicador }: { indicador: Indicador }) {
   const logro = indicador.pct_sobre_calificados!;
   const laMeta = indicador.meta_pct!;
   return (
-    <div className="mt-2">
-      <div data-barra="logro" aria-hidden="true" className="relative h-3 w-full rounded" style={{ backgroundColor: COLORES.fondo }}>
-        <div
-          data-lleno
-          className="h-3 rounded"
-          style={{ width: `${logro}%`, backgroundColor: indicador.en_meta ? COLORES.enMeta : COLORES.debajo }}
-        />
-        <div data-meta className="absolute -top-1 h-5 w-0.5" style={{ left: `${laMeta}%`, backgroundColor: COLORES.meta }} />
+    <div className="mt-3">
+      <div role="img" aria-label={etiquetaDeLaBarra(indicador)}>
+        <div data-barra="logro" aria-hidden="true" className="relative h-3 w-full rounded" style={{ backgroundColor: COLORES.fondo }}>
+          <div
+            data-lleno
+            className="h-3 rounded"
+            style={{ width: `${logro}%`, backgroundColor: indicador.en_meta ? COLORES.enMeta : COLORES.debajo }}
+          />
+          <div data-meta className="absolute -top-1 h-5 w-0.5" style={{ left: `${laMeta}%`, backgroundColor: COLORES.meta }} />
+        </div>
       </div>
-      <p className="mt-1 text-xs text-slate-700">Meta {meta(laMeta)}</p>
+      <p className="mt-1 text-xs text-tinta-suave">Meta {meta(laMeta)}</p>
     </div>
   );
 }
@@ -99,14 +114,14 @@ function RepartoPorNivel({ indicador }: { indicador: Indicador }) {
   const conteos = indicador.estudiantes_por_nivel;
   const texto = conteos.map((n, i) => `Nivel ${i + 1}: ${n}`).join(", ");
   return (
-    <div className="mt-2">
-      <p className="text-xs text-slate-700">{texto}</p>
-      <div data-barra="niveles" aria-hidden="true" className="mt-1 flex h-4 w-full gap-px overflow-hidden rounded bg-white text-[10px] text-white">
+    <div className="mt-3">
+      <p className="text-xs text-tinta-suave">{texto}</p>
+      <div data-barra="niveles" aria-hidden="true" className="mt-1 flex h-4 w-full gap-px overflow-hidden rounded bg-superficie text-[10px]">
         {conteos.map((n, i) =>
           n > 0 ? (
             <div
               key={i}
-              className="flex items-center justify-center"
+              className="flex items-center justify-center text-sobre-institucional"
               style={{ width: `${(n / indicador.calificados) * 100}%`, backgroundColor: COLORES.niveles[i] }}
             >
               {n}
@@ -121,9 +136,9 @@ function RepartoPorNivel({ indicador }: { indicador: Indicador }) {
 function FilaDeIndicador({ indicador, seccion }: { indicador: Indicador; seccion: SeccionConLogros }) {
   const conBarra = indicador.pct_sobre_calificados !== null && indicador.meta_pct !== null && indicador.en_meta !== null;
   return (
-    <li className="rounded border border-slate-300 p-3">
-      <p className="font-medium">{textoDeLaFila(indicador, seccion)}</p>
-      {indicador.instrumento !== null && <p className="text-sm">Instrumento: {indicador.instrumento}</p>}
+    <li className={tarjeta}>
+      <p className="font-semibold text-tinta">{textoDeLaFila(indicador, seccion)}</p>
+      {indicador.instrumento !== null && <p className="mt-1 text-sm text-tinta-suave">Instrumento: {indicador.instrumento}</p>}
       {conBarra && <BarraDelLogro indicador={indicador} />}
       {indicador.calificados > 0 && <RepartoPorNivel indicador={indicador} />}
     </li>
@@ -133,23 +148,23 @@ function FilaDeIndicador({ indicador, seccion }: { indicador: Indicador; seccion
 function SeccionDelReporte({ seccion }: { seccion: SeccionConLogros }) {
   const franja = franjaProvisional(seccion);
   return (
-    <li className="rounded border border-slate-300 p-3">
-      <p className="font-medium">{nombreDeSeccion(seccion)}</p>
+    <li className={tarjeta}>
+      <p className="font-titulo text-seccion font-semibold text-tinta">{nombreDeSeccion(seccion)}</p>
       {seccion.estado === "PUBLICADA" ? (
         <>
-          <p className="text-sm">Publicada</p>
-          {franja && <p className="my-2 rounded border-l-4 border-amber-700 bg-amber-50 px-3 py-2 text-sm text-amber-900">{franja}</p>}
+          <p className="mt-1 text-sm text-tinta-suave">Publicada</p>
+          {franja && <p className="my-3 rounded-md border-l-4 border-aviso-borde bg-aviso-fondo px-3 py-2 text-sm text-aviso-texto">{franja}</p>}
           <a className={botonSecundario} href={urlR17(seccion.carga_id!)}>
             Descargar R-17 de la {nombreDeSeccion(seccion).toLowerCase()}
           </a>
         </>
       ) : (
         <>
-          <p className="text-sm">Sin carga publicada</p>
+          <p className="mt-1 text-sm text-tinta-suave">Sin carga publicada</p>
           {seccion.pi.length > 0 ? (
-            <p className="text-sm">PI del plan: {seccion.pi.join(", ")}</p>
+            <p className="text-sm text-tinta-suave">PI del plan: {seccion.pi.join(", ")}</p>
           ) : (
-            <p className="text-sm">La carrera aún no registra el plan de medición de esta sección</p>
+            <p className="text-sm text-tinta-suave">La carrera aún no registra el plan de medición de esta sección</p>
           )}
         </>
       )}
@@ -191,23 +206,27 @@ export function MisLogros({ usuario, periodo, alVolver }: Props) {
       <Titulo>{titulo}</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
       {!error && resultados === null && <Espera>{esperaDeLogros(usuario)}</Espera>}
-      {resultados !== null && secciones.length === 0 && <p>{sinSecciones(usuario)}</p>}
+      {resultados !== null && secciones.length === 0 && (
+        <p className="rounded-tarjeta border border-dashed border-borde-campo bg-superficie p-tarjeta font-medium">
+          {sinSecciones(usuario)}
+        </p>
+      )}
       {resultados !== null && secciones.length > 0 && (
         <>
-          <p className="mb-4 text-sm">
+          <p className="mb-6 max-w-prose text-sm text-tinta-suave">
             Periodo {resultados.periodo}. Cada fila compara un PI de una sección con la meta de la carrera, con las cifras del
             R-17 de su carga.
           </p>
           <section aria-labelledby="titulo-secciones" className="mb-6">
-            <h2 id="titulo-secciones" className="mb-2 text-lg font-semibold">
+            <h2 id="titulo-secciones" className="mb-3 font-titulo text-seccion font-semibold text-tinta">
               Secciones
             </h2>
             {porAsignatura(secciones).map((grupo) => (
-              <div key={grupo[0].asignatura.codigo} className="mb-3">
-                <h3 className="mb-1 font-medium">
+              <div key={grupo[0].asignatura.codigo} className="mb-4">
+                <h3 className="mb-2 text-sm font-semibold text-tinta-suave">
                   {grupo[0].asignatura.codigo} {grupo[0].asignatura.nombre}
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   {grupo.map((s) => (
                     <SeccionDelReporte key={s.seccion_id} seccion={s} />
                   ))}
@@ -220,15 +239,19 @@ export function MisLogros({ usuario, periodo, alVolver }: Props) {
               s.indicadores.filter((i) => i.so === so.numero).map((i) => ({ seccion: s, indicador: i })),
             );
             return (
-              <section key={so.numero} aria-labelledby={`titulo-so-${so.numero}`} className="mb-6">
-                <h2 id={`titulo-so-${so.numero}`} className="text-lg font-semibold">
+              <section
+                key={so.numero}
+                aria-labelledby={`titulo-so-${so.numero}`}
+                className="mb-8 border-t border-linea pt-5"
+              >
+                <h2 id={`titulo-so-${so.numero}`} className="font-titulo text-seccion font-semibold text-tinta">
                   SO {so.numero}
                 </h2>
-                <p className="mb-2 text-sm">{so.descripcion}</p>
+                <p className="mt-1 mb-3 max-w-prose text-sm text-tinta-suave">{so.descripcion}</p>
                 {filas.length === 0 ? (
-                  <p className="text-sm">Ninguna sección con carga publicada mide este SO.</p>
+                  <p className="text-sm text-tinta-suave">Ninguna sección con carga publicada mide este SO.</p>
                 ) : (
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {filas.map(({ seccion, indicador }) => (
                       <FilaDeIndicador key={`${seccion.seccion_id}-${indicador.pi}`} indicador={indicador} seccion={seccion} />
                     ))}
@@ -239,7 +262,7 @@ export function MisLogros({ usuario, periodo, alVolver }: Props) {
           })}
         </>
       )}
-      <div className="mt-4">
+      <div className="mt-6">
         <button type="button" className={botonSecundario} onClick={alVolver}>
           Volver
         </button>

@@ -43,11 +43,6 @@ const construccion = import.meta.glob<string>(["../../dist/index.html", "../../d
 // El código de las pantallas, para la prueba de contraste, que busca en sus clases los pares de texto y fondo en uso.
 const fuentesDeSrc = import.meta.glob<string>("../../src/**/*.{ts,tsx}", { query: "?raw", import: "default", eager: true });
 
-/** Clases de color de la paleta de Tailwind, sin token, que todavía usan P3, P5 y P6 y que T045 lleva a los tokens. */
-const SIN_TOKEN_HASTA_T045 = [
-  "bg-amber-50", "bg-white", "border-amber-700", "border-slate-300", "peer-focus-visible:outline-sky-600",
-  "text-amber-900", "text-slate-700", "text-white",
-];
 const PALETA_TAILWIND =
   /^(?:(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}|white|black)$/;
 
@@ -140,8 +135,13 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
     }
     expect(enUso.size).toBeGreaterThan(5);
     expect([...enUso].filter((par) => !listados.has(par)), "pares en uso fuera de paresDeTexto").toEqual([]);
-    // Un color de la paleta de Tailwind fuera de los tokens no entra sin que la prueba lo vea. La lista se vacía con T045.
-    expect([...sinToken].sort()).toEqual([...SIN_TOKEN_HASTA_T045].sort());
+    // Desde T045 ninguna pantalla usa un color de la paleta de Tailwind fuera de los tokens (Ingreso y P2 a P7).
+    expect([...sinToken].sort(), "clases de la paleta de Tailwind sin token").toEqual([]);
+    // El lector de clases sí ve un color de la paleta, también con su variante.
+    const conPaleta = coloresDeLiterales('"border border-slate-300 peer-focus-visible:outline-sky-600"')[0];
+    expect(conPaleta.filter(({ color }) => PALETA_TAILWIND.test(color)).map(({ clase }) => clase)).toEqual([
+      "border-slate-300", "peer-focus-visible:outline-sky-600",
+    ]);
     // El lector de clases sí encuentra un par en uso, también en una variante que hereda el texto de la base.
     const ejemplo = coloresDeLiterales('const x = "bg-superficie text-tinta " + `hover:bg-papel`;')[0];
     expect(paresEnUso(ejemplo, tokens)).toEqual([["tinta", "superficie"], ["tinta", "papel"]]);

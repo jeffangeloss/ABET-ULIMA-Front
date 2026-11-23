@@ -8,7 +8,7 @@ export function TablaRechazos({ rechazos }: { rechazos: Rechazo[] }) {
   if (rechazos.length === 0) return null;
   return (
     <section aria-labelledby="titulo-rechazos" className="my-5">
-      <h2 id="titulo-rechazos" className="mb-2 text-seccion font-semibold text-tinta">
+      <h2 id="titulo-rechazos" className="mb-2 font-titulo text-seccion font-semibold text-tinta">
         Rechazos
       </h2>
       <div

@@ -39,19 +39,19 @@ export function Ingreso({ alIngresar, aviso }: Props) {
     <>
       <Titulo>Ingreso</Titulo>
       <AvisoSesion texto={aviso} />
-      <form onSubmit={enviar} className={`max-w-sm space-y-4 ${tarjeta}`}>
+      <form onSubmit={enviar} className={`max-w-sm space-y-4 border-t-4 border-t-institucional ${tarjeta}`}>
         <div>
-          <label htmlFor="correo" className="text-sm font-medium">Correo</label>
+          <label htmlFor="correo" className="text-sm font-semibold text-tinta">Correo</label>
           <input id="correo" type="email" autoComplete="username" required value={correo}
             onChange={(e) => setCorreo(e.target.value)} className={campo} />
         </div>
         <div>
-          <label htmlFor="contrasena" className="text-sm font-medium">Contraseña</label>
+          <label htmlFor="contrasena" className="text-sm font-semibold text-tinta">Contraseña</label>
           <input id="contrasena" type="password" autoComplete="current-password" required value={contrasena}
             onChange={(e) => setContrasena(e.target.value)} className={campo} />
         </div>
         {error && <Mensaje tipo="error">{error}</Mensaje>}
-        <button type="submit" disabled={enviando} className={boton}>
+        <button type="submit" disabled={enviando} className={`w-full ${boton}`}>
           {enviando ? "Ingresando" : "Ingresar"}
         </button>
       </form>

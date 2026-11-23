@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
-import { boton, botonSecundario } from "../componentes/estilos";
+import { boton, botonSecundario, tarjeta } from "../componentes/estilos";
 import { ErrorApi, listarCargas, listarSecciones, urlR17 } from "../servicios/api";
 import { etiquetaSeccion, horaDeLima, resumenFilas } from "../servicios/formato";
 import { sinSecciones } from "../servicios/rotulos";
@@ -58,36 +58,45 @@ export function Cargas({ usuario, periodo, alVerResultado, alReemplazar }: Props
       <Titulo>Cargas</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
       {!error && datos === null && <Espera>Cargando las cargas</Espera>}
-      {!error && datos !== null && datos.secciones.length === 0 && <p>{sinSecciones(usuario)}</p>}
+      {!error && datos !== null && datos.secciones.length === 0 && (
+        <p className="rounded-tarjeta border border-dashed border-borde-campo bg-superficie p-tarjeta font-medium">
+          {sinSecciones(usuario)}
+        </p>
+      )}
       {!error &&
         datos !== null &&
         datos.secciones.map((s) => {
           const cargas = datos.cargas.filter((c) => c.seccion.seccion_id === s.seccion_id);
           const idTitulo = `titulo-seccion-${s.seccion_id}`;
           return (
-            <section key={s.seccion_id} aria-labelledby={idTitulo} className="mb-6">
-              <h2 id={idTitulo} className="mb-2 text-lg font-semibold">
+            <section key={s.seccion_id} aria-labelledby={idTitulo} className="mb-8">
+              <h2 id={idTitulo} className="mb-3 font-titulo text-seccion font-semibold text-tinta">
                 {etiquetaSeccion(s)}
               </h2>
               {cargas.length === 0 ? (
-                <p className="text-sm">Sin cargas</p>
+                <p className="text-sm text-tinta-suave">Sin cargas</p>
               ) : (
                 <ul className="space-y-3">
                   {cargas.map((c) => {
                     const m = marca(c);
                     return (
-                      <li key={c.carga_id} className="rounded border border-slate-300 p-3 text-sm">
-                        <p className="font-medium">Carga {c.carga_id}</p>
-                        <p>
+                      <li
+                        key={c.carga_id}
+                        className={`text-sm ${tarjeta} ${c.estado === "PUBLICADA" ? "border-l-4 border-l-hecho-texto" : ""}`}
+                      >
+                        <p className="font-semibold text-tinta">Carga {c.carga_id}</p>
+                        <p className="text-tinta">
                           Estado: <strong>{ETIQUETA_ESTADO[c.estado]}</strong>
                         </p>
-                        {m && <p className="font-medium">{m}</p>}
-                        <p>{horaDeLima(c.iniciada_en)}</p>
-                        <p>{resumenFilas(c)}</p>
-                        <p>{c.nombre_archivo}</p>
-                        <p>Huella {c.sha256_corto}</p>
-                        {c.subida_por !== null && <p>Subida por {c.subida_por}</p>}
-                        <div className="mt-2 flex flex-wrap gap-2">
+                        {m && <p className="font-medium text-tinta">{m}</p>}
+                        <div className="mt-2 space-y-0.5 text-tinta-suave">
+                          <p>{horaDeLima(c.iniciada_en)}</p>
+                          <p>{resumenFilas(c)}</p>
+                          <p className="break-all">{c.nombre_archivo}</p>
+                          <p>Huella {c.sha256_corto}</p>
+                          {c.subida_por !== null && <p className="break-all">Subida por {c.subida_por}</p>}
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
                           <button type="button" className={botonSecundario} onClick={() => alVerResultado(c.carga_id)}>
                             Ver constancia
                           </button>

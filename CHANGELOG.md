@@ -6,6 +6,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Agregado
 
+- Barra del logro de P6 con su aria-label, que dice el porcentaje, la meta y el resultado en palabras (US-78 de la spec 008, T045), y el sistema visual de la spec 008 en Ingreso, P3, P4, P5 y P6, que usan solo los tokens de `@theme` (US-81, T045).
 - P7 «Avance del registro» para la coordinación (US-65 de la spec 007 y US-79 de la spec 008, T046), con el resumen de secciones con carga publicada, las filas agrupadas por asignatura con la etapa en texto, el filtro «Mostrar solo las secciones que faltan», «Ver la carga» hacia P4, el título «Avance del registro del curso» para la coordinación del curso y `pantallaDeLlegada()`, que lleva a la coordinación a P7 al ingresar.
 - «Qué corregir» de P4 para las filas rechazadas y el aviso del puntaje máximo (US-77 de la spec 008, T044), con un consejo por motivo RECHAZA_FILA en una carga publicada, el consejo del aviso PUNTAJE_MAXIMO_DISTINTO arriba con role="status", la remisión a «Reemplazar carga» de Cargas sin botón en P4 (J-53) y el texto de la carga sin filas aceptadas que ya no dice «Corrija en Blackboard».
 - Sistema visual común de la spec 008 (US-81, T040 y T041), con tokens de color, fuentes del sistema y espaciado en `@theme`, la prueba de contraste AA de cada par, la espera que no anima con movimiento reducido y P2 con el camino de cada sección, el paso actual marcado con texto y `aria-current="step"` y «Ver resultado» como botón principal de una sección publicada.
