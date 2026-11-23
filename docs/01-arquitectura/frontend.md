@@ -1,6 +1,6 @@
 # Frontend
 
-> **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** La sección 10 cambia P4 de la spec 005 del Back, que reemplaza el formulario único «Análisis del resultado» por la sección «Análisis por indicador», con un bloque por PI rotulado como oportunidad de mejora o buena práctica según el semáforo. **Estado 2026-11-18.** La spec 004 suma P6 «Mis logros por SO» (sección 9), con su enlace en la cabecera y en P4, y su prueba de humo pasa en local contra el Back de `feat/004-reportes-docente`, a la espera de su corrida contra la vista previa de `develop` (T071 del Back). **Estado 2026-11-17.** El corte 1 del MVP está construido en `src/` (tareas T040 a T045 del plan, fase 4) con las pantallas P1 a P4. La tarea T085 del corte 2 suma P5, el modo reemplazo de P3 y la confirmación de la sección (US-18, US-19 y US-21), sobre la sección 7 del contrato, y la prueba de humo del reemplazo pasa en local contra el Back del corte 2 desde el 2026-11-18, a la espera de su corrida contra la vista previa de `develop`. El código de acceso por correo de P1 (US-20) sigue pendiente. Este documento describe lo construido. Si el código y el contrato discrepan, manda el contrato (`03-api/contrato.md`), y este documento se corrige en el mismo PR.
+> **Estado 2026-11-23.** La spec 008 suma el periodo elegido en la cabecera y los rótulos de la coordinación del curso (sección 12), construidos con pruebas primero en la rama `feat/008-ciclo-quimica-industrial` (T042 y T043 del Back), a la espera del código de las rutas 2, 8 y 18 en el Back. **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** La sección 10 cambia P4 de la spec 005 del Back, que reemplaza el formulario único «Análisis del resultado» por la sección «Análisis por indicador», con un bloque por PI rotulado como oportunidad de mejora o buena práctica según el semáforo. **Estado 2026-11-18.** La spec 004 suma P6 «Mis logros por SO» (sección 9), con su enlace en la cabecera y en P4, y su prueba de humo pasa en local contra el Back de `feat/004-reportes-docente`, a la espera de su corrida contra la vista previa de `develop` (T071 del Back). **Estado 2026-11-17.** El corte 1 del MVP está construido en `src/` (tareas T040 a T045 del plan, fase 4) con las pantallas P1 a P4. La tarea T085 del corte 2 suma P5, el modo reemplazo de P3 y la confirmación de la sección (US-18, US-19 y US-21), sobre la sección 7 del contrato, y la prueba de humo del reemplazo pasa en local contra el Back del corte 2 desde el 2026-11-18, a la espera de su corrida contra la vista previa de `develop`. El código de acceso por correo de P1 (US-20) sigue pendiente. Este documento describe lo construido. Si el código y el contrato discrepan, manda el contrato (`03-api/contrato.md`), y este documento se corrige en el mismo PR.
 
 El Front es React con Vite, TypeScript y Tailwind, la misma pila de IQBF-ULIMA_Front. No toca datos personales ni la base, así que su elección no cambia el riesgo del sistema. Su regla central viene de `AGENTS.md`, regla 3. Cada pantalla nombra las historias que la justifican, y lo que ninguna historia pide no se muestra.
 
@@ -447,26 +447,30 @@ En la etapa B cambian además las pruebas de `App.test.tsx` que esperan el títu
 2. **Las decisiones** D-46 (a quién remite P2 al profesor sin secciones), D-47 (los correos en P7) y D-43 de la spec 005 (el nombre de la actividad de Blackboard), que hoy siguen su valor provisional.
 3. **Lo que la spec deja para después**, que es el bloque de reglas pendientes en P7 (C-C04), la carga publicada sin declarar (C-C06), el texto y el botón de reemplazo en P4 de una carga publicada (C-P04), el pliegue de la constancia y las explicaciones de cada estado (C-T05), el reintento y el mensaje sin conexión (C-T03), P6 sin cargas (C-P06), el filtro de P6 de la carrera (C-C05) y la tabla desplazable, la prueba a 375 px y axe-core (C-T06), que mantiene abierto el punto 3 de la sección 7.
 
-## 12. Spec 008, ciclo de Química General en Industrial (propuesta)
+## 12. Spec 008, ciclo de Química General en Industrial
 
-> **Aprobada por Jefferson en el chat el 2026-11-23 («Sí, apruébala»).** Esta sección traslada al Front la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, EP-08, US-71, US-73, US-77, US-79, US-81 y US-82) y no rige hasta su aprobación y su fase de contrato (T011). Sus textos son propuestas y las rutas que lee están en la sección 15 de `docs/03-api/contrato.md`.
+> **Definitiva desde el 2026-11-23 (T011 de la spec 008, aprobada por Jefferson en el chat el mismo día, «Sí, apruébala»).** Esta sección traslada al Front la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, EP-08, US-71, US-73, US-77, US-79, US-81 y US-82) y lee las rutas de la sección 15 de `docs/03-api/contrato.md`. Las secciones 12.1 y 12.2 describen lo construido con T042 y T043, y las secciones 12.3 y 12.4 lo que construyen T044 y T040. Los textos marcados (propuesta) en la spec siguen como propuestas.
 
 ### 12.1 El periodo en el estado de `App.tsx` (US-73)
 
-`App.tsx` pide la ruta 18 `GET /api/periodos` después del ingreso y guarda el periodo elegido en su estado, sin `localStorage` ni `sessionStorage`. Abre en `vigente` si está en `periodos` y, si no, en el primero de la lista. La cabecera muestra «Periodo 2026-1» con un solo periodo y el selector «Periodo» con dos o más, y `api.ts` y `secciones_del_profesor.ts` pasan el periodo a las rutas 4, 8, 12 y 17. Si la ruta 18 falla, el Front sigue como hoy, sin periodo y sin mostrar un error.
+`App.tsx` pide la ruta 18 `GET /api/periodos` una vez por sesión, después del arranque o del ingreso y antes de P2, y guarda en su estado el correo de la sesión, los periodos y el elegido, sin `localStorage` ni `sessionStorage`. Abre en `vigente` si está en `periodos` y, si no, en el primero de la lista, que es el más reciente. Mientras la ruta 18 responde, la pantalla dice «Cargando». La cabecera muestra «Periodo 2026-1» con un solo periodo, el selector «Periodo» con dos o más y nada con la lista vacía. Cambiar el periodo monta de nuevo P2, P5 y P6, que piden sus rutas con el periodo elegido, y el periodo se conserva al pasar por P3 y P4. `api.ts` pasa el periodo a las rutas 4, 8 y 12 (`listarSecciones()`, `listarCargas()` sin `seccion_id` y `obtenerResultados()`), `secciones_del_profesor.ts` lo pasa a la ruta 4 y a la ruta 8 de la marca de la última carga rechazada, y P7 lo pasará a la ruta 17 con T046. Si la ruta 18 falla o responde sin la forma del contrato, el Front sigue como antes, sin periodo y sin mostrar un error. Salir o un 401 borran el estado del periodo.
+
+En P2, el profesor sin secciones en el periodo elegido lee «No tiene secciones asignadas en este periodo.» y, cuando la cabecera ofrece el selector, debajo «Elija otro periodo en la cabecera si dictó una sección con medición ABET en otro ciclo.» (propuesta), antes del texto de la sección 11.2.
 
 ### 12.2 Rótulos por alcance (US-71 y US-79)
 
-`servicios/rotulos.ts` elige los rótulos por `alcance.tipo` de la ruta 2, sin cambiar el tipo Rol de `tipos.ts`. La cuenta CARRERA conserva los de la sección 11.5.
+`servicios/rotulos.ts` elige los rótulos por `alcance.tipo` de la ruta 2, que `tipos.ts` describe con los tipos `TipoAlcance` y `Alcance` y el campo opcional `alcance` de `Usuario`, sin cambiar el tipo `Rol`. Una cuenta COORDINADOR con el tipo CURSO recibe los rótulos del curso, y una con el tipo CARRERA o sin el campo, porque la sesión viene de un Back anterior, conserva los de la carrera de la sección 11.5. El PROFESOR conserva los suyos.
 
 | Lugar | Alcance CURSO (propuesta) |
 | --- | --- |
 | Botón de P2 y título de P2 | «Secciones del curso» |
 | Enlace a P6 | «Ver los logros por SO del curso» |
+| Título de P6 | «Logros por SO del curso» |
+| Espera de P6 | «Cargando los logros del curso…» |
 | Lista vacía de P2, P5, P6 y P7 | «El curso no tiene secciones en este periodo.» |
-| Título de P7 y página de llegada | «Avance del registro del curso» |
+| Título de P7 y página de llegada | «Avance del registro del curso», con T046 |
 
-La coordinación del curso no ve «Subir export» en ninguna sección, porque `permisos.puede_subir()` no le deja una carga nueva.
+La coordinación del curso no ve «Subir export» en ninguna sección, porque `permisos.puede_subir()` no le deja una carga nueva, y P4 le da el mismo consejo de la coordinación de la carrera para SECCION_NO_COINCIDE, que remite al profesor de la sección.
 
 ### 12.3 «Qué corregir» en una carga con filas rechazadas (US-77)
 
@@ -475,6 +479,10 @@ La tabla de J-43 suma un consejo por motivo RECHAZA_FILA y otro para el aviso PU
 ### 12.4 Tokens del sistema visual (US-81 y US-82)
 
 Los colores, la tipografía y el espaciado son tokens literales del bloque `@theme` de `src/index.css` (FR-017). El sistema usa fuentes del sistema (J-59), no suma dependencias ni recursos de otro dominio, respeta `prefers-reduced-motion` y conserva los rótulos que citan los `.feature` de las specs 001 a 007. Una función propia del Front calcula la razón de contraste de cada par, que supera 4,5 a 1 en el texto y 3 a 1 en los componentes, y cada control mide al menos 24 por 24 px, con el foco visible y sin desplazamiento lateral a 375 px (FR-029).
+
+### 12.5 Pruebas
+
+`tests/spec008/periodo_elegido.test.tsx` cubre los ocho escenarios `@delegado_a_vitest` de US-73 y `tests/spec008/alcance_coordinacion.test.tsx` los tres de US-71, con un `it` por escenario y su título exacto, que anotan los pasos de pytest-bdd del Back. `tests/servicios/api.test.ts` cubre `listarPeriodos()` y el periodo de `listarCargas()`. La parte de P7 y la ruta 17 del escenario «La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7» se suma a su prueba con T046.
 
 ## Referencias
 

@@ -13,10 +13,10 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-23
-- **Rama de trabajo**: `docs/008-ciclo-quimica-industrial`, con la documentación de la spec 008 aprobada
+- **Rama de trabajo**: `feat/008-ciclo-quimica-industrial`, con la construcción de la spec 008 y commits locales sin empujar
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: Jefferson aprueba la spec 008 del Back el 2026-11-23 («Sí, apruébala»), con la sección 15 del contrato (ruta 18, alcance en la sesión, periodo en las rutas 8 y 17) y la sección 12 de frontend.md
-- **En curso**: el PR de esta rama hacia `develop`. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
+- **Último cambio**: T011 de la spec 008 deja definitivas la sección 15 del contrato, las rutas 17 y 18 de la sección 2 y su suma a la sección 10, y la sección 12 de frontend.md
+- **En curso**: T042 y T043 de la spec 008 (periodo en la cabecera y rótulos del curso) con Vitest primero. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
 - **Siguiente paso**: la construcción de la spec 008 con pruebas primero, desde el contrato definitivo (T011 del Back), el periodo en la cabecera y los rótulos del curso (T042 y T043) y el sistema visual (T040 y T041)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
@@ -36,6 +36,15 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-23 14:34 (Lima) · feat/008-ciclo-quimica-industrial · Contrato definitivo de la spec 008 (T011)
+- Quién: el workflow de construcción de la spec 008 reparte el Back y el Front entre subagentes de Claude Code. El subagente del Front (Claude Code, Opus) escribe este cambio con la skill redaccion-ieee-q1 para la prosa, y el orquestador revisa su informe.
+- Qué cambió: `docs/03-api/contrato.md` suma el estado del 2026-11-23, deja la sección 15 sin la marca (propuesta) en su título, sus rutas y sus campos, quita la marca de las rutas 17 y 18 en la tabla de la sección 2, suma el campo `alcance` a la fila de la ruta 2 y el periodo a la de la ruta 8, y la sección 10 cuenta 8 y 9 caminos con las rutas 18 y 17 y suma la carpeta de la spec 008 a la comprobación de mensajes. `docs/01-arquitectura/frontend.md` deja definitiva la sección 12, con el periodo, los rótulos por alcance y las pruebas, y `docs/specs/api-contracts.md` y `docs/specs/feature-index.md` dejan sus filas y su párrafo sin la marca.
+- Por qué: T011 de la spec 008 del Back (US-71, US-73, US-79 y US-80), porque el contrato va antes del código de T042 y T043.
+- Lo que debe hacer, cómo se probó: la comprobación de mensajes de la sección 10, con `BACK=back-feat008 FRONT=front-feat008` desde `wt/`, da «0 mensajes de los escenarios sin contrato» con la carpeta de la spec 008 sumada, y `bash scripts/preflight.sh --staged` pasa.
+- Lo que no debe hacer, cómo se probó: la misma comprobación sigue con «1 mensajes del contrato sin escenario», el de T077 que ya daba `develop`, y el texto «Ocurrió un error interno. Intente de nuevo.» deja de faltar porque lo cita la spec 008. El campo `agregados` sigue condicional a D-32 y los textos de pantalla marcados (propuesta) en la spec siguen marcados. Ningún archivo de `src/`, `tests/` ni `e2e/` cambia en este commit.
+- Correcciones: la sección 15.7 daba como pendiente la marca de las rutas 17 y 18, y ahora nombra el código de las rutas 2, 8, 17 y 18 que construyen T030, T031, T033 y T038 del Back.
+- Cómo se reporta: esta entrada, el CHANGELOG y la marca de T011 en `tasks.md` del Back; pendiente T042 y T043 en el commit siguiente.
 
 ### 2026-11-23 15:40 (Lima) · docs/008-ciclo-quimica-industrial · Spec 008 aprobada
 - Quién: Jefferson aprueba en el chat la spec 008 («Sí, apruébala»). Claude Code, sin subagentes, registra la aprobación.
