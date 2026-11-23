@@ -4,6 +4,8 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+## [0.3.0] - 2026-11-23
+
 ### Agregado
 
 - Etapa A de la spec 007 en las pantallas: P2 dice el estado y el siguiente paso de cada sección, también la última carga rechazada (US-59); P3 muestra «Antes de subir» con los nombres de columna de la sección (US-60); P4 de una carga rechazada da «Qué corregir» (US-61); P4 dice «Esta carga no tiene R-17.» y P3 avisa qué pasa con un reemplazo rechazado (US-62); y un menú con la pantalla actual marcada y rótulos por rol (US-63).
