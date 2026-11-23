@@ -447,6 +447,35 @@ En la etapa B cambian además las pruebas de `App.test.tsx` que esperan el títu
 2. **Las decisiones** D-46 (a quién remite P2 al profesor sin secciones), D-47 (los correos en P7) y D-43 de la spec 005 (el nombre de la actividad de Blackboard), que hoy siguen su valor provisional.
 3. **Lo que la spec deja para después**, que es el bloque de reglas pendientes en P7 (C-C04), la carga publicada sin declarar (C-C06), el texto y el botón de reemplazo en P4 de una carga publicada (C-P04), el pliegue de la constancia y las explicaciones de cada estado (C-T05), el reintento y el mensaje sin conexión (C-T03), P6 sin cargas (C-P06), el filtro de P6 de la carrera (C-C05) y la tabla desplazable, la prueba a 375 px y axe-core (C-T06), que mantiene abierto el punto 3 de la sección 7.
 
+## 12. Spec 008, ciclo de Química General en Industrial (propuesta)
+
+> **En borrador para la aprobación de Jefferson (2026-11-23).** Esta sección traslada al Front la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, EP-08, US-71, US-73, US-77, US-79, US-81 y US-82) y no rige hasta su aprobación y su fase de contrato (T011). Sus textos son propuestas y las rutas que lee están en la sección 15 de `docs/03-api/contrato.md`.
+
+### 12.1 El periodo en el estado de `App.tsx` (US-73)
+
+`App.tsx` pide la ruta 18 `GET /api/periodos` después del ingreso y guarda el periodo elegido en su estado, sin `localStorage` ni `sessionStorage`. Abre en `vigente` si está en `periodos` y, si no, en el primero de la lista. La cabecera muestra «Periodo 2026-1» con un solo periodo y el selector «Periodo» con dos o más, y `api.ts` y `secciones_del_profesor.ts` pasan el periodo a las rutas 4, 8, 12 y 17. Si la ruta 18 falla, el Front sigue como hoy, sin periodo y sin mostrar un error.
+
+### 12.2 Rótulos por alcance (US-71 y US-79)
+
+`servicios/rotulos.ts` elige los rótulos por `alcance.tipo` de la ruta 2, sin cambiar el tipo Rol de `tipos.ts`. La cuenta CARRERA conserva los de la sección 11.5.
+
+| Lugar | Alcance CURSO (propuesta) |
+| --- | --- |
+| Botón de P2 y título de P2 | «Secciones del curso» |
+| Enlace a P6 | «Ver los logros por SO del curso» |
+| Lista vacía de P2, P5, P6 y P7 | «El curso no tiene secciones en este periodo.» |
+| Título de P7 y página de llegada | «Avance del registro del curso» |
+
+La coordinación del curso no ve «Subir export» en ninguna sección, porque `permisos.puede_subir()` no le deja una carga nueva.
+
+### 12.3 «Qué corregir» en una carga con filas rechazadas (US-77)
+
+La tabla de J-43 suma un consejo por motivo RECHAZA_FILA y otro para el aviso PUNTAJE_MAXIMO_DISTINTO, y `queCorregir()` acepta también una carga PUBLICADA con rechazos de fila o con ese aviso. `CORREGIR_SIN_FILAS_ACEPTADAS` pasa a «Corrija el archivo en cada fila de la tabla de rechazos y suba el archivo nuevo. Si recibió el export de la Oficina de Calidad, pídale uno corregido.», con un cambio fechado en `que_corregir.feature` de la spec 007 (FR-012 y FR-019 de la spec 008). P4 no gana un botón de reemplazo (J-53).
+
+### 12.4 Tokens del sistema visual (US-81 y US-82)
+
+Los colores, la tipografía y el espaciado son tokens literales del bloque `@theme` de `src/index.css` (FR-017). El sistema usa fuentes del sistema (J-59), no suma dependencias ni recursos de otro dominio, respeta `prefers-reduced-motion` y conserva los rótulos que citan los `.feature` de las specs 001 a 007. Una función propia del Front calcula la razón de contraste de cada par, que supera 4,5 a 1 en el texto y 3 a 1 en los componentes, y cada control mide al menos 24 por 24 px, con el foco visible y sin desplazamiento lateral a 375 px (FR-029).
+
 ## Referencias
 
 - [`03-api/contrato.md`](../03-api/contrato.md), las rutas que consume cada pantalla, con sus errores y sus mensajes literales. La sección 10 del contrato comprueba que esos mensajes coinciden con los de los escenarios.
