@@ -29,6 +29,8 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 | 9 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | 201 o 200 | Reemplaza la carga publicada en una transacción (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | 10 | POST | `/api/sesion/codigo` | No | 202 | Envía el código de acceso al correo, con la misma respuesta exista o no | US-20 | BR-ACCESO-09 | 2 |
 | 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, BR-ACCESO-07 y BR-ACCESO-10 | spec 004 |
+| 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de su carrera o de su curso en el periodo y el conteo por etapa, secciones 14 y 15.5 (propuesta, specs 007 y 008) | US-64 a US-66 (spec 007) y US-79 (spec 008) | BR-AVANCE-NN (propuesta), BR-ACCESO-07, BR-ACCESO-12 y BR-ACCESO-13 (propuestas) | specs 007 y 008 |
+| 18 | GET | `/api/periodos` | Sí | 200 | Periodo vigente y periodos con secciones al alcance, sección 15.2 (propuesta, spec 008) | US-73 | BR-PERIODO-05 | spec 008 |
 
 ## 3. Convenciones
 
@@ -384,7 +386,7 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 
 ## 10. Cómo verificar este documento
 
-Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI.
+Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI. Las filas marcadas (propuesta), como las rutas 17 y 18, entran en esta comprobación cuando su spec quita la marca.
 
 ```bash
 # Esperado: 5 caminos en el corte 1 (las 7 rutas, porque /api/sesion reúne tres métodos), 6 con el corte 2
@@ -852,6 +854,130 @@ Errores, en el orden 401, 403 y 422 y todos sin rastro en la base.
 
 ### 14.3 Lo que esta sección no cubre
 
-1. **Los cambios de la tabla de la sección 2 y de la sección 10**, que suman la ruta 17 y su camino `/api/avance` en la fase de contrato de la spec 007 (T012).
+1. **Los cambios de la sección 10**, que suman el camino `/api/avance` en la fase de contrato de la spec 007 (T012). La tabla de la sección 2 trae la ruta 17 marcada (propuesta) desde la spec 008.
 2. **El envío de correos desde la aplicación.** La coordinación copia la lista en P7 y escribe desde su propio correo.
 3. **El campo aditivo `ultima_rechazada_id` de la ruta 4** (J-45), que reemplaza la combinación de las rutas 4 y 8 en P2 del profesor cuando la ruta 17 esté construida.
+
+## 15. Rutas de la spec 008, ciclo de Química General en Ingeniería Industrial (propuesta)
+
+> **Aprobada por Jefferson en el chat el 2026-11-23 («Sí, apruébala»).** Esta sección traslada las rutas nuevas o cambiadas de la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, US-71, US-73, US-79 y US-80, con J-49 a J-59) y no rige hasta su aprobación y su fase de contrato (T010 y T011 de esa spec). Los nombres de las rutas, de los campos y los textos son propuestas. Todas las rutas exigen la sesión, responden con `Cache-Control: no-store`, como toda `/api`, entran en la prueba que recorre las rutas registradas (BR-ACCESO-10) y siguen la forma de error `{ "detail": "mensaje" }`. Ninguna respuesta trae nombres de personas, códigos de estudiante, datos de `acceso.credencial` ni el valor de una celda. Los ejemplos usan solo datos inventados.
+
+### 15.1 Resumen
+
+| # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Cambio |
+|---|---|---|---|---|---|---|---|---|
+| 2 | GET | `/api/sesion` | Sí | 200 | Suma el campo aditivo `alcance` al usuario actual | US-71 (spec 008) | BR-ACCESO-06 y BR-ACCESO-13 (propuesta) | aditivo |
+| 4 | GET | `/api/secciones?periodo=2026-1` | Sí | 200 | Sin cambio de forma. El alcance de la coordinación sale de `acceso.coordinacion_alcance` | US-70 y US-71 (spec 008) | BR-ACCESO-07 con un cambio fechado y BR-ACCESO-13 | de alcance |
+| 8 | GET | `/api/cargas?periodo=2026-1` | Sí | 200 | Suma el parámetro aditivo `periodo` cuando no lleva `seccion_id` | US-73 (spec 008) | BR-CARGA-20 con un cambio fechado | aditivo |
+| 12 | GET | `/api/resultados?periodo=2026-1` | Sí | 200 | Suma, solo si D-32 se responde (J-54), el campo `agregados` para el COORDINADOR | US-80 (spec 008) | BR-RESULTADOS-03, 05, 06 y 09 con un cambio fechado | aditivo y condicional |
+| 17 | GET | `/api/avance?periodo=2026-1` | Sí | 200 | La ruta de la sección 14, con el alcance de la coordinación del curso | US-79 (spec 008) | BR-AVANCE-NN (propuesta) y BR-ACCESO-13 | de alcance |
+| 18 | GET | `/api/periodos` | Sí | 200 | Devuelve el periodo vigente y los periodos con secciones al alcance del usuario | US-73 (spec 008) | BR-PERIODO-05 (propuesta) | nueva |
+| 19 | GET | reservada | Sí | 200 | Reservada para el archivo con los R-17 publicados del curso, fuera de alcance (J-55) | ninguna | ninguna | reservada |
+
+Las rutas 5, 6, 7 y 9 no cambian de forma. La 5 publica una carga de 5643 con la carrera y el conjunto de reglas de Industrial y responde el 500 de ERROR_INTERNO, «Ocurrió un error interno. Intente de nuevo.», si falta ese conjunto (US-68). La 7 escribe en B6 «Carrera de» más el nombre de la carrera de la carga (BR-R17-13, propuesta). La 9 deja reemplazar a la coordinación del curso en su curso con el valor provisional de D-52.
+
+### 15.2 `GET /api/periodos`: periodos al alcance del usuario (BR-PERIODO-05, propuesta)
+
+Sin parámetros. Responde los periodos en que el usuario tiene al menos una sección al alcance de `secciones_visibles()`, del más reciente al más antiguo, y el periodo de `PERIODO_VIGENTE` aparte.
+
+```jsonc
+// Respuesta 200 para docente701@example.invalid, con datos inventados
+{ "vigente": "2026-2", "periodos": ["2026-1"] }
+
+// Respuesta 200 para un profesor con secciones en los dos periodos
+{ "vigente": "2026-2", "periodos": ["2026-2", "2026-1"] }
+
+// Respuesta 200 para un usuario sin secciones
+{ "vigente": "2026-2", "periodos": [] }
+```
+
+Reglas y por qué existen.
+
+- Las claves son cerradas, `vigente` (texto AAAA-C) y `periodos` (lista de textos AAAA-C sin repetidos). La ruta no dice cuántas secciones hay en cada periodo ni de qué asignatura.
+- El Front abre en `vigente` si está en `periodos`, y si no, en el primero de `periodos`. Muestra el selector «Periodo» solo con dos periodos o más y guarda el elegido en el estado de `App.tsx`, sin `localStorage` ni `sessionStorage`.
+- Si la ruta falla, el Front sigue como hoy, sin periodo en las rutas 4, 8, 12 y 17, y sin mostrar un error.
+
+Errores.
+
+- 401 sin sesión, con «La sesión venció. Ingrese otra vez.».
+
+### 15.3 `GET /api/sesion`: el campo aditivo `alcance` (BR-ACCESO-13, propuesta)
+
+```jsonc
+// Respuesta 200 para la coordinación del curso, con datos inventados
+{ "correo": "coordinador.quimica@example.invalid", "rol": "COORDINADOR",
+  "alcance": { "tipo": "CURSO", "carreras": [], "asignaturas": ["5643"] } }
+
+// Respuesta 200 para la coordinación de la carrera
+{ "correo": "coordinacion@example.invalid", "rol": "COORDINADOR",
+  "alcance": { "tipo": "CARRERA", "carreras": ["AMB"], "asignaturas": [] } }
+
+// Respuesta 200 para un profesor
+{ "correo": "docente701@example.invalid", "rol": "PROFESOR",
+  "alcance": { "tipo": "SECCIONES", "carreras": [], "asignaturas": [] } }
+```
+
+Reglas y por qué existen.
+
+- `rol` sigue siendo PROFESOR o COORDINADOR, porque `ck_usuario_autorizado_rol` no cambia. `alcance.tipo` es SECCIONES para el PROFESOR, CARRERA para una cuenta COORDINADOR con al menos una fila de carrera en `acceso.coordinacion_alcance` y CURSO para una cuenta COORDINADOR con solo filas de asignatura. `carreras` trae los códigos de carrera y `asignaturas` los códigos de asignatura de esas filas, sin repetidos.
+- El Front elige sus rótulos por `alcance.tipo`, como «Secciones del curso» y «Avance del registro del curso» (propuestas), y un Front anterior que no lee el campo sigue funcionando con los rótulos de la carrera.
+- Una cuenta COORDINADOR sin filas de alcance recibe el tipo CARRERA con las dos listas vacías y no ve ninguna sección.
+- El campo no trae el periodo de las filas de asignatura, que la ruta 18 resume.
+
+### 15.4 El parámetro `periodo` de la ruta 8 (cambio fechado de BR-CARGA-20, propuesta)
+
+`GET /api/cargas?periodo=2026-1` sin `seccion_id` lista las cargas al alcance del usuario en ese periodo, con la misma forma de la sección 7. Sin `periodo`, la ruta usa `PERIODO_VIGENTE`, como hoy. Con `seccion_id`, el periodo no se usa, porque la sección ya lo fija.
+
+Errores, en el orden 401 y 422.
+
+- 401 sin sesión.
+- 422 con «El periodo no tiene la forma AAAA-C.» para un periodo con otra forma, como `2026-3`, `2026` o `26-1`, la misma validación de la ruta 4.
+- Un periodo bien formado sin secciones del usuario responde 200 con una lista vacía, no 403.
+
+### 15.5 La ruta 17 con el alcance de la coordinación del curso
+
+La ruta 17 de la sección 14 conserva su forma, sus reglas y su orden de errores. Su alcance sale de `secciones_visibles()` con la tabla de alcance, así que la coordinación del curso recibe solo las secciones de su asignatura en el periodo de su fila, y la coordinación de una carrera, solo las de su carrera. El campo `profesores` espera a D-47 en Ambiental y a D-51 en Industrial.
+
+```jsonc
+// Respuesta 200 para coordinador.quimica@example.invalid, con datos inventados
+{
+  "periodo": "2026-1",
+  "conteo": { "secciones": 4, "PUBLICADA": 1, "CON_RECHAZO": 1, "SIN_CARGA": 1, "SIN_PROFESOR": 1, "SIN_PLAN": 0 },
+  "secciones": [
+    { "seccion_id": 21, "asignatura": { "codigo": "5643", "nombre": "Química General" },
+      "numero": "701", "etapa": "PUBLICADA", "carga_id": 31 },
+    { "seccion_id": 22, "asignatura": { "codigo": "5643", "nombre": "Química General" },
+      "numero": "702", "etapa": "CON_RECHAZO", "carga_id": null },
+    { "seccion_id": 23, "asignatura": { "codigo": "5643", "nombre": "Química General" },
+      "numero": "703", "etapa": "SIN_CARGA", "carga_id": null },
+    { "seccion_id": 24, "asignatura": { "codigo": "5643", "nombre": "Química General" },
+      "numero": "704", "etapa": "SIN_PROFESOR", "carga_id": null }
+  ]
+}
+```
+
+### 15.6 El campo condicional `agregados` de la ruta 12 (propuesta, J-54)
+
+Solo existe si D-32 se responde con la suma de estudiantes por PI y curso, y solo para el rol COORDINADOR. Las cifras salen de `abet.v_r17_por_pi` de las cargas PUBLICADA del alcance, con `calificados` igual a `n_total` menos `n_sin_evidencia`, y con la meta y el nivel esperado del conjunto de reglas de la carrera.
+
+```jsonc
+// Fragmento de la respuesta 200 para coordinador.quimica@example.invalid, con datos inventados
+"agregados": [
+  { "asignatura": "5643", "pi": "6.1", "logrados": 23, "calificados": 33,
+    "pct_sobre_calificados": 69.7, "meta_pct": 80.0, "en_meta": false,
+    "secciones": 4, "secciones_publicadas": 3 }
+]
+```
+
+Reglas y por qué existen.
+
+- El agregado suma estudiantes y no promedia porcentajes, así que tres secciones de 70,0, 90,0 y 53,8 dan 69,7 y no 71,3.
+- Un curso sin cargas publicadas trae `calificados` 0 y `pct_sobre_calificados` y `en_meta` en `null`, nunca 0.
+- La respuesta de un PROFESOR no trae el campo, como fija D-33 de la spec 004.
+
+### 15.7 Lo que esta sección no cubre
+
+1. **La ruta 19**, reservada para el archivo con los R-17 publicados del curso, que vuelve si D-53 pide la entrega por la coordinación (J-55).
+2. **El campo `profesores` de la ruta 17 en Industrial**, que espera a D-51.
+3. **La marca (propuesta) de las rutas 17 y 18 en la tabla de la sección 2 y su suma a la sección 10**, que quedan para la fase de contrato de la spec 008 (T011).
+4. **Las rutas 13 a 16 de la spec 005**, que no entran antes de la capacitación (J-57).

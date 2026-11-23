@@ -12,12 +12,12 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-22
-- **Rama de trabajo**: `docs/registro-version-0.3.0`, que registra la versión 0.3.0 en Production
+- **Fecha**: 2026-11-23
+- **Rama de trabajo**: `docs/008-ciclo-quimica-industrial`, con la documentación de la spec 008 aprobada
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: la versión 0.3.0 lleva a Production la etapa A de la spec 007 (PR #29): P2 con el siguiente paso, «Antes de subir», «Qué corregir», «Esta carga no tiene R-17.» y el menú principal con rótulos por rol. Antes, el mismo día, la documentación de la spec 007 (PR #28)
-- **En curso**: el PR de esta rama, que solo registra la publicación. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
-- **Siguiente paso**: el humo con Playwright de la etapa A (T052 del Back), la etapa B de la spec 007 (ruta 17 y P7 «Avance del registro») y las pantallas de la spec 005, según el orden de J-41 del Back
+- **Último cambio**: Jefferson aprueba la spec 008 del Back el 2026-11-23 («Sí, apruébala»), con la sección 15 del contrato (ruta 18, alcance en la sesión, periodo en las rutas 8 y 17) y la sección 12 de frontend.md
+- **En curso**: el PR de esta rama hacia `develop`. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
+- **Siguiente paso**: la construcción de la spec 008 con pruebas primero, desde el contrato definitivo (T011 del Back), el periodo en la cabecera y los rótulos del curso (T042 y T043) y el sistema visual (T040 y T041)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
 
@@ -36,6 +36,25 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-23 15:40 (Lima) · docs/008-ciclo-quimica-industrial · Spec 008 aprobada
+- Quién: Jefferson aprueba en el chat la spec 008 («Sí, apruébala»). Claude Code, sin subagentes, registra la aprobación.
+- Qué cambió: el Status de la spec 008, `tasks.md`, `specs/README.md`, el CHANGELOG y las notas de la documentación del Front pasan de borrador a aprobada (secciones 15 del contrato y 12 de frontend.md, api-contracts.md y feature-index.md).
+- Por qué: la aprobación abre la construcción de la spec 008 en `feat/008-ciclo-quimica-industrial`, con pruebas primero, para la capacitación de Química General.
+- Lo que debe hacer, cómo se probó: `bash scripts/preflight.sh --staged` pasa.
+- Lo que no debe hacer, cómo se probó: el commit no cambia código ni escenarios, y D-48 a D-55 y J-49 a J-59 siguen abiertas con su valor provisional.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR de esta rama.
+- Pendiente y siguiente paso: la construcción en el orden de `tasks.md`, desde T005, T006 y T010 a T013, y la fecha de la capacitación (J-56).
+### 2026-11-23 13:17 (Lima) · docs/008-ciclo-quimica-industrial · Contrato propuesto de la spec 008
+- Quién: Claude Code, como redactor del workflow de la spec 008 del Back (cuatro subagentes de candidatas, tres lentes y un crítico de arquitectura), con las skills specs-back-front y redaccion-ieee-q1; el redactor traslada al Front lo que la auditoría deja en las rutas.
+- Qué cambió: `docs/03-api/contrato.md` suma la sección 15 «Rutas de la spec 008, ciclo de Química General en Ingeniería Industrial (propuesta)», `docs/specs/api-contracts.md` suma las filas de las rutas 17 y 18 y la nota de los cambios aditivos, y `docs/specs/feature-index.md` el párrafo de la spec 008. La tabla de la sección 2 del contrato suma las rutas 17 y 18 marcadas (propuesta), y `docs/01-arquitectura/frontend.md` suma la sección 12 con el periodo en el estado de `App.tsx`, los rótulos por alcance, el texto nuevo de «Qué corregir» y los tokens del sistema visual.
+- Por qué: la spec 008 del Back (US-71, US-73, US-79 y US-80) cambia rutas que el Front consume, y el contrato va antes de implementar.
+- Lo que debe hacer, cómo se probó: cada ruta de la sección 15 trae método, camino, parámetros, respuesta JSON con claves cerradas y datos inventados y sus errores, y `bash scripts/preflight.sh` termina «Revisión previa sin fallas (todo).».
+- Lo que no debe hacer, cómo se probó: ningún archivo de `src/`, `tests/` ni `e2e/` cambia, ninguna respuesta de ejemplo trae nombres, códigos de estudiante ni el correo real de la coordinación, y las rutas 17 y 18 entran en la tabla de la sección 2 solo marcadas (propuesta), con la marca que quita la fase de contrato (T011).
+- Correcciones: la ruta 18 queda para `GET /api/periodos` y el archivo de los R-17 del curso pasa a la 19 reservada, porque dos candidatas pedían el 18. El crítico de verificación del Back pide sumar ya las rutas 17 y 18 a la tabla de la sección 2 y la sección 12 de `frontend.md`, como hicieron las specs 004, 005 y 007.
+- Cómo se reporta: esta entrada, el CHANGELOG y el PR de esta rama, cuando Jefferson autorice el commit.
+- Pendiente y siguiente paso: la aprobación de la spec 008 del Back, con J-49 a J-59 y D-48 a D-55, y el contrato definitivo de T011.
 
 ### 2026-11-22 23:14 (Lima) · docs/registro-version-0.3.0 · Versión 0.3.0 en Production
 - Quién: Jefferson autoriza publicar en el chat («Sí, publícala») después de la prueba final. Claude Code, sin subagentes, abre y junta los PR «Versión 0.3.0» de los dos repositorios, comprueba Production y escribe este registro.

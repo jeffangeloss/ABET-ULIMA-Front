@@ -4,6 +4,10 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ## [Sin publicar]
 
+### Agregado
+
+- Contrato propuesto de la spec 008 del Back en la sección 15 de `docs/03-api/contrato.md`, con la ruta 18 de periodos, el campo `alcance` de la sesión, el periodo de la ruta 8, la ruta 17 con el alcance del curso y el campo condicional `agregados` de la ruta 12, las rutas 17 y 18 marcadas (propuesta) en la tabla de la sección 2 y la sección 12 de `docs/01-arquitectura/frontend.md`.
+
 ## [0.3.0] - 2026-11-23
 
 ### Agregado
