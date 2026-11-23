@@ -449,7 +449,7 @@ En la etapa B cambian además las pruebas de `App.test.tsx` que esperan el títu
 
 ## 12. Spec 008, ciclo de Química General en Industrial (propuesta)
 
-> **En borrador para la aprobación de Jefferson (2026-11-23).** Esta sección traslada al Front la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, EP-08, US-71, US-73, US-77, US-79, US-81 y US-82) y no rige hasta su aprobación y su fase de contrato (T011). Sus textos son propuestas y las rutas que lee están en la sección 15 de `docs/03-api/contrato.md`.
+> **Aprobada por Jefferson en el chat el 2026-11-23 («Sí, apruébala»).** Esta sección traslada al Front la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, EP-08, US-71, US-73, US-77, US-79, US-81 y US-82) y no rige hasta su aprobación y su fase de contrato (T011). Sus textos son propuestas y las rutas que lee están en la sección 15 de `docs/03-api/contrato.md`.
 
 ### 12.1 El periodo en el estado de `App.tsx` (US-73)
 

@@ -860,7 +860,7 @@ Errores, en el orden 401, 403 y 422 y todos sin rastro en la base.
 
 ## 15. Rutas de la spec 008, ciclo de Química General en Ingeniería Industrial (propuesta)
 
-> **En borrador para la aprobación de Jefferson (2026-11-23).** Esta sección traslada las rutas nuevas o cambiadas de la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, US-71, US-73, US-79 y US-80, con J-49 a J-59) y no rige hasta su aprobación y su fase de contrato (T010 y T011 de esa spec). Los nombres de las rutas, de los campos y los textos son propuestas. Todas las rutas exigen la sesión, responden con `Cache-Control: no-store`, como toda `/api`, entran en la prueba que recorre las rutas registradas (BR-ACCESO-10) y siguen la forma de error `{ "detail": "mensaje" }`. Ninguna respuesta trae nombres de personas, códigos de estudiante, datos de `acceso.credencial` ni el valor de una celda. Los ejemplos usan solo datos inventados.
+> **Aprobada por Jefferson en el chat el 2026-11-23 («Sí, apruébala»).** Esta sección traslada las rutas nuevas o cambiadas de la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, US-71, US-73, US-79 y US-80, con J-49 a J-59) y no rige hasta su aprobación y su fase de contrato (T010 y T011 de esa spec). Los nombres de las rutas, de los campos y los textos son propuestas. Todas las rutas exigen la sesión, responden con `Cache-Control: no-store`, como toda `/api`, entran en la prueba que recorre las rutas registradas (BR-ACCESO-10) y siguen la forma de error `{ "detail": "mensaje" }`. Ninguna respuesta trae nombres de personas, códigos de estudiante, datos de `acceso.credencial` ni el valor de una celda. Los ejemplos usan solo datos inventados.
 
 ### 15.1 Resumen
 
