@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { App } from "../src/App";
 import { json, simularApi } from "./ayudas";
 import {
+  avanceAmbiental,
   cargaRechazada410,
   cargasDe410,
   cargaVigente410,
@@ -241,17 +242,20 @@ describe("App", () => {
     expect(screen.getByRole("status")).toHaveTextContent("La sesión venció. Ingrese otra vez.");
   });
 
+  // Cambio del 2026-11-23 (T046 de la spec 008). El coordinador llega a P7 «Avance del registro» (J-46 de la spec 007,
+  // SC-002), así que la prueba espera P7 marcada en el menú y no P2.
   it("el coordinador abre P6 con «Ver los logros por SO de la carrera»", async () => {
     simularApi({
       "GET /api/sesion": json(200, usuarioCoordinador),
+      "GET /api/avance": json(200, avanceAmbiental),
       "GET /api/secciones": json(200, [seccionPublicada]),
       "GET /api/resultados": json(200, resultadosDelCoordinador),
     });
     const u = userEvent.setup();
     render(<App />);
-    await screen.findByRole("heading", { level: 1, name: "Secciones de la carrera" });
+    await screen.findByRole("heading", { level: 1, name: "Avance del registro" });
     const menu = within(screen.getByRole("navigation", { name: "Menú principal" }));
-    expect(menu.getAllByRole("button", { current: "page" })).toEqual([menu.getByRole("button", { name: "Secciones de la carrera" })]);
+    expect(menu.getAllByRole("button", { current: "page" })).toEqual([menu.getByRole("button", { name: "Avance del registro" })]);
     expect(menu.getByRole("button", { name: "Cargas" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Ver mis logros por SO" })).toBeNull();
     await u.click(within(screen.getByRole("banner")).getByRole("button", { name: "Ver los logros por SO de la carrera" }));
@@ -259,19 +263,24 @@ describe("App", () => {
     expect(await screen.findByRole("region", { name: "Secciones" })).toBeInTheDocument();
   });
 
-  // US-63, esquema «La cabecera nombra lo que ve cada cuenta» de rotulos_por_cuenta.feature.
+  // US-63, esquema «La cabecera nombra lo que ve cada cuenta» de rotulos_por_cuenta.feature. Cambio del 2026-11-23 (T046 de
+  // la spec 008). Desde la etapa B el coordinador llega a P7 y su menú suma «Avance del registro» antes de los tres
+  // botones del esquema (US-65 de la spec 007), así que la prueba abre P2 desde el menú antes de mirar su título.
   it.each([
-    { usuario: usuarioProfesor, secciones: "Mis secciones", logros: "Ver mis logros por SO", otro: "Secciones de la carrera" },
-    { usuario: usuarioCoordinador, secciones: "Secciones de la carrera", logros: "Ver los logros por SO de la carrera", otro: "Mis secciones" },
-  ])("con el rol $usuario.rol la cabecera dice «$secciones», «Cargas» y «$logros», y P2 lleva el título de su botón", async ({ usuario, secciones, logros, otro }) => {
+    { usuario: usuarioProfesor, antes: [], secciones: "Mis secciones", logros: "Ver mis logros por SO", otro: "Secciones de la carrera" },
+    { usuario: usuarioCoordinador, antes: ["Avance del registro"], secciones: "Secciones de la carrera", logros: "Ver los logros por SO de la carrera", otro: "Mis secciones" },
+  ])("con el rol $usuario.rol la cabecera dice «$secciones», «Cargas» y «$logros», y P2 lleva el título de su botón", async ({ usuario, antes, secciones, logros, otro }) => {
     simularApi({
       "GET /api/sesion": json(200, usuario),
       "GET /api/secciones": json(200, []),
+      "GET /api/avance": json(200, { ...avanceAmbiental, conteo: { ...avanceAmbiental.conteo, secciones: 0 }, secciones: [] }),
     });
+    const u = userEvent.setup();
     render(<App />);
+    const menu = within(await screen.findByRole("navigation", { name: "Menú principal" }));
+    expect(menu.getAllByRole("button").map((b) => b.textContent)).toEqual([...antes, secciones, "Cargas", logros]);
+    await u.click(menu.getByRole("button", { name: secciones }));
     expect(await screen.findByRole("heading", { level: 1, name: secciones })).toBeInTheDocument();
-    const menu = within(screen.getByRole("navigation", { name: "Menú principal" }));
-    expect(menu.getAllByRole("button").map((b) => b.textContent)).toEqual([secciones, "Cargas", logros]);
     expect(screen.queryByRole("button", { name: otro })).toBeNull();
     expect(screen.queryByRole("heading", { name: otro })).toBeNull();
   });

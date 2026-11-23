@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { App } from "../../src/App";
 import { json, simularApi, type Respuesta } from "../ayudas";
 import {
+  avance5643,
   cargaRechazada701,
   constanciaLimpia,
   resultadosQuimica,
@@ -182,30 +183,37 @@ describe("US-73 · Cada cuenta elige el periodo que trabaja", () => {
     expect(vacia.nextElementSibling).toBe(remite);
   });
 
-  // Este «it» prueba la parte de P2, P5 y P6 del escenario, que queda parcial hasta T046. P7 y la ruta 17 con
-  // periodo=2026-1 llegan con T046 de la spec 008 en el «it.todo» siguiente (cambio del 2026-11-23).
+  // Cambio del 2026-11-23 (T046). La coordinación del curso llega a P7 (J-46 de la spec 007), así que el recorrido empieza
+  // en P7 con la ruta 17 y sigue a P2 por el menú, y el «it.todo» de P7 que dejó T042 pasa a ser parte de esta prueba.
   it("La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7", async () => {
     const secciones = [seccion701, seccionQuimica(22, "702"), seccionQuimica(23, "703"), seccionQuimica(24, "704")];
     const { llamadas } = simularApi({
       "GET /api/sesion": json(200, usuarioCoordinacionCurso),
       "GET /api/periodos": json(200, UN_PERIODO),
+      "GET /api/avance?periodo=2026-1": json(200, avance5643),
       "GET /api/secciones?periodo=2026-1": json(200, secciones),
       "GET /api/cargas?periodo=2026-1": json(200, []),
       "GET /api/resultados?periodo=2026-1": json(200, resultadosQuimica),
     });
     const u = userEvent.setup();
     render(<App />);
-    expect(await screen.findAllByRole("listitem")).toHaveLength(4);
+    expect(await screen.findByRole("heading", { level: 1, name: "Avance del registro del curso" })).toBeInTheDocument();
+    expect(await screen.findByText("1 de 4 secciones con carga publicada.")).toHaveAttribute("role", "status");
     const cabecera = within(screen.getByRole("banner"));
+    expect(cabecera.getByText("Periodo 2026-1")).toBeInTheDocument();
+    await u.click(cabecera.getByRole("button", { name: "Secciones del curso" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Secciones del curso" })).toBeInTheDocument();
+    expect(await screen.findAllByRole("listitem")).toHaveLength(4);
     await u.click(cabecera.getByRole("button", { name: "Cargas" }));
     expect(await screen.findByRole("heading", { level: 2, name: "5643 Química General, sección 704, 2026-1" })).toBeInTheDocument();
     await u.click(cabecera.getByRole("button", { name: "Ver los logros por SO del curso" }));
     expect(await screen.findByText("El curso no tiene secciones en este periodo.")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "Logros por SO del curso" })).toBeInTheDocument();
     const pedidas = claves(llamadas).filter((c) => c !== "GET /api/sesion" && c !== "GET /api/periodos");
-    expect(pedidas.length).toBeGreaterThan(0);
+    expect(pedidas[0]).toBe("GET /api/avance?periodo=2026-1");
     expect(pedidas.every((c) => c.endsWith("periodo=2026-1"))).toBe(true);
     expect(pedidas).toEqual(expect.arrayContaining([
+      "GET /api/avance?periodo=2026-1",
       "GET /api/secciones?periodo=2026-1",
       "GET /api/cargas?periodo=2026-1",
       "GET /api/resultados?periodo=2026-1",
@@ -213,6 +221,4 @@ describe("US-73 · Cada cuenta elige el periodo que trabaja", () => {
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
   });
-
-  it.todo("La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7 (P7 pide la ruta 17 con periodo=2026-1)");
 });

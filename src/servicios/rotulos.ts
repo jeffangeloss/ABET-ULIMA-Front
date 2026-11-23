@@ -20,6 +20,18 @@ export function rotuloDeSecciones(usuario: Usuario): string {
   return segun(usuario, { PROFESOR: "Mis secciones", CARRERA: "Secciones de la carrera", CURSO: "Secciones del curso" });
 }
 
+/**
+ * Botón de la cabecera y título de P7 (spec 007, US-65, y spec 008, US-79). El profesor no llega a P7, así que su texto no
+ * se muestra nunca.
+ */
+export function rotuloDeAvance(usuario: Usuario): string {
+  return segun(usuario, {
+    PROFESOR: "Avance del registro",
+    CARRERA: "Avance del registro",
+    CURSO: "Avance del registro del curso",
+  });
+}
+
 /** Enlace a P6, que no se parece a «Ver resultado», el de P4 (spec 004, AD-11). */
 export function rotuloDeLogros(usuario: Usuario): string {
   return segun(usuario, {

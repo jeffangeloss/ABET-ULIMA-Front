@@ -1,5 +1,14 @@
 // Respuestas del contrato (docs/03-api/contrato.md) con datos inventados. Viven solo aquí, nunca en src/.
-import type { CargaResumida, Constancia, Indicador, Resultados, Seccion, SeccionConLogros } from "../src/servicios/tipos";
+import type {
+  Avance,
+  CargaResumida,
+  Constancia,
+  Indicador,
+  Resultados,
+  Seccion,
+  SeccionConLogros,
+  SeccionDeAvance,
+} from "../src/servicios/tipos";
 
 export const SHA = "a".repeat(64);
 
@@ -426,4 +435,54 @@ export const resultadosQuimica: Resultados = {
   periodo: "2026-1",
   so: [],
   secciones: [],
+};
+
+// Ruta 17 (contrato, secciones 14.2 y 15.5). La etapa la decide la API y P7 nunca la calcula.
+
+function filaDeAvance(seccionId: number, codigo: string, nombre: string, numero: string, etapa: SeccionDeAvance["etapa"],
+  cargaId: number | null = null): SeccionDeAvance {
+  return { seccion_id: seccionId, asignatura: { codigo, nombre }, numero, etapa, carga_id: cargaId };
+}
+
+const AV_PRINCIPIOS = ["450002", "Principios de Ingeniería Sostenible"] as const;
+const AV_RESIDUOS = ["450010", "Gestión Sostenible de Residuos"] as const;
+const AV_IMPACTO = ["450020", "Evaluación del Impacto Ambiental"] as const;
+
+/**
+ * La respuesta del primer escenario de US-64 de la spec 007 (contrato, sección 14.2), con el campo profesores de US-66,
+ * que P7 no muestra mientras D-47 no se responda.
+ */
+export const avanceAmbiental: Avance = {
+  periodo: "2026-2",
+  conteo: { secciones: 5, PUBLICADA: 1, CON_RECHAZO: 1, SIN_CARGA: 1, SIN_PROFESOR: 1, SIN_PLAN: 1 },
+  secciones: [
+    { ...filaDeAvance(1, ...AV_PRINCIPIOS, "410", "PUBLICADA", 7), profesores: [] },
+    { ...filaDeAvance(2, ...AV_PRINCIPIOS, "411", "CON_RECHAZO"), profesores: ["docente411@example.invalid"] },
+    { ...filaDeAvance(3, ...AV_RESIDUOS, "412", "SIN_CARGA"), profesores: ["docente410@example.invalid"] },
+    { ...filaDeAvance(4, ...AV_RESIDUOS, "413", "SIN_PROFESOR"), profesores: [] },
+    { ...filaDeAvance(5, ...AV_IMPACTO, "414", "SIN_PLAN"), profesores: [] },
+  ],
+};
+
+/** La ruta 17 de la coordinación del curso en 2026-1 (contrato, sección 15.5), sin el campo profesores (D-51). */
+export const avance5643: Avance = {
+  periodo: "2026-1",
+  conteo: { secciones: 4, PUBLICADA: 1, CON_RECHAZO: 1, SIN_CARGA: 1, SIN_PROFESOR: 1, SIN_PLAN: 0 },
+  secciones: [
+    filaDeAvance(21, QUIMICA.codigo, QUIMICA.nombre, "701", "PUBLICADA", 31),
+    filaDeAvance(22, QUIMICA.codigo, QUIMICA.nombre, "702", "CON_RECHAZO"),
+    filaDeAvance(23, QUIMICA.codigo, QUIMICA.nombre, "703", "SIN_CARGA"),
+    filaDeAvance(24, QUIMICA.codigo, QUIMICA.nombre, "704", "SIN_PROFESOR"),
+  ],
+};
+
+/** La carga 31 de la 701, PUBLICADA sin rechazos, que P7 abre en P4 con «Ver la carga». */
+export const constanciaPublicada701: Constancia = {
+  ...constanciaLimpia,
+  carga_id: 31,
+  seccion: { seccion_id: 21, asignatura: "5643", numero: "701", periodo: "2026-1" },
+  nombre_archivo: "sintetico_20261_5643_701.xlsx",
+  hoja: "gc_SINTETICO_20261_5643_701_f",
+  columnas: [{ pi: "6.1", puntaje_maximo_declarado: 4 }],
+  subida_por: "docente701@example.invalid",
 };

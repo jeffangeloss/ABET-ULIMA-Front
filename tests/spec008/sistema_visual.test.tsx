@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
 import { boton, botonSecundario, paresDeComponente, paresDeTexto } from "../../src/componentes/estilos";
 import { TablaRechazos } from "../../src/componentes/TablaRechazos";
+import { Avance } from "../../src/pantallas/Avance";
 import { Cargas } from "../../src/pantallas/Cargas";
 import { Ingreso } from "../../src/pantallas/Ingreso";
 import { COLORES, MisLogros } from "../../src/pantallas/MisLogros";
@@ -152,6 +153,7 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
     { pantalla: "P4", estado: "esperando", rol: "status" },
     { pantalla: "P5", estado: "esperando", rol: "status" },
     { pantalla: "P6", estado: "en 500", rol: "alert" },
+    { pantalla: "P7", estado: "esperando", rol: "status" },
   ] as const)("Cada estado de una pantalla usa su componente y su rol ($pantalla $estado)", async ({ pantalla, estado, rol }) => {
     const respuesta = estado === "esperando" ? nunca : json(500, { detail: "Ocurrió un error interno. Intente de nuevo." });
     const rutas = {
@@ -159,6 +161,7 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
       P4: ["GET /api/cargas/7"],
       P5: [SECCIONES_2026_1, CARGAS_2026_1],
       P6: ["GET /api/resultados?periodo=2026-1"],
+      P7: ["GET /api/avance?periodo=2026-1"],
     }[pantalla];
     simularApi(Object.fromEntries(rutas.map((r) => [r, respuesta])));
     const comunes = { usuario: usuarioDocente701, periodo: "2026-1" };
@@ -166,15 +169,14 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
     if (pantalla === "P4") render(<ResultadoCarga cargaId={7} rol="PROFESOR" alVolver={vi.fn()} />);
     if (pantalla === "P5") render(<Cargas {...comunes} alVerResultado={vi.fn()} alReemplazar={vi.fn()} />);
     if (pantalla === "P6") render(<MisLogros {...comunes} alVolver={vi.fn()} />);
+    // P7 es de la coordinación, porque la ruta 17 responde 403 al profesor, así que su fila la abre la del curso.
+    if (pantalla === "P7") render(<Avance usuario={usuarioCoordinacionCurso} periodo="2026-1" alVerCarga={vi.fn()} />);
     const el = await screen.findByRole(rol);
     expect(el).toHaveAttribute("data-componente", estado === "esperando" ? "espera" : "error");
     if (estado === "esperando") expect(el.querySelector("[data-indicador]")).not.toBeNull();
     else expect(el).toHaveTextContent("Ocurrió un error interno. Intente de nuevo.");
     expect(screen.queryAllByRole(rol === "status" ? "alert" : "status")).toHaveLength(0);
   });
-
-  // P7 llega con la ruta 17 en T046, que suma su fila «esperando» a este esquema.
-  it.todo("Cada estado de una pantalla usa su componente y su rol (P7 esperando)");
 
   it("Los rótulos fijados no cambian con el rediseño", async () => {
     simularApi({

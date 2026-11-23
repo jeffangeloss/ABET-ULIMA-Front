@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Avance } from "./pantallas/Avance";
 import { Cargas } from "./pantallas/Cargas";
 import { Ingreso } from "./pantallas/Ingreso";
 import { MisLogros } from "./pantallas/MisLogros";
@@ -8,10 +9,11 @@ import { SubirExport } from "./pantallas/SubirExport";
 import { Espera } from "./componentes/Espera";
 import { botonSecundario } from "./componentes/estilos";
 import { alSesionVencida, cerrarSesion, listarPeriodos, sesionActual } from "./servicios/api";
-import { rotuloDeLogros, rotuloDeSecciones } from "./servicios/rotulos";
+import { rotuloDeAvance, rotuloDeLogros, rotuloDeSecciones } from "./servicios/rotulos";
 import type { Constancia, Periodos, Seccion, Usuario } from "./servicios/tipos";
 
 type Vista =
+  | { pantalla: "avance" }
   | { pantalla: "secciones" }
   | { pantalla: "cargas" }
   | { pantalla: "subir"; seccion: Seccion; reemplaza?: number }
@@ -19,6 +21,15 @@ type Vista =
   | { pantalla: "logros" };
 
 type Pantalla = Vista["pantalla"];
+
+/**
+ * J-46 de la spec 007. La pantalla a la que llega cada cuenta al ingresar, al abrir la aplicación con sesión y al volver
+ * de un 401: P7 para el COORDINADOR, de la carrera o del curso, y P2 para el PROFESOR. US-52 de la spec 005 la reutiliza
+ * para el fragmento vacío o desconocido cuando llegue la navegación por fragmento.
+ */
+export function pantallaDeLlegada(usuario: Usuario): Vista {
+  return usuario.rol === "COORDINADOR" ? { pantalla: "avance" } : { pantalla: "secciones" };
+}
 
 /** Botón del menú que lleva aria-current en la pantalla a la vista. P3 y P4 no marcan ninguno (spec 007, US-63). */
 function actual(vista: Pantalla, del: Pantalla): "page" | undefined {
@@ -62,7 +73,11 @@ export function App() {
   useEffect(() => {
     let vigente = true;
     sesionActual()
-      .then((u) => vigente && setUsuario(u))
+      .then((u) => {
+        if (!vigente) return;
+        setUsuario(u);
+        setVista(pantallaDeLlegada(u));
+      })
       .catch(() => vigente && setUsuario(null));
     const quitar = alSesionVencida((detail) => {
       setAviso(detail);
@@ -127,6 +142,16 @@ export function App() {
           {usuario && (
             <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm">
               <nav aria-label="Menú principal" className="flex flex-wrap items-center gap-1">
+                {usuario.rol === "COORDINADOR" && (
+                  <button
+                    type="button"
+                    className={botonDelMenu}
+                    aria-current={actual(vista.pantalla, "avance")}
+                    onClick={() => setVista({ pantalla: "avance" })}
+                  >
+                    {rotuloDeAvance(usuario)}
+                  </button>
+                )}
                 <button type="button" className={botonDelMenu} aria-current={actual(vista.pantalla, "secciones")} onClick={volver}>
                   {rotuloDeSecciones(usuario)}
                 </button>
@@ -172,8 +197,16 @@ export function App() {
               alIngresar={(u) => {
                 setAviso(undefined);
                 setUsuario(u);
-                setVista({ pantalla: "secciones" });
+                setVista(pantallaDeLlegada(u));
               }}
+            />
+          )}
+          {usuario && periodoListo && vista.pantalla === "avance" && (
+            <Avance
+              key={llave}
+              usuario={usuario}
+              periodo={periodo}
+              alVerCarga={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
             />
           )}
           {usuario && periodoListo && vista.pantalla === "secciones" && (
