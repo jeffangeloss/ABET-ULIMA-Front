@@ -4,7 +4,9 @@ import { describe, expect, it } from "vitest";
 import { App } from "../src/App";
 import { json, simularApi } from "./ayudas";
 import {
+  cargaRechazada410,
   cargasDe410,
+  cargaVigente410,
   constanciaConError,
   constanciaReemplazada,
   constanciaSinColumna,
@@ -145,6 +147,10 @@ describe("App", () => {
     await u.click(within(fila).getByRole("button", { name: "Subir export" }));
     await screen.findByRole("heading", { level: 1, name: "Subir export" });
     expect(screen.queryByText(/Reemplaza a la carga/)).toBeNull();
+    // US-60: el apartado «Antes de subir» llega con los PI de la fila elegida en P2.
+    expect(within(screen.getByRole("region", { name: "Antes de subir" })).getAllByRole("listitem")[0]).toHaveTextContent(
+      "En Blackboard, una columna por PI, con el nombre ABET SO5.1, ABET SO5.2 y ABET SO5.3.",
+    );
   });
 
   it("«Ver constancia» de P5 abre P4 con la carga reemplazada y su sucesora", async () => {
@@ -207,14 +213,17 @@ describe("App", () => {
   it("P4 de una carga que no está publicada no ofrece el enlace a P6", async () => {
     simularApi({
       "GET /api/sesion": json(200, usuarioProfesor),
-      "GET /api/secciones": json(200, [{ ...seccionPublicada, carga_id: 8 }]),
-      "GET /api/cargas/8": json(200, constanciaSinColumna),
+      "GET /api/secciones": json(200, [{ ...seccionSinCarga, seccion_id: 1, numero: "410", asignatura: seccionPublicada.asignatura }]),
+      "GET /api/cargas": json(200, [cargaRechazada410, { ...cargaRechazada410, carga_id: 8 }]),
+      "GET /api/cargas/9": json(200, { ...constanciaSinColumna, carga_id: 9 }),
     });
     const u = userEvent.setup();
     render(<App />);
     const fila = (await screen.findAllByRole("listitem"))[0];
-    await u.click(within(fila).getByRole("button", { name: "Ver resultado" }));
-    await screen.findByText("No hay una carga publicada para esta sección");
+    expect(within(fila).getByRole("button", { name: "Subir export" })).toBeEnabled();
+    await u.click(within(fila).getByRole("button", { name: "Ver por qué se rechazó" }));
+    expect(await screen.findByText("Esta carga no tiene R-17.")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Constancia" })).toHaveTextContent(constanciaSinColumna.nombre_archivo);
     expect(within(screen.getByRole("main")).queryByRole("button", { name: "Ver mis logros por SO" })).toBeNull();
   });
 
@@ -240,10 +249,88 @@ describe("App", () => {
     });
     const u = userEvent.setup();
     render(<App />);
-    await screen.findByRole("heading", { level: 1, name: "Mis secciones" });
+    await screen.findByRole("heading", { level: 1, name: "Secciones de la carrera" });
+    const menu = within(screen.getByRole("navigation", { name: "Menú principal" }));
+    expect(menu.getAllByRole("button", { current: "page" })).toEqual([menu.getByRole("button", { name: "Secciones de la carrera" })]);
+    expect(menu.getByRole("button", { name: "Cargas" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Ver mis logros por SO" })).toBeNull();
     await u.click(within(screen.getByRole("banner")).getByRole("button", { name: "Ver los logros por SO de la carrera" }));
     expect(await screen.findByRole("heading", { level: 1, name: "Logros por SO de la carrera" })).toBeInTheDocument();
     expect(await screen.findByRole("region", { name: "Secciones" })).toBeInTheDocument();
+  });
+
+  // US-63, esquema «La cabecera nombra lo que ve cada cuenta» de rotulos_por_cuenta.feature.
+  it.each([
+    { usuario: usuarioProfesor, secciones: "Mis secciones", logros: "Ver mis logros por SO", otro: "Secciones de la carrera" },
+    { usuario: usuarioCoordinador, secciones: "Secciones de la carrera", logros: "Ver los logros por SO de la carrera", otro: "Mis secciones" },
+  ])("con el rol $usuario.rol la cabecera dice «$secciones», «Cargas» y «$logros», y P2 lleva el título de su botón", async ({ usuario, secciones, logros, otro }) => {
+    simularApi({
+      "GET /api/sesion": json(200, usuario),
+      "GET /api/secciones": json(200, []),
+    });
+    render(<App />);
+    expect(await screen.findByRole("heading", { level: 1, name: secciones })).toBeInTheDocument();
+    const menu = within(screen.getByRole("navigation", { name: "Menú principal" }));
+    expect(menu.getAllByRole("button").map((b) => b.textContent)).toEqual([secciones, "Cargas", logros]);
+    expect(screen.queryByRole("button", { name: otro })).toBeNull();
+    expect(screen.queryByRole("heading", { name: otro })).toBeNull();
+  });
+
+  it("US-63 marca solo la pantalla abierta en el menú del profesor, incluso al entrar y salir de P3 y P4", async () => {
+    simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/cargas": json(200, cargasDe410),
+      "GET /api/cargas/7": json(200, constanciaConError),
+      "GET /api/resultados": json(200, resultados410),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Mis secciones" });
+    const nav = screen.getByRole("navigation", { name: "Menú principal" });
+    // Un span solo admite contenido de frase, y nav es contenido de flujo.
+    expect(nav.closest("span")).toBeNull();
+    const menu = within(nav);
+    function comprobarActual(nombre?: string) {
+      const marcados = Array.from(nav.querySelectorAll("[aria-current]"));
+      if (nombre) {
+        expect(marcados).toEqual([menu.getByRole("button", { name: nombre, current: "page" })]);
+      } else {
+        expect(marcados).toHaveLength(0);
+      }
+    }
+    comprobarActual("Mis secciones");
+    await u.click(await screen.findByRole("button", { name: "Subir export" }));
+    expect(screen.getByRole("heading", { name: "Subir export" })).toBeInTheDocument();
+    comprobarActual();
+    await u.click(screen.getByRole("button", { name: "Volver a mis secciones" }));
+    await u.click(await screen.findByRole("button", { name: "Ver resultado" }));
+    expect(await screen.findByRole("region", { name: "Constancia" })).toBeInTheDocument();
+    comprobarActual();
+    await u.click(menu.getByRole("button", { name: "Ver mis logros por SO" }));
+    expect(await screen.findByRole("region", { name: "SO 5" })).toBeInTheDocument();
+    comprobarActual("Ver mis logros por SO");
+    await u.click(menu.getByRole("button", { name: "Cargas" }));
+    expect(await screen.findByText("Carga 11")).toBeInTheDocument();
+    comprobarActual("Cargas");
+  });
+
+  it("US-62 muestra el resultado del reemplazo rechazado de la carga 7 sin afirmar que la sección perdió su publicación", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/sesion": json(200, usuarioProfesor),
+      "GET /api/secciones": json(200, [seccionPublicada]),
+      "GET /api/cargas": json(200, [{ ...cargaVigente410, carga_id: 7, reemplaza_carga_id: null }]),
+      "POST /api/secciones/1/cargas?reemplaza=7": json(201, { ...constanciaSinColumna, carga_id: 12 }),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await u.click(await screen.findByRole("button", { name: "Cargas" }));
+    await u.click(await screen.findByRole("button", { name: "Reemplazar carga" }));
+    await u.upload(screen.getByLabelText(/^Export de Blackboard/), new File(["inventado"], "export_inventado_410.xlsx"));
+    await u.click(screen.getByRole("button", { name: "Subir" }));
+    expect(await screen.findByText("Rechazada")).toBeInTheDocument();
+    expect(screen.getByText("Esta carga no tiene R-17.")).toBeInTheDocument();
+    expect(screen.queryByText("No hay una carga publicada para esta sección")).toBeNull();
+    expect(llamadas.map((l) => l.clave)).not.toContain("GET /api/cargas/12");
   });
 });

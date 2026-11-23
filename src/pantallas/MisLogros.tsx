@@ -4,6 +4,7 @@ import { Titulo } from "../componentes/Titulo";
 import { botonSecundario } from "../componentes/estilos";
 import { ErrorApi, obtenerResultados, urlR17 } from "../servicios/api";
 import { fraccion, meta, porcentaje } from "../servicios/formato";
+import { esperaDeLogros, sinSecciones } from "../servicios/rotulos";
 import type { Indicador, Resultados, SeccionConLogros, Usuario } from "../servicios/tipos";
 
 // P6 Mis logros por SO (spec 004 del Back, US-37 a US-44, docs/01-arquitectura/frontend.md, sección 9). Muestra las cifras
@@ -186,8 +187,8 @@ export function MisLogros({ usuario, alVolver }: Props) {
     <>
       <Titulo>{titulo}</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
-      {!error && resultados === null && <Mensaje tipo="aviso">Cargando sus logros…</Mensaje>}
-      {resultados !== null && secciones.length === 0 && <p>No tiene secciones asignadas en este periodo.</p>}
+      {!error && resultados === null && <Mensaje tipo="aviso">{esperaDeLogros(usuario)}</Mensaje>}
+      {resultados !== null && secciones.length === 0 && <p>{sinSecciones(usuario)}</p>}
       {resultados !== null && secciones.length > 0 && (
         <>
           <p className="mb-4 text-sm">

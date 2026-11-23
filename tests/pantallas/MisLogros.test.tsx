@@ -179,6 +179,25 @@ describe("P6 Mis logros por SO", () => {
     expect(region("Secciones")).toHaveTextContent("La carrera aún no registra el plan de medición de esta sección");
   });
 
+  // US-63 de la spec 007, esquemas «Una lista vacía se explica según la cuenta» y «El aviso de espera de P6 habla de la
+  // cuenta que lo lee».
+  it.each([
+    { usuario: usuarioProfesor, espera: "Cargando sus logros…", vacia: "No tiene secciones asignadas en este periodo.",
+      otraEspera: "Cargando los logros de la carrera…", otraVacia: "La carrera no tiene secciones en este periodo." },
+    { usuario: usuarioCoordinador, espera: "Cargando los logros de la carrera…", vacia: "La carrera no tiene secciones en este periodo.",
+      otraEspera: "Cargando sus logros…", otraVacia: "No tiene secciones asignadas en este periodo." },
+  ])("con el rol $usuario.rol espera con «$espera» y sin secciones dice «$vacia»", async ({ usuario, espera, vacia, otraEspera, otraVacia }) => {
+    let soltar: (r: Respuesta) => void = () => undefined;
+    simularApi({ "GET /api/resultados": () => new Promise<Respuesta>((resolver) => (soltar = resolver)) });
+    render(<MisLogros usuario={usuario} alVolver={vi.fn()} />);
+    expect(await screen.findByText(espera)).toBeInTheDocument();
+    expect(screen.queryByText(otraEspera)).toBeNull();
+    soltar(json(200, { periodo: "2026-2", so: [], secciones: [] }));
+    expect(await screen.findByText(vacia)).toBeInTheDocument();
+    expect(screen.queryByText(otraVacia)).toBeNull();
+    expect(screen.queryByText(espera)).toBeNull();
+  });
+
   it("dice que espera mientras la API responde, el error del servicio y la lista vacía", async () => {
     let soltar: (r: Respuesta) => void = () => undefined;
     simularApi({ "GET /api/resultados": () => new Promise<Respuesta>((resolver) => (soltar = resolver)) });
