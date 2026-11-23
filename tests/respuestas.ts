@@ -352,3 +352,78 @@ export const resultadosDelCoordinador: Resultados = {
     ...resultadosDeVarias.secciones,
   ],
 };
+
+// Spec 008. Las secciones inventadas 701 a 704 de 5643 en 2026-1 (quimica_2026_1_inventado.sql del Back) y las
+// cuentas de la coordinación con el campo aditivo alcance de la ruta 2 (contrato, sección 15.3).
+const QUIMICA = { codigo: "5643", nombre: "Química General" };
+
+export const usuarioDocente701 = {
+  correo: "docente701@example.invalid",
+  rol: "PROFESOR" as const,
+  alcance: { tipo: "SECCIONES" as const, carreras: [], asignaturas: [] },
+};
+
+export const usuarioCoordinacionCurso = {
+  correo: "coordinador.quimica@example.invalid",
+  rol: "COORDINADOR" as const,
+  alcance: { tipo: "CURSO" as const, carreras: [], asignaturas: ["5643"] },
+};
+
+export const usuarioCoordinacionCarrera = {
+  correo: "coordinacion@example.invalid",
+  rol: "COORDINADOR" as const,
+  alcance: { tipo: "CARRERA" as const, carreras: ["AMB"], asignaturas: [] },
+};
+
+/** Una sección de 5643 en 2026-1 sin carga, con el PI 6.1 del plan (D-48). */
+export function seccionQuimica(seccionId: number, numero: string): Seccion {
+  return {
+    seccion_id: seccionId,
+    asignatura: QUIMICA,
+    numero,
+    periodo: "2026-1",
+    pi: ["6.1"],
+    tiene_plan: true,
+    estado: "SIN_CARGA",
+    carga_id: null,
+    filas_leidas: null,
+    filas_aceptadas: null,
+  };
+}
+
+export const seccion701 = seccionQuimica(21, "701");
+
+/** La carga 8 de la 701, RECHAZADA por un export de otra sección. */
+export const cargaRechazada701: CargaResumida = {
+  ...cargaRechazada410,
+  carga_id: 8,
+  seccion: { seccion_id: 21, asignatura: "5643", numero: "701", periodo: "2026-1" },
+  nombre_archivo: "sintetico_20261_5643_702.xlsx",
+  subida_por: "docente701@example.invalid",
+};
+
+/** La misma carga 8 vista en P4, con el RECHAZA_CARGA de SECCION_NO_COINCIDE. */
+export const constanciaOtraSeccion701: Constancia = {
+  ...constanciaOtraSeccion,
+  carga_id: 8,
+  seccion: { seccion_id: 21, asignatura: "5643", numero: "701", periodo: "2026-1" },
+  nombre_archivo: "sintetico_20261_5643_702.xlsx",
+  hoja: "gc_SINTETICO_20261_5643_702_f",
+  mensaje: "El archivo corresponde a la sección 702 y usted eligió la 701. No se publicó.",
+  rechazos: [
+    {
+      fila: null,
+      pi: null,
+      motivo: "SECCION_NO_COINCIDE",
+      efecto: "RECHAZA_CARGA",
+      mensaje: "El archivo corresponde a la sección 702 y usted eligió la 701. No se publicó.",
+    },
+  ],
+};
+
+/** P6 de 2026-1 sin cargas publicadas. */
+export const resultadosQuimica: Resultados = {
+  periodo: "2026-1",
+  so: [],
+  secciones: [],
+};

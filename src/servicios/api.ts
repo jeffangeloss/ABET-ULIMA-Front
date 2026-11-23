@@ -1,7 +1,7 @@
 // Única puerta HTTP del Front (docs/01-arquitectura/frontend.md, sección 2). Ningún componente
 // llama a fetch. La sesión viaja en la cookie abet_sesion, que el navegador manda solo porque el Front
 // y la API comparten origen (ADR-004), así que este archivo no lee ni guarda ningún token.
-import type { CargaResumida, Constancia, ResultadoSubida, Resultados, Seccion, Usuario } from "./tipos";
+import type { CargaResumida, Constancia, Periodos, ResultadoSubida, Resultados, Seccion, Usuario } from "./tipos";
 
 const MSG_NO_RESPONDE = "El servicio no respondió. Intente de nuevo.";
 const MSG_ENTORNO = "El entorno de pruebas no está disponible.";
@@ -133,10 +133,29 @@ export async function subirExport(
   };
 }
 
-/** Corte 2. Cargas al alcance del usuario, de la más reciente a la más antigua (contrato, sección 7). */
-export async function listarCargas(seccionId?: number): Promise<CargaResumida[]> {
-  const ruta = seccionId === undefined ? "/api/cargas" : `/api/cargas?seccion_id=${encodeURIComponent(seccionId)}`;
+/**
+ * Corte 2. Cargas al alcance del usuario, de la más reciente a la más antigua (contrato, sección 7). Desde la spec 008,
+ * el periodo viaja solo sin seccion_id, porque la sección ya fija el suyo (contrato, sección 15.4).
+ */
+export async function listarCargas(seccionId?: number, periodo?: string): Promise<CargaResumida[]> {
+  let ruta = "/api/cargas";
+  if (seccionId !== undefined) ruta = `/api/cargas?seccion_id=${encodeURIComponent(seccionId)}`;
+  else if (periodo) ruta = `/api/cargas?periodo=${encodeURIComponent(periodo)}`;
   return leer<CargaResumida[]>(await pedir(ruta));
+}
+
+/**
+ * Spec 008. Periodo vigente y periodos con secciones al alcance del usuario (ruta 18, contrato, sección 15.2). Una
+ * respuesta sin las dos claves es un error, para que App.tsx siga como hoy, sin periodo.
+ */
+export async function listarPeriodos(): Promise<Periodos> {
+  const r = await pedir("/api/periodos");
+  const cuerpo = await leer<Partial<Periodos> | null>(r);
+  const periodos = cuerpo?.periodos;
+  if (typeof cuerpo?.vigente !== "string" || !Array.isArray(periodos) || !periodos.every((p) => typeof p === "string")) {
+    throw new ErrorApi(r.status, MSG_FORMA);
+  }
+  return { vigente: cuerpo.vigente, periodos };
 }
 
 export async function obtenerCarga(cargaId: number): Promise<Constancia> {

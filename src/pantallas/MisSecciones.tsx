@@ -10,6 +10,10 @@ import type { Seccion, Usuario } from "../servicios/tipos";
 
 interface Props {
   usuario: Usuario;
+  /** Spec 008, US-73. El periodo elegido en la cabecera, o ninguno para el vigente de la API. */
+  periodo?: string;
+  /** Spec 008, US-73. Verdadero cuando la cabecera ofrece el selector «Periodo». */
+  conSelector?: boolean;
   alSubir: (seccion: Seccion) => void;
   alVerResultado: (cargaId: number) => void;
 }
@@ -18,6 +22,9 @@ const SIN_PLAN = "La carrera aún no registra el plan de medición de esta secci
 
 /** Spec 007, US-59 y D-46. Lo que dice P2 al profesor sin secciones, bajo el texto de hoy. */
 const A_QUIEN_ACUDIR = "Si dicta una sección con medición ABET en este periodo, escriba a la Coordinación de la carrera.";
+
+/** Spec 008, US-73. Lo que dice P2 al profesor sin secciones cuando la cabecera ofrece otro periodo (propuesta). */
+const OTRO_PERIODO = "Elija otro periodo en la cabecera si dictó una sección con medición ABET en otro ciclo.";
 
 function estadoDeCarga(s: Seccion): string {
   return s.estado === "PUBLICADA"
@@ -39,7 +46,7 @@ interface Datos {
 }
 
 /** P2. Una fila por sección que la API entrega al usuario, con el estado de su carga y, al profesor, lo que falta. */
-export function MisSecciones({ usuario, alSubir, alVerResultado }: Props) {
+export function MisSecciones({ usuario, periodo, conSelector = false, alSubir, alVerResultado }: Props) {
   const [datos, setDatos] = useState<Datos | null>(null);
   const [error, setError] = useState<string | null>(null);
   const prefijo = useId();
@@ -49,15 +56,15 @@ export function MisSecciones({ usuario, alSubir, alVerResultado }: Props) {
     let vigente = true;
     // La coordinación no recibe las líneas del profesor, así que no pide la ruta 8 (FR-002 de la spec 007).
     const pedir = esProfesor
-      ? seccionesDelProfesor()
-      : listarSecciones().then((secciones) => ({ secciones, rechazadas: new Map<number, number>() }));
+      ? seccionesDelProfesor(periodo)
+      : listarSecciones(periodo).then((secciones) => ({ secciones, rechazadas: new Map<number, number>() }));
     pedir
       .then((d) => vigente && setDatos(d))
       .catch((e) => vigente && setError(e instanceof ErrorApi ? e.detail : "El servicio no respondió. Intente de nuevo."));
     return () => {
       vigente = false;
     };
-  }, [esProfesor]);
+  }, [esProfesor, periodo]);
 
   const secciones = datos?.secciones ?? null;
 
@@ -69,6 +76,7 @@ export function MisSecciones({ usuario, alSubir, alVerResultado }: Props) {
       {secciones !== null && secciones.length === 0 && (
         <>
           <p>{sinSecciones(usuario)}</p>
+          {esProfesor && conSelector && <p className="mt-2 text-sm">{OTRO_PERIODO}</p>}
           {esProfesor && <p className="mt-2 text-sm">{A_QUIEN_ACUDIR}</p>}
         </>
       )}

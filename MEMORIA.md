@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-23
 - **Rama de trabajo**: `feat/008-ciclo-quimica-industrial`, con la construcción de la spec 008 y commits locales sin empujar
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: T011 de la spec 008 deja definitivas la sección 15 del contrato, las rutas 17 y 18 de la sección 2 y su suma a la sección 10, y la sección 12 de frontend.md
-- **En curso**: T042 y T043 de la spec 008 (periodo en la cabecera y rótulos del curso) con Vitest primero. Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
-- **Siguiente paso**: la construcción de la spec 008 con pruebas primero, desde el contrato definitivo (T011 del Back), el periodo en la cabecera y los rótulos del curso (T042 y T043) y el sistema visual (T040 y T041)
+- **Último cambio**: T042 y T043 de la spec 008, con el periodo elegido en la cabecera (ruta 18, sin almacenamiento del navegador) y los rótulos de la coordinación del curso por `alcance.tipo`, después del contrato definitivo de T011
+- **En curso**: la construcción de la spec 008 en el Back (T010, T013 y T030 a T033, que dan las rutas 2, 8 y 18 que el Front ya lee). Desde el 2026-11-19 se trabaja una sola línea a la vez, en una sola sesión
+- **Siguiente paso**: el sistema visual (T040 y T041), «Qué corregir» de US-77 (T044) y P7 con la ruta 17 y el periodo (T046), que suma la ruta 17 a la prueba «La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7»
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-23 14:50 (Lima) · feat/008-ciclo-quimica-industrial · Periodo elegido y rótulos del curso (T042 y T043)
+- Quién: el subagente del Front del workflow de la spec 008 (Claude Code, Opus) escribe primero las pruebas, las ve fallar, escribe el código y corre la suite, el build y la revisión previa. El orquestador revisa su informe.
+- Qué cambió: `tipos.ts` suma `TipoAlcance`, `Alcance`, el campo opcional `alcance` de `Usuario` y `Periodos`. `api.ts` suma `listarPeriodos()` para la ruta 18, que rechaza una respuesta sin la forma del contrato, y `listarCargas()` acepta el periodo sin `seccion_id`. `App.tsx` pide la ruta 18 una vez por sesión antes de P2, guarda el periodo en su estado y muestra «Periodo 2026-1» o el selector «Periodo», y P2, P5 y P6 reciben el periodo y se montan de nuevo al cambiarlo. `secciones_del_profesor.ts` pasa el periodo a las rutas 4 y 8, P2 suma «Elija otro periodo en la cabecera si dictó una sección con medición ABET en otro ciclo.» (propuesta) cuando hay selector, y `rotulos.ts` elige los rótulos por `alcance.tipo`, con `tituloDeLogros()` para P6.
+- Por qué: US-73 (T042) y US-71 (T043) de la spec 008 del Back, para que el profesor y la coordinación de Química General trabajen 2026-1 con el periodo vigente en 2026-2.
+- Lo que debe hacer, cómo se probó: `npx vitest run tests/spec008` falla en 8 de 11 pruebas antes del código, porque P2 pide la ruta 4 sin periodo y no existe «Secciones del curso», y las tres de `listarPeriodos()` y `listarCargas()` fallan porque la función no existe. Con el código, `npm test` da 14 archivos y 226 pruebas aprobadas (212 antes, 14 nuevas), `npm run build` termina sin errores y `bash scripts/preflight.sh` no da fallas.
+- Lo que no debe hacer, cómo se probó: con la ruta 18 en 500, P2 pide la ruta 4 sin periodo, sin alerta ni el texto del error y sin «Periodo» en la cabecera. Las pruebas del recorrido comprueban `localStorage` y `sessionStorage` con 0 entradas, la coordinación del curso no ve «Subir export» ni rótulos de la carrera, y una sesión COORDINADOR sin `alcance` conserva los rótulos de la carrera.
+- Correcciones: la prueba «abre P4 de la primera rechazada de esa sección en el orden de la ruta 8» de `MisSecciones.test.tsx` suma `GET /api/periodos` a su lista exacta de llamadas, porque App.tsx pide la ruta 18 antes de P2. Un comentario de `App.tsx` nombraba el almacenamiento del navegador por su API y la regla 7 de `preflight.sh` lo rechazaba, así que ahora lo describe sin nombrarla. La coordinación del curso y la del P4 cruzado ya pasaban antes del código, porque su rol COORDINADOR da el mismo consejo.
+- Cómo se reporta: esta entrada, el CHANGELOG y la marca de T042 y T043 en `tasks.md` del Back.
+- Pendiente y siguiente paso: la ruta 17 y P7 del escenario de la coordinación del curso llegan con T046, y el Front lee las rutas 2, 8 y 18 nuevas cuando el Back las construya (T030, T031 y T033).
 
 ### 2026-11-23 14:34 (Lima) · feat/008-ciclo-quimica-industrial · Contrato definitivo de la spec 008 (T011)
 - Quién: el workflow de construcción de la spec 008 reparte el Back y el Front entre subagentes de Claude Code. El subagente del Front (Claude Code, Opus) escribe este cambio con la skill redaccion-ieee-q1 para la prosa, y el orquestador revisa su informe.

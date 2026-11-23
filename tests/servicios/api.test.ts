@@ -5,6 +5,7 @@ import {
   ErrorApi,
   iniciarSesion,
   listarCargas,
+  listarPeriodos,
   listarSecciones,
   obtenerCarga,
   obtenerResultados,
@@ -16,6 +17,30 @@ import { simularApi, json } from "../ayudas";
 import { cargasDe410, constanciaConError, resultadosDeVarias, usuarioProfesor } from "../respuestas";
 
 describe("api.ts", () => {
+  it("spec 008. listarPeriodos pide GET /api/periodos sin parámetros y devuelve vigente y periodos tal cual", async () => {
+    const { llamadas } = simularApi({ "GET /api/periodos": json(200, { vigente: "2026-2", periodos: ["2026-2", "2026-1"] }) });
+    expect(await listarPeriodos()).toEqual({ vigente: "2026-2", periodos: ["2026-2", "2026-1"] });
+    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/periodos"]);
+    expect(llamadas[0].init?.credentials).toBe("same-origin");
+  });
+
+  it("spec 008. listarPeriodos rechaza una respuesta sin la forma del contrato", async () => {
+    simularApi({ "GET /api/periodos": json(200, { vigente: "2026-2" }) });
+    await expect(listarPeriodos()).rejects.toBeInstanceOf(ErrorApi);
+  });
+
+  it("spec 008. listarCargas manda periodo solo sin seccion_id, porque la sección ya fija su periodo", async () => {
+    const { llamadas } = simularApi({
+      "GET /api/cargas": json(200, []),
+      "GET /api/cargas?periodo=2026-1": json(200, []),
+      "GET /api/cargas?seccion_id=21": json(200, []),
+    });
+    await listarCargas();
+    await listarCargas(undefined, "2026-1");
+    await listarCargas(21, "2026-1");
+    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/cargas", "GET /api/cargas?periodo=2026-1", "GET /api/cargas?seccion_id=21"]);
+  });
+
   it("obtenerResultados pide GET /api/resultados, con el periodo solo si llega, y devuelve el cuerpo tal cual", async () => {
     const { llamadas } = simularApi({
       "GET /api/resultados": json(200, resultadosDeVarias),

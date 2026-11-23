@@ -4,7 +4,7 @@ import { Titulo } from "../componentes/Titulo";
 import { botonSecundario } from "../componentes/estilos";
 import { ErrorApi, obtenerResultados, urlR17 } from "../servicios/api";
 import { fraccion, meta, porcentaje } from "../servicios/formato";
-import { esperaDeLogros, sinSecciones } from "../servicios/rotulos";
+import { esperaDeLogros, sinSecciones, tituloDeLogros } from "../servicios/rotulos";
 import type { Indicador, Resultados, SeccionConLogros, Usuario } from "../servicios/tipos";
 
 // P6 Mis logros por SO (spec 004 del Back, US-37 a US-44, docs/01-arquitectura/frontend.md, sección 9). Muestra las cifras
@@ -28,6 +28,8 @@ export const COLORES = {
 
 interface Props {
   usuario: Usuario;
+  /** Spec 008, US-73. El periodo elegido en la cabecera, o ninguno para el vigente de la API. */
+  periodo?: string;
   alVolver: () => void;
 }
 
@@ -166,21 +168,21 @@ function porAsignatura(secciones: SeccionConLogros[]): SeccionConLogros[][] {
 }
 
 /** P6. Los logros de cada PI de las secciones del usuario, agrupados por SO y frente a la meta. */
-export function MisLogros({ usuario, alVolver }: Props) {
+export function MisLogros({ usuario, periodo, alVolver }: Props) {
   const [resultados, setResultados] = useState<Resultados | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let vigente = true;
-    obtenerResultados()
+    obtenerResultados(periodo)
       .then((r) => vigente && setResultados(r))
       .catch((e) => vigente && setError(e instanceof ErrorApi ? e.detail : MSG_NO_RESPONDE));
     return () => {
       vigente = false;
     };
-  }, []);
+  }, [periodo]);
 
-  const titulo = usuario.rol === "COORDINADOR" ? "Logros por SO de la carrera" : "Mis logros por SO";
+  const titulo = tituloDeLogros(usuario);
   const secciones = resultados?.secciones ?? [];
 
   return (

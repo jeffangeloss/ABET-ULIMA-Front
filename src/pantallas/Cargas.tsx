@@ -9,6 +9,8 @@ import type { CargaResumida, EstadoCarga, Seccion, Usuario } from "../servicios/
 
 interface Props {
   usuario: Usuario;
+  /** Spec 008, US-73. El periodo elegido en la cabecera, o ninguno para el vigente de la API. */
+  periodo?: string;
   alVerResultado: (cargaId: number) => void;
   alReemplazar: (seccion: Seccion, cargaId: number) => void;
 }
@@ -33,19 +35,19 @@ function marca(c: CargaResumida): string | null {
  * P5 (US-18 y US-19). Cada sección al alcance del usuario con sus cargas en el orden de la API. Muestra solo
  * los campos que nombra la pantalla, así que nunca el motivo en código, un nombre, un valor leído ni una ruta.
  */
-export function Cargas({ usuario, alVerResultado, alReemplazar }: Props) {
+export function Cargas({ usuario, periodo, alVerResultado, alReemplazar }: Props) {
   const [datos, setDatos] = useState<{ secciones: Seccion[]; cargas: CargaResumida[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let vigente = true;
-    Promise.all([listarSecciones(), listarCargas()])
+    Promise.all([listarSecciones(periodo), listarCargas(undefined, periodo)])
       .then(([secciones, cargas]) => vigente && setDatos({ secciones, cargas }))
       .catch((e) => vigente && setError(e instanceof ErrorApi ? e.detail : "El servicio no respondió. Intente de nuevo."));
     return () => {
       vigente = false;
     };
-  }, []);
+  }, [periodo]);
 
   // El profesor reemplaza en su sección y el coordinador en cualquiera; la API decide el alcance.
   const puedeReemplazar = usuario.rol === "PROFESOR" || usuario.rol === "COORDINADOR";
