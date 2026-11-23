@@ -106,7 +106,7 @@ export function Avance({ usuario, periodo, alVerCarga }: Props) {
           <label className="my-4 flex min-h-10 items-center gap-2 text-sm font-medium">
             <input
               type="checkbox"
-              className="size-4 accent-institucional focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foco"
+              className="size-6 shrink-0 accent-institucional focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foco"
               checked={soloFaltan}
               onChange={(e) => setSoloFaltan(e.target.checked)}
             />
