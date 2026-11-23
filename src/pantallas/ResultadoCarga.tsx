@@ -5,11 +5,14 @@ import { TablaRechazos } from "../componentes/TablaRechazos";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, obtenerCarga, urlR17 } from "../servicios/api";
+import { queCorregir } from "../servicios/ayudas";
 import { horaDeLima, resumenFilas } from "../servicios/formato";
-import type { Constancia, EstadoCarga } from "../servicios/tipos";
+import type { Constancia, EstadoCarga, Rol } from "../servicios/tipos";
 
 interface Props {
   cargaId: number;
+  /** Rol de la sesión, para el consejo de SECCION_NO_COINCIDE del coordinador (spec 007, US-61). */
+  rol: Rol;
   /** Constancia que P3 ya recibió con el 201, para no pedirla de nuevo. */
   constanciaInicial?: Constancia;
   alVolver: () => void;
@@ -27,7 +30,7 @@ const ETIQUETA_ESTADO: Record<EstadoCarga, string> = {
 };
 
 /** P4. Estado y conteos, rechazos, avisos aparte, constancia y descarga. Nunca un valor leído ni un nombre. */
-export function ResultadoCarga({ cargaId, constanciaInicial, alVolver, alVerLogros, rotuloLogros = "Ver mis logros por SO" }: Props) {
+export function ResultadoCarga({ cargaId, rol, constanciaInicial, alVolver, alVerLogros, rotuloLogros = "Ver mis logros por SO" }: Props) {
   const [constancia, setConstancia] = useState<Constancia | null>(constanciaInicial ?? null);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +45,9 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver, alVerLogr
     };
   }, [cargaId, constanciaInicial]);
 
+  // Spec 007, US-61. Solo una carga RECHAZADA con un motivo de la tabla de J-43 trae consejo.
+  const consejo = constancia ? queCorregir(constancia, rol) : null;
+
   return (
     <>
       <Titulo>Resultado de la carga</Titulo>
@@ -54,6 +60,7 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver, alVerLogr
           </p>
           <p className="mt-1">{resumenFilas(constancia)}</p>
           {constancia.mensaje && <Mensaje tipo={constancia.estado === "PUBLICADA" ? "aviso" : "error"}>{constancia.mensaje}</Mensaje>}
+          {consejo !== null && <p className="my-3 text-sm font-medium">{`Qué corregir. ${consejo}`}</p>}
           <TablaRechazos rechazos={constancia.rechazos} />
           <AvisosCarga avisos={constancia.avisos} />
           <section aria-labelledby="titulo-constancia" className="my-4">
@@ -94,7 +101,9 @@ export function ResultadoCarga({ cargaId, constanciaInicial, alVolver, alVerLogr
           ) : constancia.estado === "REEMPLAZADA" && constancia.reemplazada_por !== null ? (
             <p>La carga {constancia.reemplazada_por} la reemplaza, así que esta carga no tiene R-17.</p>
           ) : (
-            <p>No hay una carga publicada para esta sección</p>
+            // Spec 007, US-62. Tras un reemplazo rechazado la sección conserva su carga publicada, así que el texto
+            // habla solo de esta carga.
+            <p>Esta carga no tiene R-17.</p>
           )}
         </>
       )}

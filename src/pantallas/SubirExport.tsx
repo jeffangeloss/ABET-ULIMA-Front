@@ -3,6 +3,7 @@ import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
 import { ErrorApi, subirExport, type OpcionesSubida } from "../servicios/api";
+import { TITULO_ANTES_DE_SUBIR, lineasAntesDeSubir } from "../servicios/ayudas";
 import { etiquetaSeccion, horaDeLima } from "../servicios/formato";
 import type { Constancia, Seccion } from "../servicios/tipos";
 
@@ -76,7 +77,23 @@ export function SubirExport({ seccion, alResultado, alVerResultado, alVolver, re
     <>
       <Titulo>Subir export</Titulo>
       <p className="mb-4 font-medium">{etiquetaSeccion(seccion)}</p>
-      {reemplaza !== undefined && <p className="mb-4">Reemplaza a la carga {reemplaza}, la publicada de esta sección.</p>}
+      {reemplaza !== undefined && (
+        <>
+          <p className="mb-1">Reemplaza a la carga {reemplaza}, la publicada de esta sección.</p>
+          <p className="mb-4">Si la carga nueva queda rechazada, la carga {reemplaza} sigue publicada.</p>
+        </>
+      )}
+      {/* Spec 007, US-60. Sale solo de Seccion.pi y de la constante de J-44, sin leer el archivo ni pedir nada. */}
+      <section aria-labelledby="titulo-antes-de-subir" className="mb-4 rounded border border-slate-300 p-3">
+        <h2 id="titulo-antes-de-subir" className="mb-2 text-lg font-semibold">
+          {TITULO_ANTES_DE_SUBIR}
+        </h2>
+        <ul className="list-disc space-y-1 pl-5 text-sm">
+          {lineasAntesDeSubir(seccion.pi).map((linea) => (
+            <li key={linea}>{linea}</li>
+          ))}
+        </ul>
+      </section>
       <form onSubmit={enviar} className="max-w-md space-y-4">
         <div>
           <label htmlFor="archivo" className="text-sm font-medium">Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)</label>

@@ -17,6 +17,9 @@ src/
   servicios/api.ts         la única puerta HTTP
   servicios/tipos.ts       tipos de las respuestas del contrato
   servicios/formato.ts     hora de Lima, rótulo de la sección, conteo de filas de P4 y P5 y cifras de P6
+  servicios/rotulos.ts     rótulos que cambian con el rol (spec 007, US-63)
+  servicios/ayudas.ts      «Antes de subir» de P3 y «Qué corregir» de P4 (spec 007, J-43 y J-44)
+  servicios/secciones_del_profesor.ts   rutas 4 y 8 para P2 del profesor (spec 007, J-45)
   pantallas/
     Ingreso.tsx            P1 (con AvisoSesion.tsx para el aviso de sesión vencida)
     MisSecciones.tsx       P2
@@ -52,14 +55,14 @@ Ningún componente llama a `fetch` directamente. `api.ts` expone una función po
 
 ## 3. `App.tsx` y el estado
 
-`App.tsx` pide `GET /api/sesion` al arrancar. Sin sesión muestra P1, y con sesión muestra P2. La vista visible es una de cinco, P2 (`secciones`), P3 (`subir`, con la sección y, en el modo reemplazo, el `reemplaza` que llega de P5), P4 (`resultado`), P5 (`cargas`) y, desde la spec 004, P6 (`logros`). El resto del estado vive en la pantalla que lo usa, sin un almacén global, porque el MVP tiene cinco pantallas y un solo flujo. Un 401 de cualquier ruta con sesión, distinta de `/api/sesion`, devuelve a P1 con el `detail` de la API, «La sesión venció. Ingrese otra vez.» (propuesta), que `api.ts` entrega a `App.tsx` por `alSesionVencida`. La cabecera de `App.tsx` muestra, con sesión, los botones «Mis secciones» y «Cargas» (propuesta), que abren P2 y P5, el enlace a P6, «Ver mis logros por SO» para el profesor y «Ver los logros por SO de la carrera» para el coordinador (propuestas), el correo del usuario y el botón «Salir» (propuesta), que llama a `DELETE /api/sesion` y vuelve a P1 aunque esa llamada falle. «Reemplazar carga» de P5 abre P3 en modo reemplazo con la sección y la carga de esa fila, y «Ver constancia» abre P4 con la carga.
+`App.tsx` pide `GET /api/sesion` al arrancar. Sin sesión muestra P1, y con sesión muestra P2. La vista visible es una de cinco, P2 (`secciones`), P3 (`subir`, con la sección y, en el modo reemplazo, el `reemplaza` que llega de P5), P4 (`resultado`), P5 (`cargas`) y, desde la spec 004, P6 (`logros`). El resto del estado vive en la pantalla que lo usa, sin un almacén global, porque el MVP tiene cinco pantallas y un solo flujo. Un 401 de cualquier ruta con sesión, distinta de `/api/sesion`, devuelve a P1 con el `detail` de la API, «La sesión venció. Ingrese otra vez.» (propuesta), que `api.ts` entrega a `App.tsx` por `alSesionVencida`. La cabecera de `App.tsx` muestra, con sesión, el nav «Menú principal» (spec 007, US-63, sección 11.5) con los botones «Mis secciones» («Secciones de la carrera» para el coordinador) y «Cargas» (propuesta), que abren P2 y P5, y el enlace a P6, «Ver mis logros por SO» para el profesor y «Ver los logros por SO de la carrera» para el coordinador (propuestas), con `aria-current="page"` en el botón de la pantalla a la vista. Fuera del nav van el correo del usuario y el botón «Salir» (propuesta), que llama a `DELETE /api/sesion` y vuelve a P1 aunque esa llamada falle. «Reemplazar carga» de P5 abre P3 en modo reemplazo con la sección y la carga de esa fila, y «Ver constancia» abre P4 con la carga.
 
 ## 4. Las pantallas
 
 | Pantalla | Archivo | Historias | Rutas que consume ([contrato](../03-api/contrato.md)) | Corte |
 |---|---|---|---|---|
 | P1 Ingreso | `pantallas/Ingreso.tsx` | US-05 (y US-20 en el corte 2) | `POST /api/sesion` (sección 4) | 1 |
-| P2 Mis secciones | `pantallas/MisSecciones.tsx` | US-06 | `GET /api/secciones` (sección 5) | 1 |
+| P2 Mis secciones | `pantallas/MisSecciones.tsx` | US-06, y US-59 y US-63 de la spec 007 | `GET /api/secciones` (sección 5) y, solo para el profesor, `GET /api/cargas` (sección 7) | 1 y spec 007 |
 | P3 Subir export | `pantallas/SubirExport.tsx` | US-07, US-08, US-09, US-11, US-12, US-13, US-18 y US-21 | `POST /api/secciones/{seccion_id}/cargas` (sección 6), con `?reemplaza={carga_id}` y `confirmar_seccion` (sección 7) | 1 y 2 |
 | P4 Resultado de la carga | `pantallas/ResultadoCarga.tsx` | US-07, US-10, US-12, US-13, US-14, US-15, US-16 y US-18 | `GET /api/cargas/{carga_id}` y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | 1 y 2 |
 | P5 Cargas | `pantallas/Cargas.tsx` | US-18, US-19 | `GET /api/secciones` (sección 5), `GET /api/cargas` (sección 7) y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | 2 |
@@ -113,7 +116,7 @@ No muestra una vista previa del contenido del archivo, nombres de estudiantes, e
 
 Justifican la pantalla US-07 (la carga escrita), US-10 (filas inválidas y columnas dudosas), US-12 (rechazo por estructura), US-13 (rechazo por otra sección o periodo), US-14 (descartar nombres y valores leídos), US-15 (descargar el R-17), US-16 (constancia de la carga) y, en el corte 2, US-18 (la carga reemplazada sigue visible con su sucesora).
 
-Muestra el estado de la carga y sus conteos con la forma «11 filas leídas, 10 aceptadas y 1 rechazada», o «11 filas leídas, 11 aceptadas y 0 rechazadas» (propuesta) cuando no hay rechazos. Si hay rechazos, la tabla de rechazos dice la fila, el PI, el motivo en palabras y su efecto, como «Fila 3, PI 5.2, nivel fuera de la escala 1 a 4. La fila completa queda fuera, también de 5.1 y 5.3.». Los avisos van aparte, en su propio apartado «Avisos» y con su propio componente (`AvisosCarga.tsx`), cada uno con el texto exacto del campo `mensaje` de la API, como «PI 5.3. La columna declara 20 puntos y sus notas están entre 1 y 4. Se cargó igual.», sin repetir el PI. En la tabla de rechazos, un rechazo de toda la carga muestra «Archivo completo» en la columna de la fila, y un PI ausente muestra «No aplica». Si la carga queda RECHAZADA por estructura, por sección o por periodo, o porque ninguna fila trae un nivel (SIN_CALIFICACIONES, «El archivo no trae ningún nivel en las columnas de los PI del plan. La carga no se publicó.»), muestra el motivo, como «El archivo corresponde a la sección 411 y usted eligió la 410. No se publicó.». Cuando ninguna fila se acepta, la carga también queda RECHAZADA, y la pantalla muestra el `mensaje` de la respuesta, «Ninguna fila se pudo aceptar. La carga no se publicó.» (propuesta), junto con la tabla de rechazos. La constancia muestra el nombre del archivo sin ruta, la hoja (o «Sin hoja (export de texto)» cuando la API la manda nula, como en un `.csv` o un `.xls`, spec 003 US-34), la huella SHA-256, el conjunto de reglas con la marca PROVISIONAL, el correo de quien sube el archivo y las horas de inicio y fin. Desde el corte 2 suma la fila «Reemplaza a la carga» (propuesta) cuando `reemplaza_carga_id` no es nulo y la fila «Reemplazada por la carga» (propuesta) cuando `reemplazada_por` no es nulo. La pantalla pide la constancia a `GET /api/cargas/{carga_id}` solo cuando llega desde P2 o P5, porque desde P3 ya trae la del 201. El botón «Descargar R-17» (propuesta) aparece activo solo si la carga está PUBLICADA, y si no lo está la pantalla dice «No hay una carga publicada para esta sección» (propuesta). Una carga REEMPLAZADA con sucesora dice en su lugar «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta), con el número de `reemplazada_por`.
+Muestra el estado de la carga y sus conteos con la forma «11 filas leídas, 10 aceptadas y 1 rechazada», o «11 filas leídas, 11 aceptadas y 0 rechazadas» (propuesta) cuando no hay rechazos. Si hay rechazos, la tabla de rechazos dice la fila, el PI, el motivo en palabras y su efecto, como «Fila 3, PI 5.2, nivel fuera de la escala 1 a 4. La fila completa queda fuera, también de 5.1 y 5.3.». Los avisos van aparte, en su propio apartado «Avisos» y con su propio componente (`AvisosCarga.tsx`), cada uno con el texto exacto del campo `mensaje` de la API, como «PI 5.3. La columna declara 20 puntos y sus notas están entre 1 y 4. Se cargó igual.», sin repetir el PI. En la tabla de rechazos, un rechazo de toda la carga muestra «Archivo completo» en la columna de la fila, y un PI ausente muestra «No aplica». Si la carga queda RECHAZADA por estructura, por sección o por periodo, o porque ninguna fila trae un nivel (SIN_CALIFICACIONES, «El archivo no trae ningún nivel en las columnas de los PI del plan. La carga no se publicó.»), muestra el motivo, como «El archivo corresponde a la sección 411 y usted eligió la 410. No se publicó.». Cuando ninguna fila se acepta, la carga también queda RECHAZADA, y la pantalla muestra el `mensaje` de la respuesta, «Ninguna fila se pudo aceptar. La carga no se publicó.» (propuesta), junto con la tabla de rechazos. La constancia muestra el nombre del archivo sin ruta, la hoja (o «Sin hoja (export de texto)» cuando la API la manda nula, como en un `.csv` o un `.xls`, spec 003 US-34), la huella SHA-256, el conjunto de reglas con la marca PROVISIONAL, el correo de quien sube el archivo y las horas de inicio y fin. Desde el corte 2 suma la fila «Reemplaza a la carga» (propuesta) cuando `reemplaza_carga_id` no es nulo y la fila «Reemplazada por la carga» (propuesta) cuando `reemplazada_por` no es nulo. La pantalla pide la constancia a `GET /api/cargas/{carga_id}` solo cuando llega desde P2 o P5, porque desde P3 ya trae la del 201. El botón «Descargar R-17» (propuesta) aparece activo solo si la carga está PUBLICADA, y si no lo está la pantalla dice «Esta carga no tiene R-17.» (propuesta, US-62 de la spec 007, que reemplaza a «No hay una carga publicada para esta sección», falso tras un reemplazo rechazado). Una carga REEMPLAZADA con sucesora dice en su lugar «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta), con el número de `reemplazada_por`.
 
 No muestra el valor leído de ninguna celda, nombres de estudiantes, Last Access, Availability, columnas de actividades ni los porcentajes del R-17, que viven solo en el archivo descargado.
 
@@ -340,6 +343,109 @@ Vitest con Testing Library prueba cada escenario `@delegado_a_vitest` de `specs/
 7. **La edición de la descripción del instrumento desde una pantalla** (D-34), que llega al R-17 desde la base y no pasa por el Front.
 
 La spec 006 del Back (`specs/006-programacion-docente/`, propuesta del 2026-11-21) carga la programación docente post-matrícula del ciclo con un guion que corre desde el Windows de Jefferson, sin ruta ni pantalla nuevas. El Front no cambia con ella. Su efecto se ve en P2, donde cada profesor real encuentra su sección antes de la capacitación de la semana 14.
+
+## 11. Spec 007, lo importante para cada cuenta y en cada momento
+
+> **Aprobada por Jefferson el 2026-11-22 («Sí, apruébala»).** Esta sección traslada la spec 007 del Back (`specs/007-experiencia-por-cuenta/`, EP-07, US-59 a US-66). Estado al 2026-11-22. La etapa A (US-59 a US-63, tareas T040 a T044) está construida en `src/` con sus pruebas, y sus textos quedan aquí como definitivos, con la marca «(propuesta)» hasta la revisión de la spec. La etapa B (US-64 a US-66) sigue sin código. Con la etapa A, la sección 4 cambia «No hay una carga publicada para esta sección» por «Esta carga no tiene R-17.», y la sección 3 suma el menú con `aria-current`. En la etapa B, la sección 3 cambia además «con sesión muestra P2» por la página de llegada de cada rol (J-46).
+
+La spec responde al pedido de Jefferson del 2026-11-22 de mostrar lo importante para cada cuenta y en cada momento del registro, con la capacitación en la semana 14 y el registro en la semana 15 o, a más tardar, en la 16. La etapa A cambia solo el código del Front, sin rutas ni contrato nuevos, y se construye justo después de la spec 006 y antes del núcleo de la spec 005. Su mínimo antes del registro del 30-11-2026 son US-60, US-59 y US-61, y US-62 y US-63 entran como extras. La etapa B agrega la ruta 17 `GET /api/avance` (contrato, sección 14) y la pantalla P7 «Avance del registro», solo para la coordinación, en la semana 16, si cabe. Ninguna de las dos toca las secciones «Cómo va su sección» ni «Análisis por indicador» que la sección 10 agrega a P4, y la etapa A no agrega reglas `BR-` (FR-014 de la spec 007).
+
+### 11.1 Qué cambia en `src/`
+
+- `servicios/secciones_del_profesor.ts` es nuevo. Su función `seccionesDelProfesor()` pide la ruta 4 y, solo si trae alguna sección, una sola vez la ruta 8 sin `seccion_id` (J-45). Devuelve las secciones y, por `seccion_id`, la primera carga RECHAZADA de la sección en el orden de la ruta 8, que es la más reciente. Una falla de la ruta 8 deja el mapa vacío y no llega a la pantalla.
+- `servicios/ayudas.ts` es nuevo y guarda los textos que el Front arma sin pedir nada a la API. `nombreDeColumna(pi)` da «ABET SO5.1» con el valor provisional de D-43 de la spec 005, `lineasAntesDeSubir(pi)` arma las líneas de P3 (J-44) y `QUE_CORREGIR` es la tabla por motivo RECHAZA_CARGA de J-43, que `queCorregir(constancia, rol)` consulta. Si la carrera cierra D-43 con otro nombre, cambia solo `nombreDeColumna`.
+- `servicios/rotulos.ts` es nuevo y reúne los rótulos que cambian con el rol, que son el botón y el título de P2, el enlace a P6, la lista vacía de P2, P5 y P6 y la espera de P6. `rotuloDeLogros()` sale de `App.tsx` y vive ahí.
+- `App.tsx` pone los tres botones del menú en un nav con aria-label «Menú principal» (propuesta) y marca con `aria-current="page"` el de la pantalla a la vista, y pasa a P4 el rol de la sesión en la prop `rol`.
+- `pantallas/MisSecciones.tsx`, `SubirExport.tsx`, `ResultadoCarga.tsx`, `Cargas.tsx` y `MisLogros.tsx` cambian como dicen las secciones 11.2 a 11.5.
+- En la etapa B, `api.ts` y `tipos.ts` suman la ruta 17, `pantallas/Avance.tsx` es P7 y `App.tsx` suma la vista «avance», con el fragmento `#/avance` (propuesta), el botón «Avance del registro» del coordinador y `pantallaDeLlegada(usuario)`, que lleva al coordinador a P7 y al profesor a P2 (J-46). US-52 de la spec 005 la reutiliza para el fragmento vacío o desconocido, y la tabla de la sección 10.3 recibe `#/avance` cuando entre US-52.
+
+### 11.2 P2 Mis secciones del profesor (US-59)
+
+Cada fila conserva su texto de hoy, porque lo citan los `.feature` de la spec 001, y suma debajo del estado, en un párrafo propio, la línea de lo que falta. La línea sale de la ruta 4 y de la carga rechazada que encuentra la ruta 8, con esta precedencia.
+
+| Sección | Línea de lo que falta (propuesta) |
+| --- | --- |
+| Sin plan de medición, tenga o no cargas rechazadas | «Por ahora no hay nada que hacer. La Coordinación de la carrera registra el plan de medición.» |
+| PUBLICADA, aunque la ruta 8 traiga una RECHAZADA más reciente | «Revise el resultado de la carga para completar lo que falte y descargar el R-17.» |
+| SIN_CARGA con una carga RECHAZADA suya en la ruta 8 | «La última carga se rechazó y no se publicó. Falta subir un export corregido.» |
+| SIN_CARGA sin cargas RECHAZADA, también con una EN_CURSO | «Falta subir el export de Blackboard de esta sección.» |
+
+El botón «Subir export» anuncia la línea con `aria-describedby`, y desactivado, en la sección sin plan, anuncia en su lugar «La carrera aún no registra el plan de medición de esta sección». Solo la sección con plan, en SIN_CARGA y con una carga RECHAZADA ofrece además «Ver por qué se rechazó» (propuesta), que abre P4 de la primera RECHAZADA de esa sección en el orden de la ruta 8, y conserva «Subir export» activo. Si la ruta 8 falla, P2 muestra las mismas secciones y botones que con la ruta 8 vacía, sin mensaje de error (SC-003 de la spec 007). La lista vacía conserva «No tiene secciones asignadas en este periodo.» y suma debajo «Si dicta una sección con medición ABET en este periodo, escriba a la Coordinación de la carrera.» (propuesta, D-46), sin pedir la ruta 8. El coordinador no recibe ninguna de estas líneas y P2 nunca le pide la ruta 8.
+
+### 11.3 P3 Subir export (US-60 y US-62)
+
+Antes del campo de archivo, P3 muestra el apartado «Antes de subir» (propuesta), un `section` con su título h2 y cuatro líneas en este orden, también en el modo reemplazo.
+
+1. «En Blackboard, una columna por PI, con el nombre ABET SO5.1, ABET SO5.2 y ABET SO5.3.», con los PI de `Seccion.pi` unidos con comas y «y», como «ABET SO5.1» con un PI o «ABET SO6.1 y ABET SO6.10» con dos. El PI 6.10 conserva su número completo, porque el lector lee «6.10 [» como el PI 6.10.
+2. «En cada columna, un nivel entero de 1 a 4 por estudiante. El puntaje máximo de la columna es 4, y otro puntaje máximo solo deja un aviso.»
+3. «Conserve la columna Username y no cambie el nombre de las columnas.»
+4. «Suba el export completo del Centro de calificaciones sin cambiarle el nombre, porque la hoja o el nombre que le pone Blackboard indican la sección.»
+
+Las cuatro son propuestas que siguen el valor provisional de D-43, D-06 y D-04. El apartado sale solo de la prop `seccion`, no cambia al elegir un archivo y no hace ninguna petición antes de «Subir». Si `Seccion.pi` llega vacío, P3 omite la primera línea y conserva las otras tres. En el modo reemplazo, P3 conserva «Reemplaza a la carga 7, la publicada de esta sección.» y suma en un párrafo propio «Si la carga nueva queda rechazada, la carga 7 sigue publicada.» (propuesta), con el número de la carga que reemplaza.
+
+### 11.4 P4 Resultado de la carga (US-61 y US-62)
+
+En una carga RECHAZADA, P4 conserva el mensaje de la API sin reescribirlo y suma debajo, en un párrafo propio, «Qué corregir.» seguido del consejo de su primer rechazo RECHAZA_CARGA. La tabla de J-43 da estos consejos (propuestas), con los datos de la constancia.
+
+| Motivo | Consejo |
+| --- | --- |
+| PI_DEL_PLAN_AUSENTE | «Revise en Blackboard que cada PI del plan de esta sección tenga su columna, y cree o renombre la del PI 5.2 como ABET SO5.2. Después exporte otra vez y suba el archivo nuevo.» |
+| PI_REPETIDO | «Deje en Blackboard una sola columna del PI 5.1, exporte otra vez y suba el archivo nuevo.» |
+| COLUMNA_CODIGO_AUSENTE | «Exporte otra vez el Centro de calificaciones completo, que trae la columna Username, y suba ese archivo.» |
+| ARCHIVO_SIN_FILAS | «Exporte otra vez el Centro de calificaciones de la sección con sus estudiantes y suba ese archivo.» |
+| SIN_CALIFICACIONES | «Registre en Blackboard el nivel de cada estudiante en las columnas de los PI del plan, exporte otra vez y suba el archivo nuevo.» |
+| SECCION_NO_COINCIDE, profesor | «Exporte el Centro de calificaciones de 450002, sección 410, o suba este archivo en la sección que le corresponde.» |
+| SECCION_NO_COINCIDE, coordinador | «El archivo no es de 450002, sección 410. Pida al profesor de esa sección que exporte su Centro de calificaciones y lo suba otra vez.» |
+| PERIODO_NO_COINCIDE | «Exporte el Centro de calificaciones del curso de 2026-2 y suba ese archivo.» |
+
+El PI sale del campo `pi` del rechazo, y la asignatura, la sección y el periodo salen de `seccion` de la constancia, así que el consejo de SECCION_NO_COINCIDE nombra la sección elegida sin remitir a ninguna pantalla. El coordinador lee el mismo consejo que el profesor salvo en SECCION_NO_COINCIDE, porque `permisos.puede_subir()` no le deja una carga nueva. Una carga RECHAZADA sin ningún RECHAZA_CARGA, con filas leídas y ninguna aceptada, recibe «Qué corregir. Corrija en Blackboard cada fila de la tabla de rechazos, exporte otra vez y suba el archivo nuevo.» (propuesta). Un motivo que la tabla no conoce, o un PI_DEL_PLAN_AUSENTE o PI_REPETIDO con `pi` nulo, no muestra consejo, y una carga PUBLICADA, EN_CURSO o REEMPLAZADA nunca lo muestra. La línea de conteos, como «0 filas leídas, 0 aceptadas y 0 rechazadas», y la constancia completa no cambian.
+
+El párrafo final de una carga que no está PUBLICADA ni REEMPLAZADA con sucesora conocida pasa de «No hay una carga publicada para esta sección», falso tras un reemplazo rechazado, a «Esta carga no tiene R-17.» (propuesta), sin «Descargar R-17». La carga REEMPLAZADA con `reemplazada_por` conserva «La carga 11 la reemplaza, así que esta carga no tiene R-17.». P4 no pide la ruta 4, así que no nombra la carga que sigue publicada.
+
+### 11.5 Rótulos por cuenta (US-63)
+
+| Lugar | PROFESOR | COORDINADOR |
+| --- | --- | --- |
+| Botón de P2 y título de P2 | «Mis secciones» (sin cambios) | «Secciones de la carrera» (propuesta) |
+| Enlace a P6 | «Ver mis logros por SO» (sin cambios) | «Ver los logros por SO de la carrera» (sin cambios) |
+| Lista vacía de P2, P5 y P6 (y de P7 en la etapa B) | «No tiene secciones asignadas en este periodo.» (sin cambios) | «La carrera no tiene secciones en este periodo.» (propuesta) |
+| Espera de P6 | «Cargando sus logros…» (sin cambios) | «Cargando los logros de la carrera…» (propuesta) |
+| Página de llegada (etapa B) | P2 «Mis secciones» | P7 «Avance del registro» |
+
+El nav «Menú principal» contiene, en este orden, el botón de P2, «Cargas» y el enlace a P6, y deja fuera el correo y «Salir». Solo el botón de la pantalla a la vista lleva `aria-current="page"`, y los demás no llevan el atributo. P3 y P4 no marcan ningún botón, porque ninguno nombra la pantalla a la vista. El botón marcado se distingue también por su borde oscuro, su fondo `slate-200`, distinto del `slate-100` del puntero encima, y su letra seminegrita. Los botones «Volver a mis secciones» de P3 y P4 y «Volver» de P6 no cambian su texto ni su destino P2, también para el coordinador, porque los buscan las pruebas de Vitest. Ese texto y el regreso del coordinador a P7 quedan como deuda en «Fuera de alcance» de la spec.
+
+### 11.6 P7 Avance del registro (US-65 y US-66, etapa B)
+
+P7 es solo del coordinador y lee la ruta 17. Dice con `role="status"` un resumen como «1 de 5 secciones con carga publicada.», la línea «1 sección sin plan de medición, en la que su profesor no puede subir el export.» cuando la hay, y una fila por sección bajo su asignatura, en el orden de la API (J-28 de la spec 004), con la etapa en texto además de cualquier color, como «411 · La última carga se rechazó» o «413 · Sin profesor asignado». La etapa la decide el Back (J-48), y P7 no la deriva. Con el valor provisional de J-48, una sección publicada cuyo profesor se da de baja sigue en «Publicada» y cuenta en el resumen. La casilla «Mostrar solo las secciones que faltan» deja las secciones que no están en PUBLICADA sin cambiar el resumen. Una sección con `carga_id` ofrece «Ver la carga», que abre P4, el único lugar del R-17 (J-32 de la spec 005).
+
+Con D-47 a favor, cada fila CON_RECHAZO o SIN_CARGA muestra el correo de sus profesores activos, y «Copiar los correos de los profesores que faltan» copia la lista única, en orden alfabético y separada por «; », con «Se copiaron N correos.». Si el navegador rechaza el portapapeles, P7 muestra la lista en un cuadro de texto de solo lectura y seleccionado. Esta regla es propia de P7 y no cambia la de P6 (sección 9.2), que no muestra correos de profesores. P7 no envía correos y no escribe en el almacenamiento del navegador.
+
+### 11.7 Pruebas
+
+Cada escenario `@delegado_a_vitest` de la etapa A, en los cuatro `.feature` de `specs/007-experiencia-por-cuenta/aceptacion/` del Back, tiene su prueba de Vitest con el mismo texto literal. `tests/pantallas/MisSecciones.test.tsx` cubre los cuatro Ejemplos de la línea de lo que falta y los casos borde de la carga EN_CURSO, la sección sin plan con rechazos, la publicada con un rechazo posterior y el rechazo de otra sección. Cubre también el `aria-describedby`, «Ver por qué se rechazó» con las cargas 9 y 8, la ruta 8 en 500, la lista vacía y la coordinación sin ruta 8. `tests/pantallas/SubirExport.test.tsx` cubre las cuatro líneas en orden antes del campo, con y sin reemplazo, la primera línea con 5.1 y con 6.1 y 6.10, el archivo elegido sin peticiones y el párrafo del reemplazo. `tests/pantallas/ResultadoCarga.test.tsx` recorre los ocho Ejemplos de «Qué corregir», la carga sin filas aceptadas, el motivo desconocido, el PI nulo, la carga publicada y los tres estados sin R-17 de la carga 12. Su primera prueba extrae de la sección 6 de `docs/03-api/contrato.md` los siete motivos RECHAZA_CARGA y exige un consejo de `QUE_CORREGIR` para cada uno, así que un motivo nuevo del contrato rompe la prueba hasta tener su texto (FR-005). `tests/App.test.tsx` prueba la cabecera de cada rol, el menú con `aria-current` en P2, P3, P4, P5 y P6, el reemplazo rechazado de la carga 7 y el apartado de P3 desde P2. `tests/pantallas/Cargas.test.tsx` y `tests/pantallas/MisLogros.test.tsx` prueban la lista vacía y la espera de cada rol, y `tests/servicios/ayudas.test.ts` prueba la unión con «y», la sección sin PI y la carga que no recibe consejo.
+
+Las pruebas que ya existían y cambian son las que nombran FR-006 y SC-002 de la spec 007, más las que suman una comprobación de la etapa A sin cambiar lo que ya probaban. La prueba «P4 de una carga que no está publicada no ofrece el enlace a P6» de `App.test.tsx` cambia además sus datos y su camino, porque su dato anterior, una sección PUBLICADA con la carga 8 RECHAZADA como su `carga_id`, no puede ocurrir. Ese cambio va más allá de lo que fija SC-002 y queda como desviación consciente para la auditoría de T060.
+
+| Archivo | Prueba | Cambio |
+| --- | --- | --- |
+| `ResultadoCarga.test.tsx` | «una carga RECHAZADA por estructura muestra el motivo y no ofrece el R-17» | Espera «Esta carga no tiene R-17.» en lugar de «No hay una carga publicada para esta sección» (FR-006) |
+| `ResultadoCarga.test.tsx` | «una carga REEMPLAZADA nombra a su sucesora como la publicada y no ofrece el R-17» | Comprueba la ausencia de «Esta carga no tiene R-17.» (FR-006) |
+| `ResultadoCarga.test.tsx` | «una carga REEMPLAZADA sin sucesora conocida conserva el texto de la carga no publicada» | Pasa a «una carga %s con filas aceptadas y sin sucesora dice que esta carga no tiene R-17», con EN_CURSO y REEMPLAZADA (FR-006) |
+| `ResultadoCarga.test.tsx` | «sin constancia inicial la pide a la API por el identificador» y «si la API niega la carga muestra su detail y ningún dato» | Montan P4 con la prop `rol` |
+| `ResultadoCarga.test.tsx` | «con el rechazo de la fila 3 muestra estado, conteos, tabla de rechazos y descarga del R-17» y «sin filas aceptadas muestra el mensaje de la API junto con la tabla de rechazos» | Suman la ausencia y la presencia de «Qué corregir» |
+| `App.test.tsx` | «P4 de una carga que no está publicada no ofrece el enlace a P6» | Llega a P4 por «Ver por qué se rechazó» y espera «Esta carga no tiene R-17.» (FR-006) |
+| `App.test.tsx` | «el coordinador abre P6 con «Ver los logros por SO de la carrera»» | Espera el título «Secciones de la carrera» y el menú con `aria-current` (SC-002) |
+| `App.test.tsx` | ««Subir export» de P2 abre P3 sin modo reemplazo» | Suma la primera línea de «Antes de subir» |
+| `MisSecciones.test.tsx` | «el coordinador no ve Subir export y sí el resultado y la descarga del R-17 publicada» y «sin secciones muestra un texto y no una lista vacía» | Suman las líneas de US-59 y la ausencia de la ruta 8 |
+| `SubirExport.test.tsx` | «en modo reemplazo dice qué carga reemplaza y envía reemplaza desde la primera subida» y «fuera del modo reemplazo no nombra ninguna carga a reemplazar ni manda reemplaza» | Suman el párrafo «Si la carga nueva queda rechazada, la carga 7 sigue publicada.» y su ausencia |
+
+En la etapa B cambian además las pruebas de `App.test.tsx` que esperan el título «Mis secciones» después del ingreso del coordinador (J-46). La prueba de humo con Playwright suma en la etapa A la línea de P2 y el apartado de P3 del profesor (T052), y en la etapa B la llegada del coordinador a P7, con `ingresar()` de `e2e/comun.ts` que espera la página de llegada de cada rol.
+
+### 11.8 Lo que todavía NO está
+
+1. **El código de la etapa B** (US-64 a US-66), en la semana 16, si cabe (FR-016 de la spec 007), y la prueba de humo de la etapa A (T052).
+2. **Las decisiones** D-46 (a quién remite P2 al profesor sin secciones), D-47 (los correos en P7) y D-43 de la spec 005 (el nombre de la actividad de Blackboard), que hoy siguen su valor provisional.
+3. **Lo que la spec deja para después**, que es el bloque de reglas pendientes en P7 (C-C04), la carga publicada sin declarar (C-C06), el texto y el botón de reemplazo en P4 de una carga publicada (C-P04), el pliegue de la constancia y las explicaciones de cada estado (C-T05), el reintento y el mensaje sin conexión (C-T03), P6 sin cargas (C-P06), el filtro de P6 de la carrera (C-C05) y la tabla desplazable, la prueba a 375 px y axe-core (C-T06), que mantiene abierto el punto 3 de la sección 7.
 
 ## Referencias
 

@@ -135,6 +135,15 @@ describe("P5 Cargas", () => {
     expect(screen.queryByRole("heading", { level: 2 })).toBeNull();
   });
 
+  // US-63 de la spec 007, esquema «Una lista vacía se explica según la cuenta», fila del coordinador en P5.
+  it("al coordinador sin secciones le dice que la carrera no tiene secciones", async () => {
+    api([], []);
+    montar(usuarioCoordinador);
+    expect(await screen.findByText("La carrera no tiene secciones en este periodo.")).toBeInTheDocument();
+    expect(screen.queryByText("No tiene secciones asignadas en este periodo.")).toBeNull();
+    expect(screen.queryByRole("heading", { level: 2 })).toBeNull();
+  });
+
   it("«Ver constancia» abre P4 con la carga y «Reemplazar carga» abre P3 con la sección y la carga", async () => {
     api();
     const p = montar();
