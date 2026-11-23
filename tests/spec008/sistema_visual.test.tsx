@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
 import { boton, botonSecundario, paresDeComponente, paresDeTexto } from "../../src/componentes/estilos";
+import { TablaRechazos } from "../../src/componentes/TablaRechazos";
 import { Cargas } from "../../src/pantallas/Cargas";
 import { Ingreso } from "../../src/pantallas/Ingreso";
 import { COLORES, MisLogros } from "../../src/pantallas/MisLogros";
@@ -31,12 +32,52 @@ import {
 // Back. Cada «it» lleva el título del escenario, y cada esquema suma los valores de su fila de Ejemplos. Los escenarios
 // @playwright de US-82 viven en e2e/ (T048).
 
-// Si existe una construcción, su index.html y su CSS también se revisan (npm run build la deja en dist/).
+// La construcción que deja npm run build en dist/ también se revisa, así que la prueba de recursos exige su index.html y su
+// CSS. La CI corre npm run build antes de npm test, y en local hay que construir antes de correr esta prueba.
 const construccion = import.meta.glob<string>(["../../dist/index.html", "../../dist/assets/*.css"], {
   query: "?raw",
   import: "default",
   eager: true,
 });
+// El código de las pantallas, para la prueba de contraste, que busca en sus clases los pares de texto y fondo en uso.
+const fuentesDeSrc = import.meta.glob<string>("../../src/**/*.{ts,tsx}", { query: "?raw", import: "default", eager: true });
+
+/** Clases de color de la paleta de Tailwind, sin token, que todavía usan P3, P5 y P6 y que T045 lleva a los tokens. */
+const SIN_TOKEN_HASTA_T045 = [
+  "bg-amber-50", "bg-white", "border-amber-700", "border-slate-300", "peer-focus-visible:outline-sky-600",
+  "text-amber-900", "text-slate-700", "text-white",
+];
+const PALETA_TAILWIND =
+  /^(?:(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}|white|black)$/;
+
+/**
+ * Clases de color de cada texto literal de un archivo. Une antes los literales concatenados con «+», como los de
+ * estilos.ts, aunque abran y cierren con comillas distintas, y separa cada clase en su prefijo de variante (hover:,
+ * disabled:), su propiedad y su color.
+ */
+function coloresDeLiterales(fuente: string) {
+  const unida = fuente.replace(/["'`]\s*\+\s*["'`]/g, " ");
+  return Array.from(unida.matchAll(/["'`]([^"'`]*)["'`]/g), (m) =>
+    m[1].split(/\s+/).flatMap((clase) => {
+      const c = /^((?:[a-z-]+:)*)(text|bg|border|outline|ring)-([a-z0-9-]+)$/.exec(clase);
+      return c ? [{ clase, prefijo: c[1], propiedad: c[2], color: c[3] }] : [];
+    }),
+  );
+}
+
+/** Pares de texto y fondo de un literal, por variante. Una variante sin texto o sin fondo propio hereda el de la base. */
+function paresEnUso(literal: ReturnType<typeof coloresDeLiterales>[number], tokens: Record<string, string>) {
+  const porPrefijo = new Map<string, { text?: string; bg?: string }>();
+  for (const { prefijo, propiedad, color } of literal) {
+    if (!(color in tokens) || (propiedad !== "text" && propiedad !== "bg")) continue;
+    porPrefijo.set(prefijo, { ...porPrefijo.get(prefijo), [propiedad]: color });
+  }
+  const base = porPrefijo.get("") ?? {};
+  return Array.from(porPrefijo.values(), (v) => [v.text ?? base.text, v.bg ?? base.bg] as const).filter(
+    (par): par is readonly [string, string] => par[0] !== undefined && par[1] !== undefined,
+  );
+}
+
 const acciones = () => ({ alSubir: vi.fn(), alVerResultado: vi.fn() });
 const nunca = () => new Promise<never>(() => undefined);
 
@@ -82,6 +123,27 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
     // Un token que no existe no pasa en silencio.
     expect(leerTokensDeColor("@theme { --color-tinta: #172231; }")).toEqual({ tinta: "#172231" });
     expect(leerTokensDeColor(":root { --color-tinta: #172231; }")).toEqual({});
+
+    // Cada par de texto y fondo que escriben juntos las clases de src está en paresDeTexto, así que la lista no deja
+    // fuera un par en uso. Un texto que hereda el fondo de un elemento padre no se ve aquí, y lo cubre T048 en Playwright.
+    const archivos = Object.entries(fuentesDeSrc);
+    expect(archivos.length).toBeGreaterThan(10);
+    const listados = new Set(paresDeTexto.map(([t, f]) => `${t} sobre ${f}`));
+    const enUso = new Set<string>();
+    const sinToken = new Set<string>();
+    for (const [, fuente] of archivos) {
+      for (const literal of coloresDeLiterales(fuente)) {
+        for (const [t, f] of paresEnUso(literal, tokens)) enUso.add(`${t} sobre ${f}`);
+        for (const { clase, color } of literal) if (PALETA_TAILWIND.test(color)) sinToken.add(clase);
+      }
+    }
+    expect(enUso.size).toBeGreaterThan(5);
+    expect([...enUso].filter((par) => !listados.has(par)), "pares en uso fuera de paresDeTexto").toEqual([]);
+    // Un color de la paleta de Tailwind fuera de los tokens no entra sin que la prueba lo vea. La lista se vacía con T045.
+    expect([...sinToken].sort()).toEqual([...SIN_TOKEN_HASTA_T045].sort());
+    // El lector de clases sí encuentra un par en uso, también en una variante que hereda el texto de la base.
+    const ejemplo = coloresDeLiterales('const x = "bg-superficie text-tinta " + `hover:bg-papel`;')[0];
+    expect(paresEnUso(ejemplo, tokens)).toEqual([["tinta", "superficie"], ["tinta", "papel"]]);
   });
 
   it.each([
@@ -289,6 +351,10 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
 
   it("El rediseño no carga recursos de terceros ni dependencias nuevas", () => {
     const deOtroDominio = /(https?:)?\/\/(?!localhost)[a-z0-9.-]+\.[a-z]{2,}/i;
+    // Cuando se construye el Front con npm run build, la revisión incluye su index.html y al menos una hoja de dist/assets.
+    const construidos = Object.keys(construccion);
+    expect(construidos, "falta dist/, corra npm run build antes de npm test").toContain("../../dist/index.html");
+    expect(construidos.filter((r) => r.startsWith("../../dist/assets/") && r.endsWith(".css")).length).toBeGreaterThan(0);
     const fuentes = [indexHtml, indexCss, ...Object.values(construccion)];
     // Una hoja con una fuente de otro dominio sí se detecta.
     expect("@import url(https://fonts.example.invalid/css);").toMatch(new RegExp(`@import\\s+(url\\()?["']?${deOtroDominio.source}`, "i"));
@@ -309,5 +375,32 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
     const candado = JSON.parse(candadoTexto).packages[""];
     expect(candado.dependencies).toEqual(paquete.dependencies);
     expect(candado.devDependencies).toEqual(paquete.devDependencies);
+  });
+});
+
+// El escenario «La tabla de rechazos de P4 se desplaza dentro de su región y no la página» es @playwright y llega con
+// T048. Esta prueba fija desde ya la parte que no necesita navegador, la región con su nombre accesible y tabindex 0.
+describe("US-82 · Parte de Vitest de la región de la tabla de rechazos (el escenario completo llega con T048)", () => {
+  const rechazos = Array.from({ length: 12 }, (_, i) => ({
+    fila: i + 2,
+    pi: "PI-1.1",
+    motivo: "NOTA_FUERA_DE_RANGO",
+    efecto: "RECHAZA_FILA" as const,
+    mensaje: `Fila ${i + 2}. La nota está fuera de la escala.`,
+  }));
+
+  it("La tabla vive en una región con role=\"region\", nombre accesible y tabindex 0", () => {
+    render(<TablaRechazos rechazos={rechazos} />);
+    const region = screen.getByRole("region", { name: "Tabla de filas rechazadas" });
+    expect(region).toHaveAttribute("tabindex", "0");
+    expect(region.className).toMatch(/(^|\s)overflow-x-auto(\s|$)/);
+    const tabla = within(region).getByRole("table", { name: "Filas rechazadas" });
+    expect(within(tabla).getAllByRole("row")).toHaveLength(13);
+  });
+
+  it("Sin rechazos no hay región ni tabla que enfocar", () => {
+    const { container } = render(<TablaRechazos rechazos={[]} />);
+    expect(container).toBeEmptyDOMElement();
+    expect(screen.queryByRole("region")).toBeNull();
   });
 });

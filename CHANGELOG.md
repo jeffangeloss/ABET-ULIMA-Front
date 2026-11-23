@@ -11,6 +11,10 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 - Contrato definitivo de la spec 008 del Back (T011) en la sección 15 de `docs/03-api/contrato.md`, con las rutas 17 y 18 sin la marca (propuesta) en la sección 2, su suma a la sección 10 con la carpeta de la spec 008 en la comprobación de mensajes y la sección 12 de `docs/01-arquitectura/frontend.md` definitiva.
 - Contrato propuesto de la spec 008 del Back en la sección 15 de `docs/03-api/contrato.md`, con la ruta 18 de periodos, el campo `alcance` de la sesión, el periodo de la ruta 8, la ruta 17 con el alcance del curso y el campo condicional `agregados` de la ruta 12, las rutas 17 y 18 marcadas (propuesta) en la tabla de la sección 2 y la sección 12 de `docs/01-arquitectura/frontend.md`.
 
+### Corregido
+
+- Revisión del Front de la spec 008. La prueba de la ruta 18 caída comprueba que se pide la ruta 18, la prueba de contraste recorre las clases de `src` y suma el par tinta sobre pendiente-fondo, la prueba de recursos exige la construcción en `dist/` y la CI construye antes de probar, la sección 1 del contrato trae el mensaje de arranque nuevo del Back y `.gitignore` ignora `node_modules` también como enlace.
+
 ## [0.3.0] - 2026-11-23
 
 ### Agregado

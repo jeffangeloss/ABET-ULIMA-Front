@@ -22,13 +22,17 @@ export const campo =
 /** Superficie blanca de una tarjeta o de un formulario sobre el papel. */
 export const tarjeta = "rounded-tarjeta border border-linea bg-superficie p-tarjeta";
 
-/** Pares de texto y fondo que usan las pantallas. Cada uno tiene al menos 4,5 a 1 (AA del texto normal). */
+/**
+ * Pares de texto y fondo que usan las pantallas. Cada uno tiene al menos 4,5 a 1 (AA del texto normal), y la prueba de
+ * contraste falla si una clase de src escribe junto un texto y un fondo que no están aquí.
+ */
 export const paresDeTexto: ReadonlyArray<readonly [texto: string, fondo: string]> = [
   ["tinta", "papel"],
   ["tinta", "superficie"],
   ["tinta-suave", "papel"],
   ["tinta-suave", "superficie"],
   ["tinta-suave", "pendiente-fondo"],
+  ["tinta", "pendiente-fondo"],
   ["institucional", "papel"],
   ["institucional", "superficie"],
   ["institucional", "espera-fondo"],

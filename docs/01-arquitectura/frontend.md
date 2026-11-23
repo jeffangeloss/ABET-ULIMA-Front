@@ -449,7 +449,7 @@ En la etapa B cambian además las pruebas de `App.test.tsx` que esperan el títu
 
 ## 12. Spec 008, ciclo de Química General en Industrial
 
-> **Definitiva desde el 2026-11-23 (T011 de la spec 008, aprobada por Jefferson en el chat el mismo día, «Sí, apruébala»).** Esta sección traslada al Front la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, EP-08, US-71, US-73, US-77, US-79, US-81 y US-82) y lee las rutas de la sección 15 de `docs/03-api/contrato.md`. Las secciones 12.1 y 12.2 describen lo construido con T042 y T043, y las secciones 12.3 y 12.4 lo que construyen T044 y T040. Los textos marcados (propuesta) en la spec siguen como propuestas.
+> **Definitiva desde el 2026-11-23 (T011 de la spec 008, aprobada por Jefferson en el chat el mismo día, «Sí, apruébala»).** Esta sección traslada al Front la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, EP-08, US-71, US-73, US-77, US-79, US-81 y US-82) y lee las rutas de la sección 15 de `docs/03-api/contrato.md`. Las secciones 12.1 y 12.2 describen lo construido con T042 y T043 (commit b2369c4), la sección 12.4 lo construido con T040 y T041 (commit 8ac5fa1) y lo que falta de T045 y T048, y la sección 12.3 lo que construye T044. Los textos marcados (propuesta) en la spec siguen como propuestas. Estado al 2026-11-23.
 
 ### 12.1 El periodo en el estado de `App.tsx` (US-73)
 
@@ -476,13 +476,24 @@ La coordinación del curso no ve «Subir export» en ninguna sección, porque `p
 
 La tabla de J-43 suma un consejo por motivo RECHAZA_FILA y otro para el aviso PUNTAJE_MAXIMO_DISTINTO, y `queCorregir()` acepta también una carga PUBLICADA con rechazos de fila o con ese aviso. `CORREGIR_SIN_FILAS_ACEPTADAS` pasa a «Corrija el archivo en cada fila de la tabla de rechazos y suba el archivo nuevo. Si recibió el export de la Oficina de Calidad, pídale uno corregido.», con un cambio fechado en `que_corregir.feature` de la spec 007 (FR-012 y FR-019 de la spec 008). P4 no gana un botón de reemplazo (J-53).
 
-### 12.4 Tokens del sistema visual (US-81 y US-82)
+### 12.4 Sistema visual (US-81 y US-82)
 
-Los colores, la tipografía y el espaciado son tokens literales del bloque `@theme` de `src/index.css` (FR-017). El sistema usa fuentes del sistema (J-59), no suma dependencias ni recursos de otro dominio, respeta `prefers-reduced-motion` y conserva los rótulos que citan los `.feature` de las specs 001 a 007. Una función propia del Front calcula la razón de contraste de cada par, que supera 4,5 a 1 en el texto y 3 a 1 en los componentes, y cada control mide al menos 24 por 24 px, con el foco visible y sin desplazamiento lateral a 375 px (FR-029).
+Construido con T040 y T041.
+
+- **Tokens.** Los colores (papel, superficie, tinta, azul institucional, ocre del paso actual y los pares de cada estado), las fuentes del sistema (`--font-sans` y `--font-titulo`, J-59), la escala de títulos, el espaciado de la tarjeta y el radio son valores literales del bloque `@theme` de `src/index.css` (FR-017). La misma hoja apaga animaciones y transiciones con `prefers-reduced-motion`. El sistema no suma dependencias ni recursos de otro dominio y conserva los rótulos que citan los `.feature` de las specs 001 a 007.
+- **Contraste.** `src/servicios/contraste.ts` calcula la razón de contraste de WCAG 2.2 (pautas de accesibilidad para el contenido web) y lee los tokens del bloque `@theme`. `src/componentes/estilos.ts` declara `paresDeTexto`, con al menos 4,5 a 1, y `paresDeComponente`, con al menos 3 a 1. La prueba de contraste también recorre las clases de `src` y falla si un texto y un fondo escritos juntos no están en `paresDeTexto` o si aparece un color de la paleta de Tailwind fuera de los tokens.
+- **Componentes.** `Mensaje.tsx` marca cada estado con `data-componente`, y `Espera.tsx` muestra la espera con role="status" y un indicador que late solo con `motion-safe`. P2, P4, P5, P6 y App los usan.
+- **Camino de P2.** Cada sección es una tarjeta con el nombre en serif y el grupo «Camino de la sección», con los pasos «1. Subir el export» y «2. Revisar el resultado y descargar el R-17» (propuesta) y las marcas escritas «Ahora», «Hecho», «Corregir» y «Pendiente». El paso actual lleva `aria-current="step"` y su texto para el lector de pantalla, y el botón principal es el del paso actual.
+- **Tabla de rechazos.** `TablaRechazos.tsx` pone la tabla en una región con role="region", el nombre «Tabla de filas rechazadas» y tabindex 0, que se desplaza de lado dentro de sí misma.
+- **Pruebas en Vitest.** `vite.config.ts` deja que Vitest lea con `?raw` el texto de `src/index.css` y del CSS de `dist/assets` (`test.css.include`) y apaga la caché de módulos de Vitest en disco (`fsModuleCache: false`), que guardaba el resultado de `import.meta.glob` y podía dejar la revisión de `dist/` sobre una construcción vieja.
+
+Queda pendiente de T045 llevar los tokens a P3, P4, P5, P6 e Ingreso, que todavía usan colores de la paleta de Tailwind (`MisLogros.tsx`, `SubirExport.tsx` y `Cargas.tsx`), y dejar vacía la lista `SIN_TOKEN_HASTA_T045` de la prueba de contraste. Queda pendiente de T048 probar en Playwright el ancho del documento a 375 px sin desplazamiento lateral, los 24 por 24 px de cada botón (FR-029), el foco visible en el orden de lectura, el menú con teclado y el desplazamiento de la tabla dentro de su región. Ninguna prueba los verifica todavía, aunque las capturas de T040 a 375 px dieron un ancho de documento de 375.
 
 ### 12.5 Pruebas
 
-`tests/spec008/periodo_elegido.test.tsx` cubre los ocho escenarios `@delegado_a_vitest` de US-73 y `tests/spec008/alcance_coordinacion.test.tsx` los tres de US-71, con un `it` por escenario y su título exacto, que anotan los pasos de pytest-bdd del Back. `tests/servicios/api.test.ts` cubre `listarPeriodos()` y el periodo de `listarCargas()`. La parte de P7 y la ruta 17 del escenario «La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7» se suma a su prueba con T046.
+`tests/spec008/periodo_elegido.test.tsx` cubre los escenarios `@delegado_a_vitest` de US-73 y `tests/spec008/alcance_coordinacion.test.tsx` los tres de US-71, con un `it` por escenario y su título exacto, que anotan los pasos de pytest-bdd del Back. El escenario «La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7» queda parcial hasta T046, porque su `it` prueba P2, P5 y P6 y la parte de P7 y la ruta 17 es un `it.todo`. `tests/servicios/api.test.ts` cubre `listarPeriodos()` y el periodo de `listarCargas()`.
+
+`tests/spec008/sistema_visual.test.tsx` cubre los escenarios `@delegado_a_vitest` de US-81, con la fila «P7 esperando» del esquema de estados como `it.todo` hasta T046, y una parte de Vitest del escenario `@playwright` de la tabla de rechazos de US-82, la región con su nombre y tabindex 0. La prueba de recursos de terceros revisa también `dist/`, así que exige una construcción previa. La CI corre `npm run build` antes de `npm test`, y en local se construye antes de correrla. Los escenarios `@playwright` de US-82 llegan a `e2e/` con T048.
 
 ## Referencias
 

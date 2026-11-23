@@ -30,10 +30,11 @@ jobs:
         # seguridad de SonarQube Cloud en esta línea). En package-lock.json solo fsevents declara uno, y
         # ese paquete solo se instala en macOS, así que la CI de Linux no pierde nada.
         run: npm ci --ignore-scripts
+      - name: Compilación del Front (TypeScript y Vite)
+        # Va antes de las pruebas, porque la prueba de recursos de terceros de la spec 008 (US-81) revisa dist/.
+        run: npm run build
       - name: Pruebas del Front (Vitest y Testing Library)
         run: npm test
-      - name: Compilación del Front (TypeScript y Vite)
-        run: npm run build
       - name: Prueba de la revisión previa y del hook de memoria (casos que deben pasar y que deben fallar)
         run: bash scripts/probar_preflight.sh
       - name: Revisión previa (datos inventados, secretos y memoria)

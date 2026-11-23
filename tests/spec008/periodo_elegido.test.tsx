@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { App } from "../../src/App";
@@ -148,15 +148,21 @@ describe("US-73 · Cada cuenta elige el periodo que trabaja", () => {
   });
 
   it("Si la ruta 18 falla, P2 usa el periodo vigente como hoy y no muestra error", async () => {
+    // La ruta 18 responde 500 solo cuando la prueba la suelta, para comprobar que P2 la pide y espera su respuesta.
+    let soltarPeriodos: (r: Respuesta) => void = () => undefined;
     const { llamadas } = simularApi({
       "GET /api/sesion": json(200, usuarioDocente701),
-      "GET /api/periodos": json(500, { detail: "Ocurrió un error interno. Intente de nuevo." }),
+      "GET /api/periodos": () => new Promise<Respuesta>((soltar) => (soltarPeriodos = soltar)),
       "GET /api/secciones": json(200, [seccionPublicada]),
       "GET /api/cargas": json(200, []),
     });
     render(<App />);
+    await waitFor(() => expect(claves(llamadas)).toContain("GET /api/periodos"));
+    expect(claves(llamadas)).not.toContain("GET /api/secciones");
+    soltarPeriodos(json(500, { detail: "Ocurrió un error interno. Intente de nuevo." }));
     expect(await screen.findByText("450002 Principios de Ingeniería Sostenible, sección 410, 2026-2")).toBeInTheDocument();
-    expect(claves(llamadas)).toContain("GET /api/secciones");
+    expect(contar(llamadas, "GET /api/periodos")).toBe(1);
+    expect(claves(llamadas).indexOf("GET /api/periodos")).toBeLessThan(claves(llamadas).indexOf("GET /api/secciones"));
     expect(claves(llamadas).some((c) => c.includes("periodo="))).toBe(false);
     expect(screen.queryByRole("alert")).toBeNull();
     expect(screen.queryByText("Ocurrió un error interno. Intente de nuevo.")).toBeNull();
@@ -176,8 +182,9 @@ describe("US-73 · Cada cuenta elige el periodo que trabaja", () => {
     expect(vacia.nextElementSibling).toBe(remite);
   });
 
+  // Este «it» prueba la parte de P2, P5 y P6 del escenario, que queda parcial hasta T046. P7 y la ruta 17 con
+  // periodo=2026-1 llegan con T046 de la spec 008 en el «it.todo» siguiente (cambio del 2026-11-23).
   it("La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7", async () => {
-    // P7 y la ruta 17 llegan con T046 de la spec 008, que suma aquí la petición de la ruta 17 con periodo=2026-1.
     const secciones = [seccion701, seccionQuimica(22, "702"), seccionQuimica(23, "703"), seccionQuimica(24, "704")];
     const { llamadas } = simularApi({
       "GET /api/sesion": json(200, usuarioCoordinacionCurso),
@@ -206,4 +213,6 @@ describe("US-73 · Cada cuenta elige el periodo que trabaja", () => {
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
   });
+
+  it.todo("La coordinación del curso trabaja 2026-1 en P2, P5, P6 y P7 (P7 pide la ruta 17 con periodo=2026-1)");
 });

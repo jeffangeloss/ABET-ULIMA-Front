@@ -20,7 +20,7 @@
 *.key
 
 # Node, Vite y pruebas
-node_modules/
+node_modules
 dist/
 coverage/
 playwright-report/
