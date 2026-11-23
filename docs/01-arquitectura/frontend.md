@@ -512,6 +512,8 @@ Construido con T045.
 
 `tests/spec008/avance_del_curso.test.tsx` cubre los tres escenarios `@delegado_a_vitest` de US-79 y `tests/pantallas/Avance.test.tsx` los de US-65 de la spec 007 (su T045) y la fila de P7 del esquema «El menú marca la pantalla actual» de US-63, con un `it` por escenario o por fila de Ejemplos. «Atrás desde P4 abierta con «Ver la carga» vuelve a P7» queda como `it.todo`, porque espera a US-52 de la spec 005. El `it` de «Sin la etapa B, la coordinación del curso sigue el avance en P2» prueba P2 tal como ya la ve la coordinación del curso y pasa también sin el código de T046, como prueba de regresión.
 
+`tests/spec008/guia_y_privacidad.test.ts` cubre los seis escenarios `@delegado_a_vitest` de US-87 (T049) sobre `docs/capacitacion/guia_quimica.md`, la guía de la capacitación por rol. `tests/spec008/cotejo_guia.ts` lee cada archivo de `src/` con `parseAst` de Vite, sin los comentarios, y acepta una cita entre comillas latinas de la guía solo si aparece en un literal, una plantilla o el contenido de un elemento JSX. Una variable vale cualquier texto si la parte fija pone al menos la mitad de las letras de la cita, y un mensaje de la API, que termina en punto o en signo de pregunta, puede venir también de un mensaje entre comillas latinas del contrato con otros números. Un botón o un título se buscan solo en `src/`. Los dos escenarios `@playwright` de US-87 corren en el humo de T053.
+
 ### 12.6 P7 Avance del registro (US-65 de la spec 007 y US-79)
 
 Construido con T046, con la ruta 17 de la sección 15.5 del contrato todavía sin código en el Back (T038), así que las pruebas usan la API simulada.
