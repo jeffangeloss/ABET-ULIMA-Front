@@ -6,6 +6,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Agregado
 
+- Sistema visual común de la spec 008 (US-81, T040 y T041), con tokens de color, fuentes del sistema y espaciado en `@theme`, la prueba de contraste AA de cada par, la espera que no anima con movimiento reducido y P2 con el camino de cada sección, el paso actual marcado con texto y `aria-current="step"` y «Ver resultado» como botón principal de una sección publicada.
 - Periodo elegido en la cabecera (US-73 de la spec 008, T042), con «Periodo 2026-1» o el selector «Periodo» según la ruta 18, P2, P5 y P6 que piden sus rutas con ese periodo y el estado solo en memoria, y rótulos de la coordinación del curso por `alcance.tipo` (US-71, T043), como «Secciones del curso» y «Ver los logros por SO del curso».
 - Contrato definitivo de la spec 008 del Back (T011) en la sección 15 de `docs/03-api/contrato.md`, con las rutas 17 y 18 sin la marca (propuesta) en la sección 2, su suma a la sección 10 con la carpeta de la spec 008 en la comprobación de mensajes y la sección 12 de `docs/01-arquitectura/frontend.md` definitiva.
 - Contrato propuesto de la spec 008 del Back en la sección 15 de `docs/03-api/contrato.md`, con la ruta 18 de periodos, el campo `alcance` de la sesión, el periodo de la ruta 8, la ruta 17 con el alcance del curso y el campo condicional `agregados` de la ruta 12, las rutas 17 y 18 marcadas (propuesta) en la tabla de la sección 2 y la sección 12 de `docs/01-arquitectura/frontend.md`.

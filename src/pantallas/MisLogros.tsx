@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { botonSecundario } from "../componentes/estilos";
@@ -189,7 +190,7 @@ export function MisLogros({ usuario, periodo, alVolver }: Props) {
     <>
       <Titulo>{titulo}</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
-      {!error && resultados === null && <Mensaje tipo="aviso">{esperaDeLogros(usuario)}</Mensaje>}
+      {!error && resultados === null && <Espera>{esperaDeLogros(usuario)}</Espera>}
       {resultados !== null && secciones.length === 0 && <p>{sinSecciones(usuario)}</p>}
       {resultados !== null && secciones.length > 0 && (
         <>

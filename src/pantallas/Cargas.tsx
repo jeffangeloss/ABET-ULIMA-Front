@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario } from "../componentes/estilos";
@@ -56,7 +57,7 @@ export function Cargas({ usuario, periodo, alVerResultado, alReemplazar }: Props
     <>
       <Titulo>Cargas</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
-      {!error && datos === null && <Mensaje tipo="aviso">Cargando las cargas</Mensaje>}
+      {!error && datos === null && <Espera>Cargando las cargas</Espera>}
       {!error && datos !== null && datos.secciones.length === 0 && <p>{sinSecciones(usuario)}</p>}
       {!error &&
         datos !== null &&

@@ -1,1 +1,84 @@
 @import "tailwindcss";
+
+/*
+ * Spec 008, US-81 y FR-017. Sistema visual del Front con tokens literales, que la prueba de contraste lee sin navegador
+ * (tests/spec008/sistema_visual.test.tsx). El papel es un gris frío y el azul institucional sostiene la acción; el ocre
+ * marca solo «aquí está», el paso actual de cada sección y la pantalla abierta del menú. Las fuentes son las del sistema
+ * (J-59), así que ninguna hoja ni fuente llega de otro dominio. Cada par de texto y fondo vive en paresDeTexto y cada
+ * marca gráfica en paresDeComponente, de src/componentes/estilos.ts.
+ */
+@theme {
+  --color-papel: #f2f3f5;
+  --color-superficie: #ffffff;
+  --color-tinta: #172231;
+  --color-tinta-suave: #4a5462;
+  --color-linea: #d4d8de;
+  --color-borde-campo: #6b7482;
+  --color-institucional: #1f3b5c;
+  --color-institucional-hondo: #152b45;
+  --color-sobre-institucional: #ffffff;
+  --color-foco: #1a5fd0;
+  --color-ocre: #b26a00;
+
+  --color-ahora-texto: #6e3f00;
+  --color-ahora-fondo: #fdf1dc;
+  --color-hecho-texto: #1e5b35;
+  --color-hecho-fondo: #e8f3ec;
+  --color-corregir-texto: #8e1b1b;
+  --color-corregir-fondo: #fbeaea;
+  --color-pendiente-texto: #4a5462;
+  --color-pendiente-fondo: #eceef1;
+
+  --color-error-texto: #7f1d1d;
+  --color-error-fondo: #fdf0f0;
+  --color-error-borde: #b42318;
+  --color-aviso-texto: #6b3e00;
+  --color-aviso-fondo: #fef6e7;
+  --color-aviso-borde: #b7791f;
+  --color-confirmacion-texto: #1b4d2e;
+  --color-confirmacion-fondo: #eef7f1;
+  --color-confirmacion-borde: #2f7d4a;
+  --color-espera-fondo: #eef2f7;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-titulo: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+
+  --text-titulo: 1.875rem;
+  --text-titulo--line-height: 1.2;
+  --text-seccion: 1.125rem;
+  --text-seccion--line-height: 1.35;
+
+  --spacing-tarjeta: 1.25rem;
+  --spacing-pagina: 1rem;
+  --radius-tarjeta: 0.5rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-papel);
+    color: var(--color-tinta);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-ahora-fondo);
+    color: var(--color-tinta);
+  }
+}
+
+/* Con movimiento reducido no hay animaciones ni transiciones, tampoco las de Tailwind. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

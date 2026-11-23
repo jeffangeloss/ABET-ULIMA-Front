@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { AvisoSesion } from "./AvisoSesion";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
-import { boton, campo } from "../componentes/estilos";
+import { boton, campo, tarjeta } from "../componentes/estilos";
 import { ErrorApi, iniciarSesion } from "../servicios/api";
 import type { Usuario } from "../servicios/tipos";
 
@@ -28,6 +28,8 @@ export function Ingreso({ alIngresar, aviso }: Props) {
       alIngresar(await iniciarSesion(correo, contrasena));
     } catch (falla) {
       setError(falla instanceof ErrorApi ? falla.detail : "El servicio no respondió. Intente de nuevo.");
+      // Spec 008, US-81. El correo se conserva y la contraseña se vacía para escribirla otra vez (propuesta).
+      setContrasena("");
     } finally {
       setEnviando(false);
     }
@@ -37,7 +39,7 @@ export function Ingreso({ alIngresar, aviso }: Props) {
     <>
       <Titulo>Ingreso</Titulo>
       <AvisoSesion texto={aviso} />
-      <form onSubmit={enviar} className="max-w-sm space-y-4">
+      <form onSubmit={enviar} className={`max-w-sm space-y-4 ${tarjeta}`}>
         <div>
           <label htmlFor="correo" className="text-sm font-medium">Correo</label>
           <input id="correo" type="email" autoComplete="username" required value={correo}

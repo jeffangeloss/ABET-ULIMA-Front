@@ -16,6 +16,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./tests/preparar.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
-    css: false,
+    // Spec 008, US-81. La prueba de contraste lee el texto de src/index.css y del CSS construido con ?raw, y lo demás sigue sin CSS.
+    css: { include: [/src\/index\.css/, /dist\/assets\/.*\.css/] },
   },
 });

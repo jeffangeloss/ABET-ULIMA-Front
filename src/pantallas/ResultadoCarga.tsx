@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AvisosCarga } from "../componentes/AvisosCarga";
+import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { TablaRechazos } from "../componentes/TablaRechazos";
 import { Titulo } from "../componentes/Titulo";
@@ -52,7 +53,7 @@ export function ResultadoCarga({ cargaId, rol, constanciaInicial, alVolver, alVe
     <>
       <Titulo>Resultado de la carga</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
-      {!error && !constancia && <Mensaje tipo="aviso">Cargando la constancia</Mensaje>}
+      {!error && !constancia && <Espera>Cargando la constancia</Espera>}
       {constancia && (
         <>
           <p>
