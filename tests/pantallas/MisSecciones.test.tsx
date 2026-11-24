@@ -228,7 +228,8 @@ describe("US-59, siguiente paso de cada sección", () => {
     await userEvent.click(within(primera).getByRole("button", { name: "Ver por qué se rechazó" }));
     expect(await screen.findByRole("heading", { name: "Constancia" })).toBeInTheDocument();
     expect(screen.getByText(constanciaOtraSeccion.nombre_archivo)).toBeInTheDocument();
-    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/sesion", "GET /api/secciones", "GET /api/cargas", "GET /api/cargas/9"]);
+    // Spec 008, US-73. App.tsx pide la ruta 18 antes de P2, y aquí no está simulada, así que P2 sigue sin periodo.
+    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/sesion", "GET /api/periodos", "GET /api/secciones", "GET /api/cargas", "GET /api/cargas/9"]);
   });
 
   it("conserva las secciones y permite subir si la ruta 8 da 500", async () => {

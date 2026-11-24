@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
-import { boton, botonSecundario } from "../componentes/estilos";
+import { boton, botonSecundario, tarjeta } from "../componentes/estilos";
 import { ErrorApi, subirExport, type OpcionesSubida } from "../servicios/api";
 import { TITULO_ANTES_DE_SUBIR, lineasAntesDeSubir } from "../servicios/ayudas";
 import { etiquetaSeccion, horaDeLima } from "../servicios/formato";
@@ -76,27 +76,27 @@ export function SubirExport({ seccion, alResultado, alVerResultado, alVolver, re
   return (
     <>
       <Titulo>Subir export</Titulo>
-      <p className="mb-4 font-medium">{etiquetaSeccion(seccion)}</p>
+      <p className="mb-5 font-titulo text-seccion font-semibold text-tinta">{etiquetaSeccion(seccion)}</p>
       {reemplaza !== undefined && (
         <>
-          <p className="mb-1">Reemplaza a la carga {reemplaza}, la publicada de esta sección.</p>
-          <p className="mb-4">Si la carga nueva queda rechazada, la carga {reemplaza} sigue publicada.</p>
+          <p className="mb-1 font-medium text-tinta">Reemplaza a la carga {reemplaza}, la publicada de esta sección.</p>
+          <p className="mb-5 text-sm text-tinta-suave">Si la carga nueva queda rechazada, la carga {reemplaza} sigue publicada.</p>
         </>
       )}
       {/* Spec 007, US-60. Sale solo de Seccion.pi y de la constante de J-44, sin leer el archivo ni pedir nada. */}
-      <section aria-labelledby="titulo-antes-de-subir" className="mb-4 rounded border border-slate-300 p-3">
-        <h2 id="titulo-antes-de-subir" className="mb-2 text-lg font-semibold">
+      <section aria-labelledby="titulo-antes-de-subir" className={`mb-5 border-l-4 border-l-institucional ${tarjeta}`}>
+        <h2 id="titulo-antes-de-subir" className="mb-2 font-titulo text-seccion font-semibold text-tinta">
           {TITULO_ANTES_DE_SUBIR}
         </h2>
-        <ul className="list-disc space-y-1 pl-5 text-sm">
+        <ul className="list-disc space-y-1 pl-5 text-sm text-tinta marker:text-institucional">
           {lineasAntesDeSubir(seccion.pi).map((linea) => (
             <li key={linea}>{linea}</li>
           ))}
         </ul>
       </section>
-      <form onSubmit={enviar} className="max-w-md space-y-4">
+      <form onSubmit={enviar} className="max-w-xl space-y-4">
         <div>
-          <label htmlFor="archivo" className="text-sm font-medium">Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)</label>
+          <label htmlFor="archivo" className="text-sm font-semibold text-tinta">Export de Blackboard (.xlsx, .csv o .xls, hasta 1 MB)</label>
           {/* El control nativo pinta su botón en el idioma del navegador, así que queda oculto a la
               vista, con su etiqueta y su foco, y el botón visible es propio y en español. */}
           <input id="archivo" ref={campo} type="file" accept=".xlsx,.csv,.xls" className="peer sr-only"
@@ -104,12 +104,12 @@ export function SubirExport({ seccion, alResultado, alVerResultado, alVolver, re
               setArchivo(e.target.files?.[0] ?? null);
               setPregunta(null);
             }} />
-          <div className="mt-1 flex flex-wrap items-center gap-3 rounded peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-sky-600">
+          <div className="mt-2 flex flex-wrap items-center gap-3 rounded-tarjeta border border-dashed border-borde-campo bg-superficie p-3 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-foco">
             <button type="button" tabIndex={-1} aria-hidden="true" className={botonSecundario}
               onClick={() => campo.current?.click()}>
               Elegir archivo
             </button>
-            <span className="text-sm">{archivo ? archivo.name : "Ningún archivo elegido"}</span>
+            <span className="min-w-0 text-sm break-all text-tinta">{archivo ? archivo.name : "Ningún archivo elegido"}</span>
           </div>
         </div>
         {error && <Mensaje tipo="error">{error}</Mensaje>}
@@ -140,7 +140,7 @@ export function SubirExport({ seccion, alResultado, alVerResultado, alVolver, re
             </div>
           </div>
         )}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 border-t border-linea pt-4">
           <button type="submit" disabled={enviando} className={boton}>
             {enviando ? "Subiendo" : "Subir"}
           </button>

@@ -33,6 +33,10 @@ Los datos de todos los ejemplos son inventados. La sección 410 de la asignatura
 
 - [`contrato.md`](03-api/contrato.md) fija cada ruta de la API con su cuerpo, su respuesta, sus errores y la historia que la origina.
 
+### Capacitación
+
+- [`guia_quimica.md`](capacitacion/guia_quimica.md) guía la capacitación de Química General (5643) en Ingeniería Industrial por rol, con los rótulos exactos de cada pantalla, que `tests/spec008/guia_y_privacidad.test.ts` coteja con `src/`, y el ejercicio de error con un archivo inventado (US-87 de la spec 008 del Back).
+
 ### 05 · Operación
 
 - [`entornos-y-despliegue.md`](05-operacion/entornos-y-despliegue.md) describe los entornos local, Preview (vista previa) y Production (producción) de Vercel, los dos proyectos de Vercel en `iad1`, junto a Neon, las ramas de Neon y las variables que pega Jefferson.

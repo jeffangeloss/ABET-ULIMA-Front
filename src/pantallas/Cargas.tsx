@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
+import { EnlaceR17 } from "../componentes/EnlaceR17";
+import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
-import { boton, botonSecundario } from "../componentes/estilos";
-import { ErrorApi, listarCargas, listarSecciones, urlR17 } from "../servicios/api";
+import { boton, botonSecundario, tarjeta } from "../componentes/estilos";
+import { ErrorApi, listarCargas, listarSecciones } from "../servicios/api";
 import { etiquetaSeccion, horaDeLima, resumenFilas } from "../servicios/formato";
 import { sinSecciones } from "../servicios/rotulos";
 import type { CargaResumida, EstadoCarga, Seccion, Usuario } from "../servicios/tipos";
 
 interface Props {
   usuario: Usuario;
+  /** Spec 008, US-73. El periodo elegido en la cabecera, o ninguno para el vigente de la API. */
+  periodo?: string;
   alVerResultado: (cargaId: number) => void;
   alReemplazar: (seccion: Seccion, cargaId: number) => void;
 }
@@ -33,19 +37,19 @@ function marca(c: CargaResumida): string | null {
  * P5 (US-18 y US-19). Cada sección al alcance del usuario con sus cargas en el orden de la API. Muestra solo
  * los campos que nombra la pantalla, así que nunca el motivo en código, un nombre, un valor leído ni una ruta.
  */
-export function Cargas({ usuario, alVerResultado, alReemplazar }: Props) {
+export function Cargas({ usuario, periodo, alVerResultado, alReemplazar }: Props) {
   const [datos, setDatos] = useState<{ secciones: Seccion[]; cargas: CargaResumida[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let vigente = true;
-    Promise.all([listarSecciones(), listarCargas()])
+    Promise.all([listarSecciones(periodo), listarCargas(undefined, periodo)])
       .then(([secciones, cargas]) => vigente && setDatos({ secciones, cargas }))
       .catch((e) => vigente && setError(e instanceof ErrorApi ? e.detail : "El servicio no respondió. Intente de nuevo."));
     return () => {
       vigente = false;
     };
-  }, []);
+  }, [periodo]);
 
   // El profesor reemplaza en su sección y el coordinador en cualquiera; la API decide el alcance.
   const puedeReemplazar = usuario.rol === "PROFESOR" || usuario.rol === "COORDINADOR";
@@ -54,44 +58,53 @@ export function Cargas({ usuario, alVerResultado, alReemplazar }: Props) {
     <>
       <Titulo>Cargas</Titulo>
       {error && <Mensaje tipo="error">{error}</Mensaje>}
-      {!error && datos === null && <Mensaje tipo="aviso">Cargando las cargas</Mensaje>}
-      {!error && datos !== null && datos.secciones.length === 0 && <p>{sinSecciones(usuario)}</p>}
+      {!error && datos === null && <Espera>Cargando las cargas</Espera>}
+      {!error && datos !== null && datos.secciones.length === 0 && (
+        <p className="rounded-tarjeta border border-dashed border-borde-campo bg-superficie p-tarjeta font-medium">
+          {sinSecciones(usuario)}
+        </p>
+      )}
       {!error &&
         datos !== null &&
         datos.secciones.map((s) => {
           const cargas = datos.cargas.filter((c) => c.seccion.seccion_id === s.seccion_id);
           const idTitulo = `titulo-seccion-${s.seccion_id}`;
           return (
-            <section key={s.seccion_id} aria-labelledby={idTitulo} className="mb-6">
-              <h2 id={idTitulo} className="mb-2 text-lg font-semibold">
+            <section key={s.seccion_id} aria-labelledby={idTitulo} className="mb-8">
+              <h2 id={idTitulo} className="mb-3 font-titulo text-seccion font-semibold text-tinta">
                 {etiquetaSeccion(s)}
               </h2>
               {cargas.length === 0 ? (
-                <p className="text-sm">Sin cargas</p>
+                <p className="text-sm text-tinta-suave">Sin cargas</p>
               ) : (
                 <ul className="space-y-3">
                   {cargas.map((c) => {
                     const m = marca(c);
                     return (
-                      <li key={c.carga_id} className="rounded border border-slate-300 p-3 text-sm">
-                        <p className="font-medium">Carga {c.carga_id}</p>
-                        <p>
+                      <li
+                        key={c.carga_id}
+                        className={`text-sm ${tarjeta} ${c.estado === "PUBLICADA" ? "border-l-4 border-l-hecho-texto" : ""}`}
+                      >
+                        <p className="font-semibold text-tinta">Carga {c.carga_id}</p>
+                        <p className="text-tinta">
                           Estado: <strong>{ETIQUETA_ESTADO[c.estado]}</strong>
                         </p>
-                        {m && <p className="font-medium">{m}</p>}
-                        <p>{horaDeLima(c.iniciada_en)}</p>
-                        <p>{resumenFilas(c)}</p>
-                        <p>{c.nombre_archivo}</p>
-                        <p>Huella {c.sha256_corto}</p>
-                        {c.subida_por !== null && <p>Subida por {c.subida_por}</p>}
-                        <div className="mt-2 flex flex-wrap gap-2">
+                        {m && <p className="font-medium text-tinta">{m}</p>}
+                        <div className="mt-2 space-y-0.5 text-tinta-suave">
+                          <p>{horaDeLima(c.iniciada_en)}</p>
+                          <p>{resumenFilas(c)}</p>
+                          <p className="break-all">{c.nombre_archivo}</p>
+                          <p>Huella {c.sha256_corto}</p>
+                          {c.subida_por !== null && <p className="break-all">Subida por {c.subida_por}</p>}
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
                           <button type="button" className={botonSecundario} onClick={() => alVerResultado(c.carga_id)}>
                             Ver constancia
                           </button>
                           {c.estado === "PUBLICADA" && (
-                            <a className={botonSecundario} href={urlR17(c.carga_id)}>
+                            <EnlaceR17 className={botonSecundario} cargaId={c.carga_id}>
                               Descargar R-17
-                            </a>
+                            </EnlaceR17>
                           )}
                           {c.estado === "PUBLICADA" && puedeReemplazar && (
                             <button type="button" className={boton} onClick={() => alReemplazar(s, c.carga_id)}>

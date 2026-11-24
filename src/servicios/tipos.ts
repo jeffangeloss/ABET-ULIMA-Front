@@ -3,9 +3,32 @@
 
 export type Rol = "PROFESOR" | "COORDINADOR";
 
+/**
+ * Spec 008. Tipo del alcance de la cuenta en la ruta 2 (contrato, sección 15.3). SECCIONES es el del PROFESOR, CARRERA el
+ * de una coordinación con al menos una fila de carrera y CURSO el de una coordinación con solo filas de asignatura.
+ */
+export type TipoAlcance = "SECCIONES" | "CARRERA" | "CURSO";
+
+/** Spec 008. Campo aditivo alcance de GET /api/sesion, con códigos de carrera y de asignatura y sin datos de personas. */
+export interface Alcance {
+  tipo: TipoAlcance;
+  carreras: string[];
+  asignaturas: string[];
+}
+
 export interface Usuario {
   correo: string;
   rol: Rol;
+  /** Spec 008. Opcional, porque un Back anterior no lo manda y el Front sigue con los rótulos del rol. */
+  alcance?: Alcance;
+}
+
+/** Spec 008. Cuerpo de GET /api/periodos, la ruta 18 (contrato, sección 15.2). */
+export interface Periodos {
+  /** El periodo de PERIODO_VIGENTE, AAAA-C. */
+  vigente: string;
+  /** Periodos con al menos una sección al alcance del usuario, del más reciente al más antiguo. */
+  periodos: string[];
 }
 
 export type EstadoSeccion = "PUBLICADA" | "SIN_CARGA";
@@ -153,4 +176,28 @@ export interface Resultados {
   periodo: string;
   so: SoDelPlan[];
   secciones: SeccionConLogros[];
+}
+
+/**
+ * Spec 007, J-48. Etapa de una sección en la ruta 17, que decide el Back en cada lectura. P7 la muestra y nunca la calcula.
+ */
+export type Etapa = "SIN_PLAN" | "SIN_PROFESOR" | "CON_RECHAZO" | "SIN_CARGA" | "PUBLICADA";
+
+/** Spec 007, US-64. Una sección de GET /api/avance (contrato, secciones 14.2 y 15.5). */
+export interface SeccionDeAvance {
+  seccion_id: number;
+  asignatura: { codigo: string; nombre: string };
+  numero: string;
+  etapa: Etapa;
+  /** La carga PUBLICADA de la sección, o null sin ella. P7 abre con él P4. */
+  carga_id: number | null;
+  /** US-66 de la spec 007. Existe solo si D-47 (Ambiental) o D-51 (Industrial) dicen que sí, y P7 todavía no lo muestra. */
+  profesores?: string[];
+}
+
+/** Spec 007, US-64. Cuerpo de GET /api/avance, la ruta 17, con el alcance de secciones_visibles() (spec 008, US-79). */
+export interface Avance {
+  periodo: string;
+  conteo: { secciones: number } & Record<Etapa, number>;
+  secciones: SeccionDeAvance[];
 }

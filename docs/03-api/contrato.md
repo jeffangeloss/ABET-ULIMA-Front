@@ -1,8 +1,8 @@
 # Contrato de la API
 
-> **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** La sección 13 cambia las rutas 13 a 16 de la spec 005 del Back. El profesor registra una causa y una acción por indicador de desempeño, rotuladas como oportunidad de mejora o buena práctica según el semáforo, en lugar de un texto por carga. **Estado 2026-11-18.** La sección 12 fija la forma definitiva de la ruta 12 de la spec 004 del Back (T011), los logros por resultado del estudiante (student outcome, SO) de las secciones al alcance del usuario, escrita antes de su código en la rama `feat/004-reportes-docente` después de la aprobación de Jefferson del 2026-11-18. **Estado 2026-11-17.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. La sección 7 fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo de la carga publicada, la lista de cargas y la confirmación de la sección, escrita antes de su código en la rama `feat/001-corte-2`. El código de acceso por correo (ruta 10) sigue en espera de T018, el dominio y la cuenta de Resend de Jefferson. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
+> **Estado 2026-11-23.** La sección 15 fija la forma definitiva de las rutas de la spec 008 del Back (T011), con la ruta 18 de periodos, el campo `alcance` de la ruta 2, el parámetro `periodo` de la ruta 8 y la ruta 17 con el alcance de la coordinación del curso, escrita antes de su código en la rama `feat/008-ciclo-quimica-industrial` después de la aprobación de Jefferson del 2026-11-23. **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** La sección 13 cambia las rutas 13 a 16 de la spec 005 del Back. El profesor registra una causa y una acción por indicador de desempeño, rotuladas como oportunidad de mejora o buena práctica según el semáforo, en lugar de un texto por carga. **Estado 2026-11-18.** La sección 12 fija la forma definitiva de la ruta 12 de la spec 004 del Back (T011), los logros por resultado del estudiante (student outcome, SO) de las secciones al alcance del usuario, escrita antes de su código en la rama `feat/004-reportes-docente` después de la aprobación de Jefferson del 2026-11-18. **Estado 2026-11-17.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. La sección 7 fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo de la carga publicada, la lista de cargas y la confirmación de la sección, escrita antes de su código en la rama `feat/001-corte-2`. El código de acceso por correo (ruta 10) sigue en espera de T018, el dominio y la cuenta de Resend de Jefferson. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
 
-Este documento describe todas las rutas de ABET-ULIMA-Back con su cuerpo, su respuesta y sus errores. El índice corto vive en `docs/specs/api-contracts.md`, y las reglas viven en las specs vivas del Back. Son BR-ACCESO-01 a BR-ACCESO-10 (`specs/features/acceso/acceso.spec.md`), BR-PERIODO-01 a BR-PERIODO-04 (`specs/features/periodo/periodo.spec.md`), BR-CARGA-01 a BR-CARGA-20 (`specs/features/carga-export/carga-export.spec.md`), BR-R17-01 a BR-R17-10 (`specs/features/r17/r17.spec.md`) y BR-RESULTADOS-01 a BR-RESULTADOS-11 (`specs/features/resultados/resultados.spec.md`). Los mensajes literales y la forma de las respuestas salen de los escenarios de `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back y de los de las specs 003 y 004. Si un ejemplo de aquí y un escenario discrepan, gana el escenario. Lleva la marca «(propuesta)» lo que ningún escenario fija y también lo que un escenario usa sin que las decisiones de la spec lo fijen, como lo marcan los `.feature`. Los ejemplos usan solo datos inventados.
+Este documento describe todas las rutas de ABET-ULIMA-Back con su cuerpo, su respuesta y sus errores. El índice corto vive en `docs/specs/api-contracts.md`, y las reglas viven en las specs vivas del Back. Son BR-ACCESO-01 a BR-ACCESO-10 (`specs/features/acceso/acceso.spec.md`), BR-PERIODO-01 a BR-PERIODO-04 (`specs/features/periodo/periodo.spec.md`), BR-CARGA-01 a BR-CARGA-20 (`specs/features/carga-export/carga-export.spec.md`), BR-R17-01 a BR-R17-10 (`specs/features/r17/r17.spec.md`) y BR-RESULTADOS-01 a BR-RESULTADOS-11 (`specs/features/resultados/resultados.spec.md`). Los mensajes literales y la forma de las respuestas salen de los escenarios de `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back y de los de las specs 003, 004 y 008. Si un ejemplo de aquí y un escenario discrepan, gana el escenario. Lleva la marca «(propuesta)» lo que ningún escenario fija y también lo que un escenario usa sin que las decisiones de la spec lo fijen, como lo marcan los `.feature`. Los ejemplos usan solo datos inventados.
 
 ## 1. Cómo está montada
 
@@ -10,7 +10,7 @@ La API es una aplicación FastAPI en Python 3.12 (ADR-003) con prefijo `/api`, d
 
 La API lee y escribe en Neon con el rol `abet_app` por la cadena con pooler (el agrupador de conexiones de Neon). Toda carga ocurre en una sola transacción (ADR-001).
 
-Al arrancar, la API comprueba contra la base el periodo de `PERIODO_VIGENTE` y el conjunto de reglas de `CONJUNTO_REGLAS`, porque la base no marca ninguno como vigente (BR-PERIODO-01 y BR-PERIODO-02). Si no los encuentra, se detiene con «PERIODO_VIGENTE 2027-1 no existe en abet.periodo» o «CONJUNTO_REGLAS R-NO-EXISTE no existe para Ambiental» (propuesta). También se detiene si `DATABASE_URL` entra con un rol de administración (superusuario, creación de roles o de bases, sin seguridad por filas o de replicación), con «DATABASE_URL entra con un rol de administración, y la API necesita el rol de la aplicación.» (propuesta), porque la aplicación trabaja solo con el rol `abet_app`. En Production y Preview de Vercel, la API también se detiene si la base no está marcada para ese entorno, con «La base de DATABASE_URL está marcada para production y el despliegue es de preview. Revise DATABASE_URL o marque la rama con db/plataforma/neon/marcar_entorno.sql.», y en Vercel se detiene si falta `VERCEL_ENV` (T077 del Back).
+Al arrancar, la API comprueba contra la base el periodo de `PERIODO_VIGENTE` y el conjunto de reglas de `CONJUNTO_REGLAS`, porque la base no marca ninguno como vigente (BR-PERIODO-01 y BR-PERIODO-02). Si no los encuentra, se detiene con «PERIODO_VIGENTE 2027-1 no existe en abet.periodo» o «CONJUNTO_REGLAS R-NO-EXISTE no existe para la carrera AMB.», que nombra cada carrera con plan de medición que no tiene esa versión, o «CONJUNTO_REGLAS R-NO-EXISTE no existe en abet.conjunto_reglas.» (propuesta) cuando la base no tiene ningún plan (cambio del 2026-11-23, T033 del Back). También se detiene si `DATABASE_URL` entra con un rol de administración (superusuario, creación de roles o de bases, sin seguridad por filas o de replicación), con «DATABASE_URL entra con un rol de administración, y la API necesita el rol de la aplicación.» (propuesta), porque la aplicación trabaja solo con el rol `abet_app`. En Production y Preview de Vercel, la API también se detiene si la base no está marcada para ese entorno, con «La base de DATABASE_URL está marcada para production y el despliegue es de preview. Revise DATABASE_URL o marque la rama con db/plataforma/neon/marcar_entorno.sql.», y en Vercel se detiene si falta `VERCEL_ENV` (T077 del Back).
 
 En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SECURE=1`, que deja la cookie sin el atributo Secure para servir por http en 127.0.0.1 (propuesta). La API admite esa variable solo con una base local, por socket de Unix, localhost o 127.0.0.1, y fuera de Vercel, y en otro caso no arranca.
 
@@ -19,18 +19,18 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 | # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Corte |
 |---|---|---|---|---|---|---|---|---|
 | 1 | POST | `/api/sesion` | No | 200 | Valida correo y contraseña y fija la cookie `abet_sesion` | US-05 | BR-ACCESO-02 a BR-ACCESO-05 | 1 |
-| 2 | GET | `/api/sesion` | Sí | 200 | Devuelve el usuario actual (correo y rol) | US-05 | BR-ACCESO-06 | 1 |
+| 2 | GET | `/api/sesion` | Sí | 200 | Devuelve el usuario actual (correo, rol y, desde la spec 008, `alcance`, sección 15.3) | US-05 y US-71 (spec 008) | BR-ACCESO-06 y BR-ACCESO-13 | 1 |
 | 3 | DELETE | `/api/sesion` | Opcional (propuesta) | 204 | Cierra la sesión y vence la cookie | US-05 | BR-ACCESO-06 | 1 |
 | 4 | GET | `/api/secciones?periodo=2026-2` | Sí | 200 | Lista las secciones al alcance del usuario con el estado de su carga | US-06 | BR-PERIODO-01, BR-PERIODO-04 y BR-ACCESO-07 | 1 |
 | 5 | POST | `/api/secciones/{seccion_id}/cargas` | Sí | 201 o 200 | Sube el export (.xlsx, .csv o .xls), lo carga en una transacción y devuelve la constancia | US-07 a US-14, US-21, US-27 a US-32 y US-36 (spec 003) | BR-CARGA-01 a BR-CARGA-17, BR-CARGA-18 (corte 2), BR-PERIODO-02 y BR-ACCESO-08 | 1 |
 | 6 | GET | `/api/cargas/{carga_id}` | Sí | 200 | Devuelve la constancia de una carga, con `hoja` nula en un export de texto | US-16, US-19, US-34 (spec 003) | BR-R17-10 y BR-ACCESO-08 | 1 |
 | 7 | GET | `/api/cargas/{carga_id}/r17.xlsx` | Sí | 200 | Entrega el R-17 con la hoja «Constancia», solo de cargas en estado PUBLICADA | US-15, US-16 | BR-R17-01 a BR-R17-09 y BR-ACCESO-08 | 1 |
-| 8 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | 200 | Lista las cargas al alcance del usuario, con `seccion_id` opcional | US-19 | BR-CARGA-20 y BR-ACCESO-07 | 2 |
+| 8 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | 200 | Lista las cargas al alcance del usuario, con `seccion_id` opcional y, sin él, `periodo` opcional desde la spec 008 (sección 15.4) | US-19 y US-73 (spec 008) | BR-CARGA-20 y BR-ACCESO-07 | 2 |
 | 9 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | 201 o 200 | Reemplaza la carga publicada en una transacción (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | 10 | POST | `/api/sesion/codigo` | No | 202 | Envía el código de acceso al correo, con la misma respuesta exista o no | US-20 | BR-ACCESO-09 | 2 |
 | 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, BR-ACCESO-07 y BR-ACCESO-10 | spec 004 |
-| 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de su carrera o de su curso en el periodo y el conteo por etapa, secciones 14 y 15.5 (propuesta, specs 007 y 008) | US-64 a US-66 (spec 007) y US-79 (spec 008) | BR-AVANCE-NN (propuesta), BR-ACCESO-07, BR-ACCESO-12 y BR-ACCESO-13 (propuestas) | specs 007 y 008 |
-| 18 | GET | `/api/periodos` | Sí | 200 | Periodo vigente y periodos con secciones al alcance, sección 15.2 (propuesta, spec 008) | US-73 | BR-PERIODO-05 | spec 008 |
+| 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de su carrera o de su curso en el periodo y el conteo por etapa, secciones 14 y 15.5 | US-64 a US-66 (spec 007) y US-79 (spec 008) | Las reglas BR-AVANCE de la spec 007, BR-ACCESO-07, BR-ACCESO-12 y BR-ACCESO-13 | specs 007 y 008 |
+| 18 | GET | `/api/periodos` | Sí | 200 | Periodo vigente y periodos con secciones al alcance, sección 15.2 | US-73 (spec 008) | BR-PERIODO-05 | spec 008 |
 
 ## 3. Convenciones
 
@@ -386,16 +386,18 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 
 ## 10. Cómo verificar este documento
 
-Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI. Las filas marcadas (propuesta), como las rutas 17 y 18, entran en esta comprobación cuando su spec quita la marca.
+Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI. Las rutas 17 y 18 entran en esta comprobación desde la fase de contrato de la spec 008 (T011, 2026-11-23), y cada una aparece en el esquema cuando llega su código (T038 y T033 del Back).
 
 ```bash
 # Esperado: 5 caminos en el corte 1 (las 7 rutas, porque /api/sesion reúne tres métodos), 6 con el corte 2
 # sin US-20 (suma /api/cargas, porque el reemplazo usa el camino de la ruta 5), 7 con la ruta 12 de la spec 004
-# (suma /api/resultados) y 8 cuando llegue /api/sesion/codigo, sin caminos que este documento no describa.
+# (suma /api/resultados), 8 con la ruta 18 de la spec 008 (suma /api/periodos), 9 con la ruta 17 de las
+# specs 007 y 008 (suma /api/avance) y 10 cuando llegue /api/sesion/codigo, sin caminos que este documento
+# no describa. Las rutas 13 a 16 de la spec 005 suman sus caminos cuando esa spec quite su marca.
 curl -s "$URL_FRONT/api/openapi.json" | python -c "import json,sys; print('\n'.join(sorted(json.load(sys.stdin)['paths'])))"
 ```
 
-Los mensajes literales de este contrato y los de los escenarios de las specs 001, 003 y 004 coinciden en los dos sentidos. La comprobación corre desde la carpeta que contiene los dos repositorios, y las variables `BACK` y `FRONT` cambian sus rutas si viven en otro lugar.
+Los mensajes literales de este contrato y los de los escenarios de las specs 001, 003, 004 y 008 coinciden en los dos sentidos. La comprobación corre desde la carpeta que contiene los dos repositorios, y las variables `BACK` y `FRONT` cambian sus rutas si viven en otro lugar.
 
 ```bash
 # Esperado: «0 mensajes del contrato sin escenario» y «0 mensajes de los escenarios sin contrato».
@@ -412,7 +414,8 @@ import re
 
 contrato = pathlib.Path(os.environ["FRONT"], "docs/03-api/contrato.md").read_text(encoding="utf-8")
 carpetas = [pathlib.Path(os.environ["BACK"], "specs", c, "aceptacion")
-            for c in ("001-mvp-carga-r17", "003-exports-blackboard", "004-reportes-docente")]
+            for c in ("001-mvp-carga-r17", "003-exports-blackboard", "004-reportes-docente",
+                      "008-ciclo-quimica-industrial")]
 escenarios = "\n".join(p.read_text(encoding="utf-8") for c in carpetas for p in sorted(c.glob("*.feature")))
 
 del_contrato = {
@@ -800,19 +803,19 @@ El Front no ofrece el enlace a la ruta 7 sin declaración, porque P4 es el únic
 9. **La edición de la descripción del instrumento desde una pantalla** (D-34) y la escritura de la declaración por el coordinador.
 10. **Los cambios de la tabla de la sección 2 y de la sección 10**, que se ajustan al reaprobar la spec (tarea T011).
 
-## 14. Ruta de la spec 007, avance del registro para la coordinación (propuesta)
+## 14. Ruta de la spec 007, avance del registro para la coordinación
 
-> **Aprobada por Jefferson el 2026-11-22 («Sí, apruébala»).** Esta sección traslada la ruta 17 de la spec 007 del Back (`specs/007-experiencia-por-cuenta/`, US-64 a US-66, J-47 y J-48) y no rige hasta su aprobación y su fase de contrato (T011 y T012). Los nombres de la ruta, de los campos y los textos son propuestas. La etapa A de la spec 007 no agrega rutas ni cambia las rutas 4, 6, 8 y 9, que P2, P3 y P4 leen como hoy.
+> **Cambio del 2026-11-23 (corrección de la revisión del segundo bloque de la spec 008).** La ruta 17 está construida desde T038 de la spec 008 del Back (`app/rutas/avance.py` y `abet_carga/avance.py`), y la sección 10 la cuenta desde T011. La ruta no emite el campo `profesores`, que espera a D-47 en Ambiental y a D-51 en Industrial (sección 15.5), así que el ejemplo de 14.2 ya no lo trae. Los textos marcados «(propuesta)» siguen como propuestas. **Aprobada por Jefferson el 2026-11-22 («Sí, apruébala»).** Esta sección traslada la ruta 17 de la spec 007 del Back (`specs/007-experiencia-por-cuenta/`, US-64 a US-66, J-47 y J-48) y rige desde su fase de contrato (T011 de la spec 008) y su código (T038). Los nombres de la ruta, de los campos y los textos son propuestas. La etapa A de la spec 007 no agrega rutas ni cambia las rutas 4, 6, 8 y 9, que P2, P3 y P4 leen como hoy.
 
 ### 14.1 Resumen
 
 | # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Corte |
 |---|---|---|---|---|---|---|---|---|
-| 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de la carrera en el periodo, el conteo por etapa y, con D-47, los correos de los profesores de las secciones que faltan | US-64 a US-66 (spec 007) | BR-AVANCE-NN (propuesta), BR-ACCESO-07 y BR-ACCESO-12 (propuesta) | spec 007, etapa B |
+| 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de la carrera en el periodo, el conteo por etapa y, solo si D-47 y D-51 lo aprueban, los correos de los profesores de las secciones que faltan | US-64 a US-66 (spec 007) | BR-AVANCE-NN (propuesta), BR-ACCESO-07 y BR-ACCESO-12 (propuesta) | spec 007, etapa B |
 
 El número 17 y la pantalla P7 son los que AD-47 de la revisión de la spec 005 nombra para una idea fuera de alcance, la rúbrica de la sección, que recibe otros números cuando entre (J-47).
 
-### 14.2 `GET /api/avance?periodo=2026-2`: etapa de cada sección de la carrera (propuesta)
+### 14.2 `GET /api/avance?periodo=2026-2`: etapa de cada sección de la carrera
 
 Solo un usuario activo con rol COORDINADOR la lee, por `puede_ver_avance()` de `app/permisos.py`, y su alcance sale de `secciones_visibles()`, el mismo de la ruta 4 para el coordinador. Sin `periodo`, la API usa `PERIODO_VIGENTE`.
 
@@ -823,15 +826,15 @@ Solo un usuario activo con rol COORDINADOR la lee, por `puede_ver_avance()` de `
   "conteo": { "secciones": 5, "PUBLICADA": 1, "CON_RECHAZO": 1, "SIN_CARGA": 1, "SIN_PROFESOR": 1, "SIN_PLAN": 1 },
   "secciones": [
     { "seccion_id": 1, "asignatura": { "codigo": "450002", "nombre": "Principios de Ingeniería Sostenible" },
-      "numero": "410", "etapa": "PUBLICADA", "carga_id": 7, "profesores": [] },
+      "numero": "410", "etapa": "PUBLICADA", "carga_id": 7 },
     { "seccion_id": 2, "asignatura": { "codigo": "450002", "nombre": "Principios de Ingeniería Sostenible" },
-      "numero": "411", "etapa": "CON_RECHAZO", "carga_id": null, "profesores": ["docente411@example.invalid"] },
+      "numero": "411", "etapa": "CON_RECHAZO", "carga_id": null },
     { "seccion_id": 3, "asignatura": { "codigo": "450010", "nombre": "Gestión Sostenible de Residuos" },
-      "numero": "412", "etapa": "SIN_CARGA", "carga_id": null, "profesores": ["docente410@example.invalid"] },
+      "numero": "412", "etapa": "SIN_CARGA", "carga_id": null },
     { "seccion_id": 4, "asignatura": { "codigo": "450010", "nombre": "Gestión Sostenible de Residuos" },
-      "numero": "413", "etapa": "SIN_PROFESOR", "carga_id": null, "profesores": [] },
+      "numero": "413", "etapa": "SIN_PROFESOR", "carga_id": null },
     { "seccion_id": 5, "asignatura": { "codigo": "450020", "nombre": "Evaluación del Impacto Ambiental" },
-      "numero": "414", "etapa": "SIN_PLAN", "carga_id": null, "profesores": [] }
+      "numero": "414", "etapa": "SIN_PLAN", "carga_id": null }
   ]
 }
 ```
@@ -840,7 +843,7 @@ Reglas y por qué existen.
 
 - La etapa la decide el Back en cada lectura y no se guarda en ninguna tabla (J-48, valor provisional). Una sección es SIN_PLAN si `abet.plan_medicion` no tiene filas de su asignatura en el periodo, la misma condición de `tiene_plan` de la ruta 4. Si no, es PUBLICADA con una carga PUBLICADA, aunque ya no tenga un profesor activo. Si no, es SIN_PROFESOR si ningún usuario activo con rol PROFESOR la tiene en `acceso.docente_seccion`, la condición de `secciones_sin_docente.sql` de la spec 006. Si no, es CON_RECHAZO con al menos una carga RECHAZADA, y SIN_CARGA en otro caso, también con una carga EN_CURSO. El Front muestra la etapa y nunca la calcula.
 - `carga_id` es el de la carga PUBLICADA de la sección, y `null` sin ella. Con la alternativa de J-48, que pone SIN_PROFESOR antes de PUBLICADA, también lo trae una sección SIN_PROFESOR. P7 abre con él P4, el único lugar del R-17 (J-32 de la spec 005).
-- `profesores` trae, en orden alfabético, los correos de los usuarios activos con rol PROFESOR de `acceso.docente_seccion` solo en las secciones CON_RECHAZO y SIN_CARGA, y `[]` en las demás. Depende de D-47, y si la Coordinación responde que no, el campo no existe.
+- `profesores` es un campo condicional que la ruta construida no emite. Si D-47 y D-51 lo aprueban, trae, en orden alfabético, los correos de los usuarios activos con rol PROFESOR de `acceso.docente_seccion` solo en las secciones CON_RECHAZO y SIN_CARGA, y `[]` en las demás. Depende de D-47, y si la Coordinación responde que no, el campo no existe.
 - La respuesta no trae porcentajes, niveles, cifras del R-17, códigos ni nombres de estudiantes, nombres de profesores ni datos de `acceso.credencial`.
 - Las secciones van por código de asignatura y número, el orden de `secciones_visibles()`, sin un orden por resultado (J-28 de la spec 004).
 - La ruta responde con `Cache-Control: no-store`, como toda `/api`, y entra en la prueba que recorre las rutas registradas (BR-ACCESO-10).
@@ -854,29 +857,29 @@ Errores, en el orden 401, 403 y 422 y todos sin rastro en la base.
 
 ### 14.3 Lo que esta sección no cubre
 
-1. **Los cambios de la sección 10**, que suman el camino `/api/avance` en la fase de contrato de la spec 007 (T012). La tabla de la sección 2 trae la ruta 17 marcada (propuesta) desde la spec 008.
+1. **El campo condicional `profesores`**, que espera a D-47 y a D-51 (US-66 de la spec 007 y T034 de la spec 008). La sección 10 cuenta el camino `/api/avance` desde T011 de la spec 008, y la tabla de la sección 2 trae la ruta 17.
 2. **El envío de correos desde la aplicación.** La coordinación copia la lista en P7 y escribe desde su propio correo.
-3. **El campo aditivo `ultima_rechazada_id` de la ruta 4** (J-45), que reemplaza la combinación de las rutas 4 y 8 en P2 del profesor cuando la ruta 17 esté construida.
+3. **El campo aditivo `ultima_rechazada_id` de la ruta 4** (J-45), que reemplaza la combinación de las rutas 4 y 8 en P2 del profesor. La ruta 17 ya está construida (T038 de la spec 008), y el campo sigue sin fecha.
 
-## 15. Rutas de la spec 008, ciclo de Química General en Ingeniería Industrial (propuesta)
+## 15. Rutas de la spec 008, ciclo de Química General en Ingeniería Industrial
 
-> **Aprobada por Jefferson en el chat el 2026-11-23 («Sí, apruébala»).** Esta sección traslada las rutas nuevas o cambiadas de la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, US-71, US-73, US-79 y US-80, con J-49 a J-59) y no rige hasta su aprobación y su fase de contrato (T010 y T011 de esa spec). Los nombres de las rutas, de los campos y los textos son propuestas. Todas las rutas exigen la sesión, responden con `Cache-Control: no-store`, como toda `/api`, entran en la prueba que recorre las rutas registradas (BR-ACCESO-10) y siguen la forma de error `{ "detail": "mensaje" }`. Ninguna respuesta trae nombres de personas, códigos de estudiante, datos de `acceso.credencial` ni el valor de una celda. Los ejemplos usan solo datos inventados.
+> **Definitiva desde el 2026-11-23 (T011 de la spec 008, aprobada por Jefferson en el chat el mismo día, «Sí, apruébala»).** Esta sección traslada las rutas nuevas o cambiadas de la spec 008 del Back (`specs/008-ciclo-quimica-industrial/`, US-71, US-73, US-79 y US-80, con J-49 a J-59) y fija los nombres de las rutas y de los campos antes de su código. Las reglas BR-ACCESO-13, BR-PERIODO-05 y BR-R17-13 y los cambios fechados de BR-ACCESO-07, BR-ACCESO-08 y BR-CARGA-20 entran en las specs vivas del Back con T010. Siguen como propuestas los textos de pantalla que la spec marca así, como «Secciones del curso», y el campo condicional `agregados` de la sección 15.6, que depende de D-32 (J-54). Todas las rutas exigen la sesión, responden con `Cache-Control: no-store`, como toda `/api`, entran en la prueba que recorre las rutas registradas (BR-ACCESO-10) y siguen la forma de error `{ "detail": "mensaje" }`. Ninguna respuesta trae nombres de personas, códigos de estudiante, datos de `acceso.credencial` ni el valor de una celda. Los ejemplos usan solo datos inventados.
 
 ### 15.1 Resumen
 
 | # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Cambio |
 |---|---|---|---|---|---|---|---|---|
-| 2 | GET | `/api/sesion` | Sí | 200 | Suma el campo aditivo `alcance` al usuario actual | US-71 (spec 008) | BR-ACCESO-06 y BR-ACCESO-13 (propuesta) | aditivo |
+| 2 | GET | `/api/sesion` | Sí | 200 | Suma el campo aditivo `alcance` al usuario actual | US-71 (spec 008) | BR-ACCESO-06 y BR-ACCESO-13 | aditivo |
 | 4 | GET | `/api/secciones?periodo=2026-1` | Sí | 200 | Sin cambio de forma. El alcance de la coordinación sale de `acceso.coordinacion_alcance` | US-70 y US-71 (spec 008) | BR-ACCESO-07 con un cambio fechado y BR-ACCESO-13 | de alcance |
 | 8 | GET | `/api/cargas?periodo=2026-1` | Sí | 200 | Suma el parámetro aditivo `periodo` cuando no lleva `seccion_id` | US-73 (spec 008) | BR-CARGA-20 con un cambio fechado | aditivo |
 | 12 | GET | `/api/resultados?periodo=2026-1` | Sí | 200 | Suma, solo si D-32 se responde (J-54), el campo `agregados` para el COORDINADOR | US-80 (spec 008) | BR-RESULTADOS-03, 05, 06 y 09 con un cambio fechado | aditivo y condicional |
-| 17 | GET | `/api/avance?periodo=2026-1` | Sí | 200 | La ruta de la sección 14, con el alcance de la coordinación del curso | US-79 (spec 008) | BR-AVANCE-NN (propuesta) y BR-ACCESO-13 | de alcance |
-| 18 | GET | `/api/periodos` | Sí | 200 | Devuelve el periodo vigente y los periodos con secciones al alcance del usuario | US-73 (spec 008) | BR-PERIODO-05 (propuesta) | nueva |
+| 17 | GET | `/api/avance?periodo=2026-1` | Sí | 200 | La ruta de la sección 14, con el alcance de la coordinación del curso | US-79 (spec 008) | Las reglas BR-AVANCE de la spec 007 y BR-ACCESO-13 | de alcance |
+| 18 | GET | `/api/periodos` | Sí | 200 | Devuelve el periodo vigente y los periodos con secciones al alcance del usuario | US-73 (spec 008) | BR-PERIODO-05 | nueva |
 | 19 | GET | reservada | Sí | 200 | Reservada para el archivo con los R-17 publicados del curso, fuera de alcance (J-55) | ninguna | ninguna | reservada |
 
-Las rutas 5, 6, 7 y 9 no cambian de forma. La 5 publica una carga de 5643 con la carrera y el conjunto de reglas de Industrial y responde el 500 de ERROR_INTERNO, «Ocurrió un error interno. Intente de nuevo.», si falta ese conjunto (US-68). La 7 escribe en B6 «Carrera de» más el nombre de la carrera de la carga (BR-R17-13, propuesta). La 9 deja reemplazar a la coordinación del curso en su curso con el valor provisional de D-52.
+Las rutas 5, 6, 7 y 9 no cambian de forma. La 5 publica una carga de 5643 con la carrera y el conjunto de reglas de Industrial y responde el 500 de ERROR_INTERNO, «Ocurrió un error interno. Intente de nuevo.», si falta ese conjunto (US-68). La 7 escribe en B6 «Carrera de» más el nombre de la carrera de la carga (BR-R17-13). La 9 deja reemplazar a la coordinación del curso en su curso con el valor provisional de D-52.
 
-### 15.2 `GET /api/periodos`: periodos al alcance del usuario (BR-PERIODO-05, propuesta)
+### 15.2 `GET /api/periodos`: periodos al alcance del usuario (BR-PERIODO-05)
 
 Sin parámetros. Responde los periodos en que el usuario tiene al menos una sección al alcance de `secciones_visibles()`, del más reciente al más antiguo, y el periodo de `PERIODO_VIGENTE` aparte.
 
@@ -894,14 +897,15 @@ Sin parámetros. Responde los periodos en que el usuario tiene al menos una secc
 Reglas y por qué existen.
 
 - Las claves son cerradas, `vigente` (texto AAAA-C) y `periodos` (lista de textos AAAA-C sin repetidos). La ruta no dice cuántas secciones hay en cada periodo ni de qué asignatura.
-- El Front abre en `vigente` si está en `periodos`, y si no, en el primero de `periodos`. Muestra el selector «Periodo» solo con dos periodos o más y guarda el elegido en el estado de `App.tsx`, sin `localStorage` ni `sessionStorage`.
+- El Front abre en `vigente` si está en `periodos`, y si no, en el primero de `periodos`. Muestra el selector «Periodo» solo con dos periodos o más, «Periodo 2026-1» sin selector con uno solo y nada con la lista vacía, y guarda el elegido en el estado de `App.tsx`, sin `localStorage` ni `sessionStorage`.
+- Una respuesta 200 sin `vigente` de texto o sin `periodos` como lista de textos cuenta como falla.
 - Si la ruta falla, el Front sigue como hoy, sin periodo en las rutas 4, 8, 12 y 17, y sin mostrar un error.
 
 Errores.
 
 - 401 sin sesión, con «La sesión venció. Ingrese otra vez.».
 
-### 15.3 `GET /api/sesion`: el campo aditivo `alcance` (BR-ACCESO-13, propuesta)
+### 15.3 `GET /api/sesion`: el campo aditivo `alcance` (BR-ACCESO-13)
 
 ```jsonc
 // Respuesta 200 para la coordinación del curso, con datos inventados
@@ -924,7 +928,7 @@ Reglas y por qué existen.
 - Una cuenta COORDINADOR sin filas de alcance recibe el tipo CARRERA con las dos listas vacías y no ve ninguna sección.
 - El campo no trae el periodo de las filas de asignatura, que la ruta 18 resume.
 
-### 15.4 El parámetro `periodo` de la ruta 8 (cambio fechado de BR-CARGA-20, propuesta)
+### 15.4 El parámetro `periodo` de la ruta 8 (cambio fechado de BR-CARGA-20)
 
 `GET /api/cargas?periodo=2026-1` sin `seccion_id` lista las cargas al alcance del usuario en ese periodo, con la misma forma de la sección 7. Sin `periodo`, la ruta usa `PERIODO_VIGENTE`, como hoy. Con `seccion_id`, el periodo no se usa, porque la sección ya lo fija.
 
@@ -979,5 +983,5 @@ Reglas y por qué existen.
 
 1. **La ruta 19**, reservada para el archivo con los R-17 publicados del curso, que vuelve si D-53 pide la entrega por la coordinación (J-55).
 2. **El campo `profesores` de la ruta 17 en Industrial**, que espera a D-51.
-3. **La marca (propuesta) de las rutas 17 y 18 en la tabla de la sección 2 y su suma a la sección 10**, que quedan para la fase de contrato de la spec 008 (T011).
+3. **El código de las rutas 17 y 18 y del campo `alcance`**, que construyen T030, T031, T033 y T038 del Back. Hasta entonces el Front sigue como hoy, porque la falla de la ruta 18 lo deja sin periodo y la sesión sin `alcance` lo deja con los rótulos de su rol.
 4. **Las rutas 13 a 16 de la spec 005**, que no entran antes de la capacitación (J-57).

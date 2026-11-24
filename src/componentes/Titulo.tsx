@@ -7,7 +7,7 @@ export function Titulo({ children }: { children: string }) {
     ref.current?.focus();
   }, []);
   return (
-    <h1 ref={ref} tabIndex={-1} className="mb-4 text-2xl font-semibold outline-none">
+    <h1 ref={ref} tabIndex={-1} className="mb-5 font-titulo text-titulo font-semibold text-tinta outline-none">
       {children}
     </h1>
   );

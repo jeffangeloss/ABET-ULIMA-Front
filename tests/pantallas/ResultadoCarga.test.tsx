@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import contrato from "../../docs/03-api/contrato.md?raw";
 import { ResultadoCarga } from "../../src/pantallas/ResultadoCarga";
-import { QUE_CORREGIR, queCorregir } from "../../src/servicios/ayudas";
+import { QUE_CORREGIR, QUE_CORREGIR_FILA, queCorregir } from "../../src/servicios/ayudas";
 import type { Constancia, Rol } from "../../src/servicios/tipos";
 import { json, simularApi } from "../ayudas";
 import {
@@ -126,6 +126,14 @@ describe("P4 Resultado de la carga", () => {
       "Fila 3, PI 5.2, nivel fuera de la escala 1 a 4. La fila completa queda fuera, también de 5.1 y 5.3.",
     ]);
     expect(screen.getByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/7/r17.xlsx");
+    // Cambio del 2026-11-23 (FR-012 de la spec 008, US-77). Una carga PUBLICADA con rechazos de fila dice qué corregir,
+    // y la que no tiene rechazos ni avisos sigue sin consejo, como pedía «Una carga publicada no muestra «Qué corregir»».
+    expect(screen.getByText(`Qué corregir. ${QUE_CORREGIR_FILA.get("NIVEL_FUERA_DE_ESCALA")}`)).toBeInTheDocument();
+  });
+
+  it("una carga publicada sin rechazos ni avisos no muestra «Qué corregir»", () => {
+    montar(constanciaLimpia);
+    expect(screen.getByText("11 filas leídas, 11 aceptadas y 0 rechazadas")).toBeInTheDocument();
     expect(screen.queryByText(/^Qué corregir/)).toBeNull();
   });
 
@@ -193,7 +201,8 @@ describe("P4 Resultado de la carga", () => {
     montar(constanciaSinFilasAceptadas);
     expect(screen.getByText("Ninguna fila se pudo aceptar. La carga no se publicó.")).toBeInTheDocument();
     expect(screen.getByText("11 filas leídas, 0 aceptadas y 11 rechazadas")).toBeInTheDocument();
-    expect(screen.getByText("Qué corregir. Corrija en Blackboard cada fila de la tabla de rechazos, exporte otra vez y suba el archivo nuevo."))
+    // Cambio del 2026-11-23 (FR-012 y FR-019 de la spec 008). El texto deja de decir «Corrija en Blackboard».
+    expect(screen.getByText("Qué corregir. Corrija el archivo en cada fila de la tabla de rechazos y suba el archivo nuevo. Si recibió el export de la Oficina de Calidad, pídale uno corregido."))
       .toAppearAfter(screen.getByRole("alert"));
     expect(screen.getByRole("table", { name: "Filas rechazadas" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Descargar R-17" })).toBeNull();

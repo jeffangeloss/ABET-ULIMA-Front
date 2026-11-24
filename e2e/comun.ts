@@ -4,9 +4,9 @@ import { inflateRawSync } from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Ayudas comunes de las pruebas de humo (e2e/humo.spec.ts y e2e/humo_csv.spec.ts). Las contraseñas se leen del
-// archivo temporal de ABET_CLAVES_ARCHIVO (líneas "correo clave") que imprimen api_local.sh del Back o
-// herramientas_neon/asignar_claves.py; nunca se escriben en el repositorio ni en las capturas. Datos inventados.
+// Ayudas comunes de las pruebas de humo (e2e/humo.spec.ts, e2e/humo_csv.spec.ts y e2e/humo_quimica.spec.ts). Las
+// contraseñas se leen del archivo temporal de ABET_CLAVES_ARCHIVO (líneas "correo clave") que imprimen api_local.sh del
+// Back o herramientas_neon/asignar_claves.py; nunca se escriben en el repositorio ni en las capturas. Datos inventados.
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 export const ARCHIVO_CLAVES = process.env.ABET_CLAVES_ARCHIVO ?? "";
 const CAPTURAS = process.env.DIR_CAPTURAS ?? "";
@@ -35,15 +35,26 @@ export async function capturar(page: Page, nombre: string) {
   await page.screenshot({ path: path.join(CAPTURAS, nombre), fullPage: true });
 }
 
-/** P1. Ingresa con la contraseña del archivo de claves y espera P2 «Mis secciones». */
-export async function ingresar(page: Page, correo: string) {
+/**
+ * P1. Ingresa con la contraseña del archivo de claves y espera la pantalla de llegada, P2 «Mis secciones» por omisión.
+ * Spec 008 (T053). La coordinación del curso llega a P7 o, sin la etapa B, a P2 «Secciones del curso».
+ */
+export async function ingresar(page: Page, correo: string, llegada: string | RegExp = "Mis secciones") {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "Ingreso" })).toBeVisible();
   if (correo.startsWith("docente410")) await capturar(page, "P1_ingreso.png");
   await page.getByLabel("Correo").fill(correo);
   await page.getByLabel("Contraseña").fill(clave(correo));
   await page.getByRole("button", { name: "Ingresar" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Mis secciones" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: llegada })).toBeVisible();
+}
+
+/**
+ * Spec 008 (T053). Cabeceras de omisión para un contexto de peticiones sin navegador (request.newContext), que
+ * context.route no alcanza. Vacías fuera de una vista previa o sin la clave.
+ */
+export function cabecerasDeOmision(): Record<string, string> {
+  return VISTA_PREVIA && OMISION ? { "x-vercel-protection-bypass": OMISION, "x-vercel-set-bypass-cookie": "true" } : {};
 }
 
 /** Agrega la clave de omisión a las peticiones del navegador hacia la vista previa, si la hay. */
@@ -115,6 +126,22 @@ export function celdasDelLibro(datos: Buffer, hoja: string, celdas: string[]): R
       : v ?? null;
   }
   return valores;
+}
+
+/**
+ * Spec 008 (T053). Cada celda con valor de una hoja del libro, por su referencia, para comparar dos R-17 celda por celda.
+ */
+export function todasLasCeldas(datos: Buffer, hoja: string): Record<string, string | null> {
+  const partes = partesDelZip(datos);
+  const leer = (nombre: string) => partes.get(nombre)?.toString("utf8") ?? "";
+  const etiqueta = [...leer("xl/workbook.xml").matchAll(/<sheet\b[^>]*>/g)].map((m) => m[0]).find((e) => atributo(e, "name") === hoja);
+  const id = atributo(etiqueta ?? "", "r:id");
+  const relacion = [...leer("xl/_rels/workbook.xml.rels").matchAll(/<Relationship\b[^>]*>/g)]
+    .map((m) => m[0])
+    .find((e) => atributo(e, "Id") === id);
+  const destino = (atributo(relacion ?? "", "Target") ?? "").replace(/^\/?(xl\/)?/, "");
+  const referencias = [...leer(`xl/${destino}`).matchAll(/<c\b[^>]*\sr="([A-Z]+[0-9]+)"/g)].map((m) => m[1]);
+  return celdasDelLibro(datos, hoja, referencias);
 }
 
 /** «81,8 %», como escribe P6 el porcentaje de un decimal. */

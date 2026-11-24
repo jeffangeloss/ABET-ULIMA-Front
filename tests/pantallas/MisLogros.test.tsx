@@ -121,6 +121,13 @@ describe("P6 Mis logros por SO", () => {
     expect(screen.getAllByRole("link", { name: /Descargar R-17/ })).toHaveLength(1);
   });
 
+  it("una sección publicada sin carga_id válido no ofrece el R-17 y el resto del reporte sigue", async () => {
+    const [publicada, ...resto] = resultadosConUnaPublicada.secciones;
+    await abrir({ ...resultadosConUnaPublicada, secciones: [{ ...publicada, carga_id: null }, ...resto] });
+    expect(await screen.findByText("Publicada")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Descargar R-17/ })).not.toBeInTheDocument();
+  });
+
   it("no ofrece Subir export al profesor ni al coordinador", async () => {
     const { unmount } = await abrir(resultadosDeVarias);
     await screen.findByRole("region", { name: "SO 5" });

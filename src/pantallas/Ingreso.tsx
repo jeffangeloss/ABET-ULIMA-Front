@@ -2,8 +2,8 @@ import { useState, type FormEvent } from "react";
 import { AvisoSesion } from "./AvisoSesion";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
-import { boton, campo } from "../componentes/estilos";
-import { ErrorApi, iniciarSesion } from "../servicios/api";
+import { boton, campo, tarjeta } from "../componentes/estilos";
+import { ErrorApi, iniciarSesion, sesionActual } from "../servicios/api";
 import type { Usuario } from "../servicios/tipos";
 
 interface Props {
@@ -25,9 +25,14 @@ export function Ingreso({ alIngresar, aviso }: Props) {
     setEnviando(true);
     setError(null);
     try {
-      alIngresar(await iniciarSesion(correo, contrasena));
+      const usuario = await iniciarSesion(correo, contrasena);
+      // Spec 008, T053. La ruta 1 responde solo el correo y el rol, y el alcance que decide los rótulos de la
+      // coordinación llega en la ruta 2 (contrato, sección 15.3). Si la ruta 2 falla, la sesión sigue con la ruta 1.
+      alIngresar(await sesionActual().catch(() => usuario));
     } catch (falla) {
       setError(falla instanceof ErrorApi ? falla.detail : "El servicio no respondió. Intente de nuevo.");
+      // Spec 008, US-81. El correo se conserva y la contraseña se vacía para escribirla otra vez (propuesta).
+      setContrasena("");
     } finally {
       setEnviando(false);
     }
@@ -37,19 +42,19 @@ export function Ingreso({ alIngresar, aviso }: Props) {
     <>
       <Titulo>Ingreso</Titulo>
       <AvisoSesion texto={aviso} />
-      <form onSubmit={enviar} className="max-w-sm space-y-4">
+      <form onSubmit={enviar} className={`max-w-sm space-y-4 border-t-4 border-t-institucional ${tarjeta}`}>
         <div>
-          <label htmlFor="correo" className="text-sm font-medium">Correo</label>
+          <label htmlFor="correo" className="text-sm font-semibold text-tinta">Correo</label>
           <input id="correo" type="email" autoComplete="username" required value={correo}
             onChange={(e) => setCorreo(e.target.value)} className={campo} />
         </div>
         <div>
-          <label htmlFor="contrasena" className="text-sm font-medium">Contraseña</label>
+          <label htmlFor="contrasena" className="text-sm font-semibold text-tinta">Contraseña</label>
           <input id="contrasena" type="password" autoComplete="current-password" required value={contrasena}
             onChange={(e) => setContrasena(e.target.value)} className={campo} />
         </div>
         {error && <Mensaje tipo="error">{error}</Mensaje>}
-        <button type="submit" disabled={enviando} className={boton}>
+        <button type="submit" disabled={enviando} className={`w-full ${boton}`}>
           {enviando ? "Ingresando" : "Ingresar"}
         </button>
       </form>
