@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { EnlaceR17 } from "../componentes/EnlaceR17";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
@@ -33,6 +32,8 @@ interface Props {
   /** Spec 008, US-73. El periodo elegido en la cabecera, o ninguno para el vigente de la API. */
   periodo?: string;
   alVolver: () => void;
+  /** Spec 005, J-32. Abre P4 de la carga publicada de una sección, el único lugar que ofrece el R-17. */
+  alVerCarga?: (cargaId: number) => void;
 }
 
 function nombreDeSeccion(s: SeccionConLogros): string {
@@ -131,7 +132,13 @@ function FilaDeIndicador({ indicador, seccion }: { indicador: Indicador; seccion
   );
 }
 
-function SeccionDelReporte({ seccion }: { seccion: SeccionConLogros }) {
+/** Un carga_id de la API que abre P4, un entero positivo, o null (como urlR17 antes de la spec 005). */
+function cargaQueSeAbre(s: SeccionConLogros): number | null {
+  return Number.isSafeInteger(s.carga_id) && (s.carga_id as number) > 0 ? s.carga_id : null;
+}
+
+function SeccionDelReporte({ seccion, alVerCarga }: { seccion: SeccionConLogros; alVerCarga?: (cargaId: number) => void }) {
+  const cargaId = cargaQueSeAbre(seccion);
   const franja = franjaProvisional(seccion);
   return (
     <li className={tarjeta}>
@@ -140,9 +147,12 @@ function SeccionDelReporte({ seccion }: { seccion: SeccionConLogros }) {
         <>
           <p className="mt-1 text-sm text-tinta-suave">Publicada</p>
           {franja && <p className="my-3 rounded-md border-l-4 border-aviso-borde bg-aviso-fondo px-3 py-2 text-sm text-aviso-texto">{franja}</p>}
-          <EnlaceR17 className={botonSecundario} cargaId={seccion.carga_id}>
-            Descargar R-17 de la {nombreDeSeccion(seccion).toLowerCase()}
-          </EnlaceR17>
+          {/* Spec 005, J-32. P6 lleva a P4, que ofrece el R-17 solo con la declaración, en lugar del enlace de FR-015 de la spec 004. */}
+          {cargaId !== null && alVerCarga && (
+            <button type="button" className={botonSecundario} onClick={() => alVerCarga(cargaId)}>
+              Ver la carga de la {nombreDeSeccion(seccion).toLowerCase()}
+            </button>
+          )}
         </>
       ) : (
         <>
@@ -170,7 +180,7 @@ function porAsignatura(secciones: SeccionConLogros[]): SeccionConLogros[][] {
 }
 
 /** P6. Los logros de cada PI de las secciones del usuario, agrupados por SO y frente a la meta. */
-export function MisLogros({ usuario, periodo, alVolver }: Props) {
+export function MisLogros({ usuario, periodo, alVolver, alVerCarga }: Props) {
   const [resultados, setResultados] = useState<Resultados | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -214,7 +224,7 @@ export function MisLogros({ usuario, periodo, alVolver }: Props) {
                 </h3>
                 <ul className="space-y-3">
                   {grupo.map((s) => (
-                    <SeccionDelReporte key={s.seccion_id} seccion={s} />
+                    <SeccionDelReporte key={s.seccion_id} seccion={s} alVerCarga={alVerCarga} />
                   ))}
                 </ul>
               </div>

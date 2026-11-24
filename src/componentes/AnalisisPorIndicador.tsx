@@ -308,9 +308,9 @@ function Edicion({ cargaId, datos, mejora, sesion, textosTraidos, alCambiarPendi
     window.addEventListener("pagehide", alOcultar);
     return () => {
       window.removeEventListener("pagehide", alOcultar);
+      // Dejar P4 descarta lo que no se guardó, como pide «Salir» (AD-22). Pulsar otro botón saca antes el foco del campo,
+      // y esa salida ya envía el guardado.
       limpiarTemporizador();
-      // Al dejar P4 con texto sin guardar, el borrador sale igual, con keepalive, para no perder lo escrito.
-      if (sucioRef.current) void guardarRef.current(true);
       avisarRef.current?.(false);
     };
   }, []);

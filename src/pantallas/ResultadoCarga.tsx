@@ -33,6 +33,8 @@ interface Props {
   sesion?: number;
   /** Spec 005, AD-22. Avisa si hay texto sin guardar en «Análisis por indicador». */
   alCambiarPendiente?: (pendiente: boolean) => void;
+  /** Spec 005, US-52. Tras una subida RECHAZADA, vuelve a P3 de la misma sección, porque P4 reemplazó su entrada. */
+  alSubirOtro?: () => void;
 }
 
 const MSG_SIN_RESPUESTA = "El servicio no respondió. Intente de nuevo.";
@@ -74,6 +76,7 @@ export function ResultadoCarga({
   textosTraidos,
   sesion,
   alCambiarPendiente,
+  alSubirOtro,
 }: Props) {
   const [constancia, setConstancia] = useState<Constancia | null>(constanciaInicial ?? null);
   const [error, setError] = useState<string | null>(null);
@@ -222,6 +225,11 @@ export function ResultadoCarga({
         </>
       )}
       <div className="mt-6 flex flex-wrap gap-2 border-t border-linea pt-4">
+        {alSubirOtro && constancia?.estado === "RECHAZADA" && (
+          <button type="button" className={boton} onClick={alSubirOtro}>
+            Subir otro archivo
+          </button>
+        )}
         <button type="button" className={botonSecundario} onClick={alVolver}>
           Volver a mis secciones
         </button>

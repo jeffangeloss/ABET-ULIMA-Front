@@ -1,5 +1,4 @@
 import { useEffect, useId, useState } from "react";
-import { EnlaceR17 } from "../componentes/EnlaceR17";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
@@ -199,17 +198,13 @@ export function MisSecciones({ usuario, periodo, conSelector = false, alSubir, a
                     {loQueFalta(s, rechazada !== undefined)}
                   </p>
                 )}
+                {/* J-32 de la spec 005. «Ver resultado» abre P4, el único lugar que ofrece el R-17. */}
                 <div className="mt-3 flex flex-wrap gap-2">
                   {verPrimero ? [ver, subir] : [subir, ver]}
                   {esProfesor && rechazada !== undefined && (
                     <button type="button" className={botonSecundario} onClick={() => alVerResultado(rechazada)}>
                       Ver por qué se rechazó
                     </button>
-                  )}
-                  {!esProfesor && s.carga_id !== null && (
-                    <EnlaceR17 className={botonSecundario} cargaId={s.carga_id}>
-                      Descargar R-17
-                    </EnlaceR17>
                   )}
                 </div>
               </li>

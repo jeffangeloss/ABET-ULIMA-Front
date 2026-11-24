@@ -294,7 +294,7 @@ Cada campo admite hasta 800 puntos de código (J-39), y el Front los cuenta con 
 | 401 durante el guardado | No desmonta P4. El ingreso la tapa con el texto en memoria, y si vuelve a ingresar el mismo usuario, reintenta con la misma versión (decisión de arquitectura AD-22). Con otro usuario, o después de «Salir», descarta el texto |
 | Carga REEMPLAZADA con 409 | Conserva el texto y ofrece «Llevar el texto a la carga N» (propuesta), con el número de `reemplazada_por` |
 
-**Textos que el código fija (propuestas).** Una celda sin cifra de la tabla dice «Sin dato», y un PI sin calificaciones no escribe su 0,0 % sobre el total. Cada campo cuenta debajo «120 de 800 caracteres», y con más de 800 marca el campo como inválido, no guarda y muestra «Cada campo admite hasta 800 caracteres.» (propuesta). El 409 por versión ofrece «Conservar el texto de esta pantalla» y «Usar el texto guardado» (propuestas). El primero guarda el texto de la pantalla sobre la versión guardada, y el segundo trae a los bloques el borrador guardado. Al dejar P4 con texto sin guardar, el borrador sale igual con `keepalive`.
+**Textos que el código fija (propuestas).** Una celda sin cifra de la tabla dice «Sin dato», y un PI sin calificaciones no escribe su 0,0 % sobre el total. Cada campo cuenta debajo «120 de 800 caracteres», y con más de 800 marca el campo como inválido, no guarda y muestra «Cada campo admite hasta 800 caracteres.» (propuesta). El 409 por versión ofrece «Conservar el texto de esta pantalla» y «Usar el texto guardado» (propuestas). El primero guarda el texto de la pantalla sobre la versión guardada, y el segundo trae a los bloques el borrador guardado. Pulsar cualquier botón para dejar P4 saca antes el foco del campo, y esa salida envía el guardado.
 
 **El R-17 solo con declaración.** Sin declaración, P4 muestra «Descargar R-17» deshabilitado con «El R-17 se habilita cuando registre y declare la causa y la acción de cada indicador.» (propuesta) para el profesor, y «El R-17 se habilita cuando el profesor de la sección declare el análisis por indicador.» (propuesta) para el coordinador. Con la declaración ofrece el enlace de siempre a la ruta 7, que escribe el análisis de cada PI en los recuadros A y B (contrato, sección 13.6). Una carga REEMPLAZADA mantiene su texto de hoy, «La carga 11 la reemplaza, así que esta carga no tiene R-17.» (propuesta).
 
@@ -318,12 +318,14 @@ La spec 005 (US-52, J-34) agrega la navegación por el fragmento de la direcció
 | `#/secciones/{seccion_id}/subir?reemplaza={carga_id}` | P3 en modo reemplazo |
 | `#/cargas/{carga_id}` | P4 |
 | `#/logros` | P6 |
+| `#/avance` | P7, solo para la coordinación (spec 007) |
 
 - **`history.state`** lleva solo la ruta y una marca del ingreso, nunca la constancia ni el borrador. Cada pantalla vuelve a pedir sus datos.
 - **Reemplazo tras la subida.** Después de una subida que termina en P4, `replaceState` reemplaza la entrada de P3 solo si la pantalla visible sigue siendo esa subida, de modo que atrás lleve a P2 sin repetir el POST. Una carga RECHAZADA ofrece «Subir otro archivo» (propuesta).
 - **«Salir».** Después de «Salir», `replaceState` lleva a `#/`, y sin usuario `App.tsx` muestra P1 con cualquier fragmento. Atrás desde ahí no muestra ninguna sección.
 - **Entradas inválidas.** Una entrada de otro ingreso o un fragmento desconocido llevan a P2. P3 recargada cae a P2, porque necesita la sección. Recargar en P4 conserva la pantalla por el fragmento, sin prueba propia.
 - **Fragmento ajeno.** Un fragmento a una carga ajena, como `#/cargas/999`, muestra el 403 de P4, «La sección no está a su cargo.».
+- **Construcción.** `App.tsx` guarda la marca de cada ingreso, nueva al abrir la aplicación con sesión y al ingresar, y recuerda en memoria las secciones que la sesión abrió en P3, de modo que atrás y adelante vuelven a P3 sin pedir la sección y una recarga cae a la pantalla de llegada. Escucha `popstate` y `hashchange`, porque un fragmento escrito en la dirección llega por cualquiera de los dos. Tras un 401 con texto sin guardar en P4, la pantalla queda oculta bajo el ingreso con el atributo `hidden`, y el mismo usuario la recupera con la misma entrada del historial.
 
 ### 10.4 Pruebas
 

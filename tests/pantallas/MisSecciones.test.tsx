@@ -84,10 +84,9 @@ describe("P2 Mis secciones", () => {
     const filas = await screen.findAllByRole("listitem");
     expect(screen.queryByRole("button", { name: "Subir export" })).toBeNull();
     expect(within(filas[0]).getByRole("button", { name: "Ver resultado" })).toBeInTheDocument();
-    expect(within(filas[0]).getByRole("link", { name: "Descargar R-17" })).toHaveAttribute(
-      "href",
-      "/api/cargas/7/r17.xlsx",
-    );
+    // Spec 005, J-32. El título sigue el del enlace de cumplimiento del Back, y desde la spec 005 P2 no ofrece el R-17,
+    // porque «Ver resultado» abre P4, el único lugar que lo ofrece con la declaración.
+    expect(within(filas[0]).queryByRole("link", { name: "Descargar R-17" })).toBeNull();
     expect(within(filas[1]).queryByRole("link", { name: "Descargar R-17" })).toBeNull();
     expect(screen.queryByText(revisarPublicada)).toBeNull();
     expect(screen.queryByText(faltaExport)).toBeNull();

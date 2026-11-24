@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { Textos } from "./componentes/AnalisisPorIndicador";
 import { Avance } from "./pantallas/Avance";
 import { Cargas } from "./pantallas/Cargas";
 import { Ingreso } from "./pantallas/Ingreso";
@@ -17,10 +18,71 @@ type Vista =
   | { pantalla: "secciones" }
   | { pantalla: "cargas" }
   | { pantalla: "subir"; seccion: Seccion; reemplaza?: number }
-  | { pantalla: "resultado"; cargaId: number; constancia?: Constancia }
+  | {
+      pantalla: "resultado";
+      cargaId: number;
+      constancia?: Constancia;
+      /** Spec 005, US-54. El texto traído con «Llevar el texto a la carga N», solo en memoria. */
+      textos?: Textos;
+      /** Spec 005, US-52. La sección de la subida que terminó aquí, para «Subir otro archivo». */
+      seccion?: Seccion;
+    }
   | { pantalla: "logros" };
 
 type Pantalla = Vista["pantalla"];
+
+/**
+ * Spec 005, US-52 y J-34. Cada pantalla vive en el fragmento de la dirección. history.state lleva solo la ruta y la marca
+ * del ingreso, nunca la constancia ni el borrador, y cada pantalla vuelve a pedir sus datos.
+ */
+interface EstadoDelHistorial {
+  ruta: string;
+  ingreso: string;
+}
+
+const ID = "([1-9][0-9]{0,14})";
+const RUTA_CARGA = new RegExp(`^#/cargas/${ID}$`);
+const RUTA_SUBIR = new RegExp(`^#/secciones/${ID}/subir(?:\\?reemplaza=${ID})?$`);
+const RUTAS_FIJAS: Record<string, Vista> = {
+  "#/avance": { pantalla: "avance" },
+  "#/secciones": { pantalla: "secciones" },
+  "#/cargas": { pantalla: "cargas" },
+  "#/logros": { pantalla: "logros" },
+};
+
+/** El fragmento de cada pantalla (frontend.md, sección 10.3). */
+export function fragmentoDe(v: Vista): string {
+  switch (v.pantalla) {
+    case "subir":
+      return `#/secciones/${v.seccion.seccion_id}/subir${v.reemplaza === undefined ? "" : `?reemplaza=${v.reemplaza}`}`;
+    case "resultado":
+      return `#/cargas/${v.cargaId}`;
+    default:
+      return `#/${v.pantalla}`;
+  }
+}
+
+/**
+ * La pantalla de un fragmento, o null si es desconocido. P3 necesita la sección, así que solo vuelve si esta sesión ya la
+ * abrió, y P3 recargada cae a la pantalla de llegada. P7 es solo de la coordinación.
+ */
+function vistaDe(fragmento: string, usuario: Usuario, secciones: Map<number, Seccion>): Vista | null {
+  const fija = RUTAS_FIJAS[fragmento];
+  if (fija) return fija.pantalla === "avance" && usuario.rol !== "COORDINADOR" ? null : fija;
+  const carga = RUTA_CARGA.exec(fragmento);
+  if (carga) return { pantalla: "resultado", cargaId: Number(carga[1]) };
+  const subir = RUTA_SUBIR.exec(fragmento);
+  const seccion = subir ? secciones.get(Number(subir[1])) : undefined;
+  if (subir && seccion) return { pantalla: "subir", seccion, reemplaza: subir[2] === undefined ? undefined : Number(subir[2]) };
+  return null;
+}
+
+let marcas = 0;
+/** Marca de un ingreso, que distingue las entradas del historial de esta sesión de las de otra. */
+function nuevaMarca(): string {
+  marcas += 1;
+  return `${Date.now().toString(36)}-${marcas}`;
+}
 
 /**
  * J-46 de la spec 007. La pantalla a la que llega cada cuenta al ingresar, al abrir la aplicación con sesión y al volver
@@ -68,7 +130,38 @@ export function App() {
   const [vista, setVista] = useState<Vista>({ pantalla: "secciones" });
   const [aviso, setAviso] = useState<string | undefined>(undefined);
   const [estadoPeriodo, setEstadoPeriodo] = useState<EstadoPeriodo | null>(null);
+  /** Spec 005, AD-22. El usuario cuya P4 queda oculta bajo el ingreso tras un 401, con su texto en memoria. */
+  const [retenido, setRetenido] = useState<Usuario | null>(null);
+  /** Sube cada vez que vuelve el mismo usuario, para que P4 reintente el guardado que recibió el 401. */
+  const [sesion, setSesion] = useState(0);
   const correo = usuario?.correo;
+
+  const usuarioRef = useRef(usuario);
+  usuarioRef.current = usuario;
+  const vistaRef = useRef(vista);
+  const ingresoRef = useRef("");
+  const fragmentoRef = useRef("");
+  const pendienteRef = useRef(false);
+  const seccionesRef = useRef(new Map<number, Seccion>());
+
+  /** Muestra una pantalla y la guarda en el fragmento, con una entrada nueva o en lugar de la actual. */
+  function ir(v: Vista, reemplazar = false) {
+    vistaRef.current = v;
+    setVista(v);
+    const ruta = fragmentoDe(v);
+    const estado: EstadoDelHistorial = { ruta, ingreso: ingresoRef.current };
+    if (reemplazar || window.location.hash === ruta) window.history.replaceState(estado, "", ruta);
+    else window.history.pushState(estado, "", ruta);
+    fragmentoRef.current = ruta;
+  }
+
+  /** Un ingreso nuevo, con su marca, en la pantalla del fragmento si la hay o en la de llegada. */
+  function abrirSesion(u: Usuario, conFragmento: boolean) {
+    ingresoRef.current = nuevaMarca();
+    seccionesRef.current = new Map();
+    const desdeFragmento = conFragmento ? vistaDe(window.location.hash, u, seccionesRef.current) : null;
+    ir(desdeFragmento ?? pantallaDeLlegada(u), true);
+  }
 
   useEffect(() => {
     let vigente = true;
@@ -76,18 +169,45 @@ export function App() {
       .then((u) => {
         if (!vigente) return;
         setUsuario(u);
-        setVista(pantallaDeLlegada(u));
+        abrirSesion(u, true);
       })
       .catch(() => vigente && setUsuario(null));
     const quitar = alSesionVencida((detail) => {
+      const actual = usuarioRef.current;
       setAviso(detail);
       setUsuario(null);
       setEstadoPeriodo(null);
-      setVista({ pantalla: "secciones" });
+      // AD-22. Con texto sin guardar en P4, la pantalla queda oculta bajo el ingreso en vez de desmontarse.
+      if (actual && vistaRef.current.pantalla === "resultado" && pendienteRef.current) {
+        setRetenido(actual);
+      } else {
+        vistaRef.current = { pantalla: "secciones" };
+        setVista({ pantalla: "secciones" });
+      }
     });
+    // US-52. Atrás, adelante o un fragmento escrito en la dirección. Sin usuario, App muestra P1 con cualquier fragmento.
+    const alCambiarDireccion = () => {
+      const u = usuarioRef.current;
+      const fragmento = window.location.hash;
+      if (!u || fragmento === fragmentoRef.current) return;
+      fragmentoRef.current = fragmento;
+      const estado = window.history.state as Partial<EstadoDelHistorial> | null;
+      const deOtroIngreso = typeof estado?.ingreso === "string" && estado.ingreso !== ingresoRef.current;
+      const v = deOtroIngreso ? null : vistaDe(fragmento, u, seccionesRef.current);
+      if (v) {
+        vistaRef.current = v;
+        setVista(v);
+      } else {
+        ir(pantallaDeLlegada(u), true);
+      }
+    };
+    window.addEventListener("popstate", alCambiarDireccion);
+    window.addEventListener("hashchange", alCambiarDireccion);
     return () => {
       vigente = false;
       quitar();
+      window.removeEventListener("popstate", alCambiarDireccion);
+      window.removeEventListener("hashchange", alCambiarDireccion);
     };
   }, []);
 
@@ -109,12 +229,42 @@ export function App() {
     await cerrarSesion().catch(() => undefined);
     setAviso(undefined);
     setUsuario(null);
+    setRetenido(null);
     setEstadoPeriodo(null);
+    vistaRef.current = { pantalla: "secciones" };
     setVista({ pantalla: "secciones" });
+    // US-52. Atrás desde P1 no muestra ninguna sección, porque las entradas anteriores son de otro ingreso.
+    window.history.replaceState(null, "", "#/");
+    fragmentoRef.current = "#/";
   }
 
-  const volver = () => setVista({ pantalla: "secciones" });
-  const verLogros = () => setVista({ pantalla: "logros" });
+  function alIngresar(u: Usuario) {
+    setAviso(undefined);
+    setUsuario(u);
+    // AD-22. El mismo usuario recupera P4 con su texto y el guardado se reintenta. Otro usuario lo descarta.
+    if (retenido && retenido.correo === u.correo) {
+      setRetenido(null);
+      setSesion((s) => s + 1);
+      return;
+    }
+    setRetenido(null);
+    abrirSesion(u, false);
+  }
+
+  const volver = () => ir({ pantalla: "secciones" });
+  const verLogros = () => ir({ pantalla: "logros" });
+  const verCarga = (cargaId: number) => ir({ pantalla: "resultado", cargaId });
+  const subir = (seccion: Seccion, reemplaza?: number) => {
+    seccionesRef.current.set(seccion.seccion_id, seccion);
+    ir({ pantalla: "subir", seccion, reemplaza });
+  };
+  /** Tras la subida, P4 toma la entrada de P3 solo si la pantalla visible sigue siendo esa subida. */
+  const alSubirConResultado = (seccion: Seccion, reemplaza: number | undefined, constancia: Constancia) => {
+    const v = vistaRef.current;
+    if (v.pantalla !== "subir" || v.seccion.seccion_id !== seccion.seccion_id || v.reemplaza !== reemplaza) return;
+    ir({ pantalla: "resultado", cargaId: constancia.carga_id, constancia, seccion }, true);
+  };
+  const quien = usuario ?? retenido;
   const periodoListo = usuario ? estadoPeriodo?.correo === usuario.correo : false;
   const periodos = periodoListo ? estadoPeriodo!.periodos : [];
   const periodo = periodoListo ? estadoPeriodo!.elegido : undefined;
@@ -148,7 +298,7 @@ export function App() {
                     type="button"
                     className={botonDelMenu}
                     aria-current={actual(vista.pantalla, "avance")}
-                    onClick={() => setVista({ pantalla: "avance" })}
+                    onClick={() => ir({ pantalla: "avance" })}
                   >
                     {rotuloDeAvance(usuario)}
                   </button>
@@ -160,7 +310,7 @@ export function App() {
                   type="button"
                   className={botonDelMenu}
                   aria-current={actual(vista.pantalla, "cargas")}
-                  onClick={() => setVista({ pantalla: "cargas" })}
+                  onClick={() => ir({ pantalla: "cargas" })}
                 >
                   Cargas
                 </button>
@@ -193,21 +343,14 @@ export function App() {
         <main>
           {(usuario === undefined || (usuario && !periodoListo)) && <Espera>Cargando</Espera>}
           {usuario === null && (
-            <Ingreso
-              aviso={aviso}
-              alIngresar={(u) => {
-                setAviso(undefined);
-                setUsuario(u);
-                setVista(pantallaDeLlegada(u));
-              }}
-            />
+            <Ingreso aviso={aviso} alIngresar={alIngresar} />
           )}
           {usuario && periodoListo && vista.pantalla === "avance" && (
             <Avance
               key={llave}
               usuario={usuario}
               periodo={periodo}
-              alVerCarga={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
+              alVerCarga={verCarga}
             />
           )}
           {usuario && periodoListo && vista.pantalla === "secciones" && (
@@ -216,8 +359,8 @@ export function App() {
               usuario={usuario}
               periodo={periodo}
               conSelector={conSelector}
-              alSubir={(seccion) => setVista({ pantalla: "subir", seccion })}
-              alVerResultado={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
+              alSubir={(seccion) => subir(seccion)}
+              alVerResultado={verCarga}
             />
           )}
           {usuario && periodoListo && vista.pantalla === "cargas" && (
@@ -225,8 +368,8 @@ export function App() {
               key={llave}
               usuario={usuario}
               periodo={periodo}
-              alVerResultado={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
-              alReemplazar={(seccion, cargaId) => setVista({ pantalla: "subir", seccion, reemplaza: cargaId })}
+              alVerResultado={verCarga}
+              alReemplazar={(seccion, cargaId) => subir(seccion, cargaId)}
             />
           )}
           {usuario && vista.pantalla === "subir" && (
@@ -235,22 +378,33 @@ export function App() {
               seccion={vista.seccion}
               reemplaza={vista.reemplaza}
               alVolver={volver}
-              alVerResultado={(cargaId) => setVista({ pantalla: "resultado", cargaId })}
-              alResultado={(constancia) => setVista({ pantalla: "resultado", cargaId: constancia.carga_id, constancia })}
+              alVerResultado={verCarga}
+              alResultado={(constancia) => alSubirConResultado(vista.seccion, vista.reemplaza, constancia)}
             />
           )}
-          {usuario && vista.pantalla === "resultado" && (
-            <ResultadoCarga
-              cargaId={vista.cargaId}
-              rol={usuario.rol}
-              constanciaInicial={vista.constancia}
-              alVolver={volver}
-              alVerLogros={verLogros}
-              rotuloLogros={rotuloDeLogros(usuario)}
-            />
+          {quien && vista.pantalla === "resultado" && (
+            // AD-22. Tras un 401 con texto sin guardar, P4 sigue montada y oculta bajo el ingreso.
+            <div hidden={!usuario}>
+              <ResultadoCarga
+                key={vista.cargaId}
+                cargaId={vista.cargaId}
+                rol={quien.rol}
+                constanciaInicial={vista.constancia}
+                textosTraidos={vista.textos}
+                sesion={sesion}
+                alCambiarPendiente={(p) => {
+                  pendienteRef.current = p;
+                }}
+                alVolver={volver}
+                alVerLogros={verLogros}
+                rotuloLogros={rotuloDeLogros(quien)}
+                alVerCarga={(cargaId, textos) => ir({ pantalla: "resultado", cargaId, textos })}
+                alSubirOtro={vista.seccion ? () => subir(vista.seccion!) : undefined}
+              />
+            </div>
           )}
           {usuario && periodoListo && vista.pantalla === "logros" && (
-            <MisLogros key={llave} usuario={usuario} periodo={periodo} alVolver={volver} />
+            <MisLogros key={llave} usuario={usuario} periodo={periodo} alVolver={volver} alVerCarga={verCarga} />
           )}
         </main>
       </div>
