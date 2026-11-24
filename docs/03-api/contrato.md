@@ -1,8 +1,8 @@
 # Contrato de la API
 
-> **Estado 2026-11-23.** La sección 15 fija la forma definitiva de las rutas de la spec 008 del Back (T011), con la ruta 18 de periodos, el campo `alcance` de la ruta 2, el parámetro `periodo` de la ruta 8 y la ruta 17 con el alcance de la coordinación del curso, escrita antes de su código en la rama `feat/008-ciclo-quimica-industrial` después de la aprobación de Jefferson del 2026-11-23. **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** La sección 13 cambia las rutas 13 a 16 de la spec 005 del Back. El profesor registra una causa y una acción por indicador de desempeño, rotuladas como oportunidad de mejora o buena práctica según el semáforo, en lugar de un texto por carga. **Estado 2026-11-18.** La sección 12 fija la forma definitiva de la ruta 12 de la spec 004 del Back (T011), los logros por resultado del estudiante (student outcome, SO) de las secciones al alcance del usuario, escrita antes de su código en la rama `feat/004-reportes-docente` después de la aprobación de Jefferson del 2026-11-18. **Estado 2026-11-17.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. La sección 7 fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo de la carga publicada, la lista de cargas y la confirmación de la sección, escrita antes de su código en la rama `feat/001-corte-2`. El código de acceso por correo (ruta 10) sigue en espera de T018, el dominio y la cuenta de Resend de Jefferson. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
+> **Estado 2026-11-24.** La sección 13 fija la forma definitiva de las rutas 13 a 16 de la spec 005 del Back (T011), con el hallazgo y el tipo de registro de cada indicador, el arreglo `indicadores` y el estado PROPUESTA derivado, escrita antes de su código en la rama `feat/005-oportunidades-de-mejora`, y la tabla de la sección 2 y la comprobación de la sección 10 las suman. Los textos marcados «(propuesta)» siguen como propuestas. **Estado 2026-11-23.** La sección 15 fija la forma definitiva de las rutas de la spec 008 del Back (T011), con la ruta 18 de periodos, el campo `alcance` de la ruta 2, el parámetro `periodo` de la ruta 8 y la ruta 17 con el alcance de la coordinación del curso, escrita antes de su código en la rama `feat/008-ciclo-quimica-industrial` después de la aprobación de Jefferson del 2026-11-23. **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** La sección 13 cambia las rutas 13 a 16 de la spec 005 del Back. El profesor registra una causa y una acción por indicador de desempeño, rotuladas como oportunidad de mejora o buena práctica según el semáforo, en lugar de un texto por carga. **Estado 2026-11-18.** La sección 12 fija la forma definitiva de la ruta 12 de la spec 004 del Back (T011), los logros por resultado del estudiante (student outcome, SO) de las secciones al alcance del usuario, escrita antes de su código en la rama `feat/004-reportes-docente` después de la aprobación de Jefferson del 2026-11-18. **Estado 2026-11-17.** El Back implementa las rutas del corte 1 y `specs/001-mvp-carga-r17/audit.md` del Back cruza cada escenario con su prueba. La sección 7 fija la forma definitiva de las rutas del corte 2 (T080), con el reemplazo de la carga publicada, la lista de cargas y la confirmación de la sección, escrita antes de su código en la rama `feat/001-corte-2`. El código de acceso por correo (ruta 10) sigue en espera de T018, el dominio y la cuenta de Resend de Jefferson. Este contrato se escribió antes del código, como exige [`docs/specs/api-contracts.md`](../specs/api-contracts.md), y cada ruta cita las reglas `BR-` numeradas de las specs vivas del Back. Si el código y este documento discrepan, el documento dice cuál de los dos está mal.
 
-Este documento describe todas las rutas de ABET-ULIMA-Back con su cuerpo, su respuesta y sus errores. El índice corto vive en `docs/specs/api-contracts.md`, y las reglas viven en las specs vivas del Back. Son BR-ACCESO-01 a BR-ACCESO-10 (`specs/features/acceso/acceso.spec.md`), BR-PERIODO-01 a BR-PERIODO-04 (`specs/features/periodo/periodo.spec.md`), BR-CARGA-01 a BR-CARGA-20 (`specs/features/carga-export/carga-export.spec.md`), BR-R17-01 a BR-R17-10 (`specs/features/r17/r17.spec.md`) y BR-RESULTADOS-01 a BR-RESULTADOS-11 (`specs/features/resultados/resultados.spec.md`). Los mensajes literales y la forma de las respuestas salen de los escenarios de `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back y de los de las specs 003, 004 y 008. Si un ejemplo de aquí y un escenario discrepan, gana el escenario. Lleva la marca «(propuesta)» lo que ningún escenario fija y también lo que un escenario usa sin que las decisiones de la spec lo fijen, como lo marcan los `.feature`. Los ejemplos usan solo datos inventados.
+Este documento describe todas las rutas de ABET-ULIMA-Back con su cuerpo, su respuesta y sus errores. El índice corto vive en `docs/specs/api-contracts.md`, y las reglas viven en las specs vivas del Back. Son BR-ACCESO-01 a BR-ACCESO-10 (`specs/features/acceso/acceso.spec.md`), BR-PERIODO-01 a BR-PERIODO-04 (`specs/features/periodo/periodo.spec.md`), BR-CARGA-01 a BR-CARGA-20 (`specs/features/carga-export/carga-export.spec.md`), BR-R17-01 a BR-R17-10 (`specs/features/r17/r17.spec.md`) y BR-RESULTADOS-01 a BR-RESULTADOS-11 (`specs/features/resultados/resultados.spec.md`). Los mensajes literales y la forma de las respuestas salen de los escenarios de `specs/001-mvp-carga-r17/aceptacion/*.feature` del Back y de los de las specs 003, 004, 005 y 008. Si un ejemplo de aquí y un escenario discrepan, gana el escenario. Lleva la marca «(propuesta)» lo que ningún escenario fija y también lo que un escenario usa sin que las decisiones de la spec lo fijen, como lo marcan los `.feature`. Los ejemplos usan solo datos inventados.
 
 ## 1. Cómo está montada
 
@@ -24,11 +24,15 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 | 4 | GET | `/api/secciones?periodo=2026-2` | Sí | 200 | Lista las secciones al alcance del usuario con el estado de su carga | US-06 | BR-PERIODO-01, BR-PERIODO-04 y BR-ACCESO-07 | 1 |
 | 5 | POST | `/api/secciones/{seccion_id}/cargas` | Sí | 201 o 200 | Sube el export (.xlsx, .csv o .xls), lo carga en una transacción y devuelve la constancia | US-07 a US-14, US-21, US-27 a US-32 y US-36 (spec 003) | BR-CARGA-01 a BR-CARGA-17, BR-CARGA-18 (corte 2), BR-PERIODO-02 y BR-ACCESO-08 | 1 |
 | 6 | GET | `/api/cargas/{carga_id}` | Sí | 200 | Devuelve la constancia de una carga, con `hoja` nula en un export de texto | US-16, US-19, US-34 (spec 003) | BR-R17-10 y BR-ACCESO-08 | 1 |
-| 7 | GET | `/api/cargas/{carga_id}/r17.xlsx` | Sí | 200 | Entrega el R-17 con la hoja «Constancia», solo de cargas en estado PUBLICADA | US-15, US-16 | BR-R17-01 a BR-R17-09 y BR-ACCESO-08 | 1 |
+| 7 | GET | `/api/cargas/{carga_id}/r17.xlsx` | Sí | 200 | Entrega el R-17 con la hoja «Constancia», solo de cargas en estado PUBLICADA y, desde la spec 005, solo con la declaración vigente (sección 13.6) | US-15, US-16 | BR-R17-01 a BR-R17-09 y BR-ACCESO-08 | 1 |
 | 8 | GET | `/api/cargas?seccion_id={seccion_id}` | Sí | 200 | Lista las cargas al alcance del usuario, con `seccion_id` opcional y, sin él, `periodo` opcional desde la spec 008 (sección 15.4) | US-19 y US-73 (spec 008) | BR-CARGA-20 y BR-ACCESO-07 | 2 |
 | 9 | POST | `/api/secciones/{seccion_id}/cargas?reemplaza={carga_id}` | Sí | 201 o 200 | Reemplaza la carga publicada en una transacción (profesor en su sección, coordinador en cualquiera) | US-18 | BR-CARGA-19 y BR-ACCESO-08 | 2 |
 | 10 | POST | `/api/sesion/codigo` | No | 202 | Envía el código de acceso al correo, con la misma respuesta exista o no | US-20 | BR-ACCESO-09 | 2 |
 | 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, BR-ACCESO-07 y BR-ACCESO-10 | spec 004 |
+| 13 | GET | `/api/cargas/{carga_id}/indicadores` | Sí | 200 | Devuelve, por PI de una carga publicada, los conteos por nivel, el logro, la meta, el semáforo, el hallazgo y el tipo de registro, sección 13.2 | US-45 y US-46 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+| 14 | GET | `/api/cargas/{carga_id}/mejora` | Sí | 200 | Devuelve la declaración vigente y el borrador por PI, con el estado PROPUESTA derivado y `puede_editar`, sección 13.3 | US-47, US-48 y US-54 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-07 | spec 005 |
+| 15 | PUT | `/api/cargas/{carga_id}/mejora/borrador` | Sí | 200 | Guarda el borrador de la causa y la acción de cada PI, con una sola versión por carga, sección 13.4 | US-47, US-48 y US-53 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
+| 16 | POST | `/api/cargas/{carga_id}/mejora/declaracion` | Sí | 201 | Declara una versión exacta y completa del borrador, que habilita el R-17, sección 13.5 | US-47 y US-49 a US-53 (spec 005) | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
 | 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de su carrera o de su curso en el periodo y el conteo por etapa, secciones 14 y 15.5 | US-64 a US-66 (spec 007) y US-79 (spec 008) | Las reglas BR-AVANCE de la spec 007, BR-ACCESO-07, BR-ACCESO-12 y BR-ACCESO-13 | specs 007 y 008 |
 | 18 | GET | `/api/periodos` | Sí | 200 | Periodo vigente y periodos con secciones al alcance, sección 15.2 | US-73 (spec 008) | BR-PERIODO-05 | spec 008 |
 | 20 | GET | `/api/resumen-curso?periodo=2026-1&asignatura=5643` | Sí | 200 | Devuelve a la coordinación las cifras del curso y de cada sección por PI, sección 16 (propuesta hasta su código) | US-91 (spec 009) | BR-RESULTADOS-12 a BR-RESULTADOS-14 y BR-ACCESO-13 | spec 009 |
@@ -388,18 +392,18 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 
 ## 10. Cómo verificar este documento
 
-Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI. Las rutas 17 y 18 entran en esta comprobación desde la fase de contrato de la spec 008 (T011, 2026-11-23), y cada una aparece en el esquema cuando llega su código (T038 y T033 del Back). Las rutas 20 y 21 de la spec 009 entran desde el 2026-11-24 (T011 de esa spec) y aparecen en el esquema con su código (T021 y T022 del Back), con 11 y 12 caminos.
+Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI. Las rutas 17 y 18 entran en esta comprobación desde la fase de contrato de la spec 008 (T011, 2026-11-23), y cada una aparece en el esquema cuando llega su código (T038 y T033 del Back). Las rutas 20 y 21 de la spec 009 entran desde el 2026-11-24 (T011 de esa spec) y aparecen en el esquema con su código (T021 y T022 del Back), con 11 y 12 caminos. Las rutas 13 a 16 de la spec 005 entran el mismo día (T011 de la spec 005) y suman cuatro caminos, `/api/cargas/{carga_id}/indicadores`, `/api/cargas/{carga_id}/mejora`, `/api/cargas/{carga_id}/mejora/borrador` y `/api/cargas/{carga_id}/mejora/declaracion`, que aparecen en el esquema con su código (T031 y T032 del Back).
 
 ```bash
 # Esperado: 5 caminos en el corte 1 (las 7 rutas, porque /api/sesion reúne tres métodos), 6 con el corte 2
 # sin US-20 (suma /api/cargas, porque el reemplazo usa el camino de la ruta 5), 7 con la ruta 12 de la spec 004
 # (suma /api/resultados), 8 con la ruta 18 de la spec 008 (suma /api/periodos), 9 con la ruta 17 de las
 # specs 007 y 008 (suma /api/avance) y 10 cuando llegue /api/sesion/codigo, sin caminos que este documento
-# no describa. Las rutas 13 a 16 de la spec 005 suman sus caminos cuando esa spec quite su marca.
+# no describa. Las rutas 13 a 16 de la spec 005 suman cuatro caminos con su código (T031 y T032 del Back).
 curl -s "$URL_FRONT/api/openapi.json" | python -c "import json,sys; print('\n'.join(sorted(json.load(sys.stdin)['paths'])))"
 ```
 
-Los mensajes literales de este contrato y los de los escenarios de las specs 001, 003, 004 y 008 coinciden en los dos sentidos. La comprobación corre desde la carpeta que contiene los dos repositorios, y las variables `BACK` y `FRONT` cambian sus rutas si viven en otro lugar.
+Los mensajes literales de este contrato y los de los escenarios de las specs 001, 003, 004, 005 y 008 coinciden en los dos sentidos. La comprobación corre desde la carpeta que contiene los dos repositorios, y las variables `BACK` y `FRONT` cambian sus rutas si viven en otro lugar.
 
 ```bash
 # Esperado: «0 mensajes del contrato sin escenario» y «0 mensajes de los escenarios sin contrato».
@@ -417,7 +421,7 @@ import re
 contrato = pathlib.Path(os.environ["FRONT"], "docs/03-api/contrato.md").read_text(encoding="utf-8")
 carpetas = [pathlib.Path(os.environ["BACK"], "specs", c, "aceptacion")
             for c in ("001-mvp-carga-r17", "003-exports-blackboard", "004-reportes-docente",
-                      "008-ciclo-quimica-industrial")]
+                      "005-oportunidades-de-mejora", "008-ciclo-quimica-industrial")]
 escenarios = "\n".join(p.read_text(encoding="utf-8") for c in carpetas for p in sorted(c.glob("*.feature")))
 
 del_contrato = {
@@ -533,9 +537,9 @@ Errores 401 con «La sesión venció. Ingrese otra vez.» (propuesta), sin cooki
 3. **La descripción del instrumento de medición**, que espera a D-34 y a J-27.
 4. **La paginación.** La ruta no pagina, y la spec 004 fija un techo de prueba de 150 secciones para el coordinador, con respuesta en menos de 1 s sin el arranque en frío de Neon (SC-005 de la spec 004).
 
-## 13. Rutas de la spec 005, oportunidades de mejora y buenas prácticas por indicador (propuesta, cambio del 2026-11-21)
+## 13. Rutas de la spec 005, oportunidades de mejora y buenas prácticas por indicador
 
-> **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** Jefferson aprueba en el chat el 2026-11-21 el alcance del cambio de la spec 005 del Back (`specs/005-oportunidades-de-mejora/`, Clarification «Session 2026-11-21»), y esta sección lo traslada al contrato. El profesor ya no declara un par de textos por carga. Registra una causa y una acción en cada indicador de desempeño (performance indicator, PI) con calificaciones. El sistema rotula ese registro como oportunidad de mejora (OM) o como buena práctica (BP) según el semáforo, como piden la secretaría académica de Ingeniería Ambiental y el equipo del proyecto en sus correos del 19 y el 20 de noviembre. Las rutas 13 a 16 conservan su número y su camino, y cambian sus campos. Ninguna de ellas existe todavía en el Back ni en `src/`, porque de la spec 005 solo está construida US-51, que no tiene ruta. **Estado 2026-11-18.** La spec 005 se aprueba con un texto por carga para cada recuadro, A y B, y la tabla resumen de la sección 2 y la sección 10 no cambian hasta su tarea T011.
+> **Cambio del 2026-11-21 (aprobado por Jefferson el 2026-11-21, «Sí, apruébalas»).** Jefferson aprueba en el chat el 2026-11-21 el alcance del cambio de la spec 005 del Back (`specs/005-oportunidades-de-mejora/`, Clarification «Session 2026-11-21»), y esta sección lo traslada al contrato. El profesor ya no declara un par de textos por carga. Registra una causa y una acción en cada indicador de desempeño (performance indicator, PI) con calificaciones. El sistema rotula ese registro como oportunidad de mejora (OM) o como buena práctica (BP) según el semáforo, como piden la secretaría académica de Ingeniería Ambiental y el equipo del proyecto en sus correos del 19 y el 20 de noviembre. Las rutas 13 a 16 conservan su número y su camino, y cambian sus campos. La tarea T011 del 2026-11-24 deja definitivos sus caminos, sus campos y sus códigos, y el Back y el Front los construyen en sus ramas `feat/005-oportunidades-de-mejora`. **Estado 2026-11-18.** La spec 005 se aprueba con un texto por carga para cada recuadro, A y B, y la tabla resumen de la sección 2 y la sección 10 no cambian hasta su tarea T011.
 
 ### 13.1 Resumen
 
@@ -546,7 +550,7 @@ Errores 401 con «La sesión venció. Ingrese otra vez.» (propuesta), sin cooki
 | 15 | PUT | `/api/cargas/{carga_id}/mejora/borrador` | Sí | 200 | Guarda el borrador de la causa y la acción de cada PI, con una sola versión por carga | US-47, US-48 y US-53 | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
 | 16 | POST | `/api/cargas/{carga_id}/mejora/declaracion` | Sí | 201 | Declara una versión exacta del borrador, completa en cada PI con calificaciones, y esa declaración alimenta el R-17 | US-47 y US-49 a US-53 | BR-MEJORA-NN (propuesta) y BR-ACCESO-08 | spec 005 |
 
-Los nombres de ruta, los campos y los textos de esta sección son propuestas hasta que Jefferson reapruebe la spec 005. Sus decisiones son J-29 a J-41 de Jefferson y D-35 a D-43 de la carrera. Las de la carrera que trae el cambio son D-39 (el semáforo fija el tipo de registro, uno por PI), D-40 (un PI sin dato no exige registro), D-41 (las OM y las BP van en los recuadros A y B del R-17, un párrafo por PI), D-42 (el responsable, el plazo y los estados Revisado y Aprobado quedan para el R-18) y D-43 (el nombre estándar de la actividad de Blackboard). Las de Jefferson son J-38 (cuatro tablas en V1_12), J-39 (tope de 800 caracteres por campo), J-40 (la declaración guarda la foto del logro, la meta y el semáforo) y J-41 (el orden de construcción).
+Los caminos, los campos y los códigos de esta sección son definitivos desde T011, y los textos marcados «(propuesta)» siguen como propuestas hasta que la revisión del contrato los confirme. Sus decisiones son J-29 a J-41 de Jefferson y D-35 a D-43 de la carrera. Las de la carrera que trae el cambio son D-39 (el semáforo fija el tipo de registro, uno por PI), D-40 (un PI sin dato no exige registro), D-41 (las OM y las BP van en los recuadros A y B del R-17, un párrafo por PI), D-42 (el responsable, el plazo y los estados Revisado y Aprobado quedan para el R-18) y D-43 (el nombre estándar de la actividad de Blackboard). Las de Jefferson son J-38 (cuatro tablas en V1_12), J-39 (tope de 800 caracteres por campo), J-40 (la declaración guarda la foto del logro, la meta y el semáforo) y J-41 (el orden de construcción).
 
 Reglas comunes a las cuatro rutas.
 
@@ -559,13 +563,13 @@ Reglas comunes a las cuatro rutas.
 - Una carga que no existe recibe el mismo 403 que una ajena, como en la sección 9. El 403 dice «La sección no está a su cargo.». El 401 dice «La sesión venció. Ingrese otra vez.» (propuesta), igual que en las demás rutas.
 - Las cuatro rutas entran en la prueba que recorre las rutas registradas con su lista cerrada de rutas públicas (BR-ACCESO-10, propuesta).
 
-### 13.2 `GET /api/cargas/{carga_id}/indicadores`: cifras, semáforo, hallazgo y tipo de registro de una carga (propuesta, cambio del 2026-11-21)
+### 13.2 `GET /api/cargas/{carga_id}/indicadores`: cifras, semáforo, hallazgo y tipo de registro de una carga
 
 Sin cuerpo. Alcance de `puede_leer()`, una sola instantánea de `abet.v_r17_por_pi` y `Cache-Control: no-store`. La única pantalla que la consume es P4, solo para una carga PUBLICADA, y J-41 la pone primera en el orden de construcción, junto con P4 por indicador.
 
 ```jsonc
 // Respuesta 200 recortada para docente.varias@example.invalid, con la 412 de 450002 publicada y el conjunto
-// R-2026-BORRADOR (propuesta, cambio del 2026-11-21). El carga_id es de ejemplo y sale siempre de la API.
+// R-2026-BORRADOR (cambio del 2026-11-21). El carga_id es de ejemplo y sale siempre de la API.
 // El instrumento de 5.2 y 5.3 se abrevia con «…».
 {
   "carga_id": 9,
@@ -613,13 +617,13 @@ Reglas y por qué existen.
 
 Errores 401, 403 («La sección no está a su cargo.»), también para una carga que no existe, y 409 con «La carga no está publicada y no tiene semáforo.» (propuesta) para una carga RECHAZADA o REEMPLAZADA. La ruta no tiene cuerpo ni parámetros, así que no responde 422.
 
-### 13.3 `GET /api/cargas/{carga_id}/mejora`: declaración y borrador por indicador (propuesta, cambio del 2026-11-21)
+### 13.3 `GET /api/cargas/{carga_id}/mejora`: declaración y borrador por indicador
 
 Sin cuerpo. Alcance de `puede_leer()`, con `puede_editar` verdadero solo para el profesor asignado a la sección. P4 la pide al abrirse, para llenar la sección «Análisis por indicador» y para decidir si ofrece el R-17.
 
 ```jsonc
 // Respuesta 200 para docente.varias@example.invalid con la 412 de 450002 declarada y sin cambios posteriores
-// (propuesta, cambio del 2026-11-21). Los textos son inventados y las fechas son de ejemplo.
+// (cambio del 2026-11-21). Los textos son inventados y las fechas son de ejemplo.
 {
   "declaracion": {
     "declarada_en": "2026-11-21T15:10:00-05:00",
@@ -669,12 +673,12 @@ Reglas y por qué existen.
 
 Errores 401 y 403 («La sección no está a su cargo.»), también para una carga que no existe.
 
-### 13.4 `PUT /api/cargas/{carga_id}/mejora/borrador`: guardar el borrador por indicador (propuesta, cambio del 2026-11-21)
+### 13.4 `PUT /api/cargas/{carga_id}/mejora/borrador`: guardar el borrador por indicador
 
 Cuerpo JSON con `version`, la que la persona leyó, e `indicadores`, un arreglo con un elemento por PI que lleva `pi`, `tipo`, `causa` y `accion`. `causa` y `accion` son opcionales para admitir un borrador parcial. `tipo` copia el `tipo_registro` de la ruta 13, porque lo fija el sistema con el semáforo, y el Back comprueba que coincida. Escribe solo el profesor asignado, por `puede_declarar()`.
 
 ```jsonc
-// PUT con solo la causa de 5.2 y version 0 (propuesta, cambio del 2026-11-21).
+// PUT con solo la causa de 5.2 y version 0 (cambio del 2026-11-21).
 {
   "version": 0,
   "indicadores": [
@@ -698,7 +702,7 @@ Reglas y por qué existen.
 - Un borrador con 422 no se guarda, tampoco en parte.
 
 ```jsonc
-// 409 por versión desactualizada (propuesta, cambio del 2026-11-21). El borrador guardado viaja con la misma
+// 409 por versión desactualizada (cambio del 2026-11-21). El borrador guardado viaja con la misma
 // forma que en la ruta 14, para que P4 lo muestre junto al texto de la pantalla. La fecha es de ejemplo.
 {
   "detail": "Otra pestaña guardó un texto más reciente.",
@@ -734,12 +738,12 @@ Errores en este orden.
 
 El 409 de la carga que no está PUBLICADA manda sobre el de la versión. Un número de 9 dígitos o una fecha como 21/11/2026 se aceptan. Un nombre de estudiante escrito en el texto no se detecta, y por eso P4 lo advierte con una nota (J-36).
 
-### 13.5 `POST /api/cargas/{carga_id}/mejora/declaracion`: declarar una versión completa del borrador (propuesta, cambio del 2026-11-21)
+### 13.5 `POST /api/cargas/{carga_id}/mejora/declaracion`: declarar una versión completa del borrador
 
 Cuerpo JSON `{ "version": 3 }`, que declara esa versión exacta del borrador con todos sus PI. Escribe solo el profesor asignado, por `puede_declarar()`. La declaración no se edita, y una corrección es una declaración nueva que reemplaza a la anterior en el R-17 siguiente (D-37).
 
 ```jsonc
-// Respuesta 201 (propuesta, cambio del 2026-11-21), con la misma forma de «declaracion» de la ruta 14.
+// Respuesta 201 (cambio del 2026-11-21), con la misma forma de «declaracion» de la ruta 14.
 // Los textos se recortan aquí con «…» y la fecha es de ejemplo.
 {
   "declarada_en": "2026-11-21T15:10:00-05:00",
@@ -778,7 +782,7 @@ Errores en este orden.
 
 El 409 de la carga que no está PUBLICADA manda sobre los demás 409, y el de la regla sin definir manda sobre el 422 «Complete la causa y la acción de cada indicador.» (propuesta). P4 muestra ese 409 con su `detail` junto al botón «Guardar declaración» y conserva el texto de los bloques (`docs/01-arquitectura/frontend.md`, sección 10.2). Con una declaración incompleta no se crea ninguna fila. P4 envía siempre el guardado pendiente antes de declarar, así que el 409 por versión aparece solo cuando otra pestaña guardó entre los dos pasos.
 
-### 13.6 El cambio de la ruta 7 con la spec 005 (propuesta, cambio del 2026-11-21)
+### 13.6 El cambio de la ruta 7 con la spec 005
 
 `GET /api/cargas/{carga_id}/r17.xlsx` suma un 409 para una carga PUBLICADA sin declaración vigente, con el texto «Complete la causa y la acción de cada indicador en la página de la carga antes de descargar el R-17.» (propuesta). Como la ruta 16 acepta solo una declaración completa, la declaración vigente cubre siempre cada PI con calificaciones (US-49). Ese 409 vale también para el coordinador (J-33), que no escribe la declaración, y si el profesor no declara la salida es reasignar la sección en `acceso.docente_seccion`.
 
@@ -803,7 +807,6 @@ El Front no ofrece el enlace a la ruta 7 sin declaración, porque P4 es el únic
 7. **Una OM además de la BP en un PI VERDE**, que D-39 deja abierta. Mientras no se decida, cada PI lleva un solo registro con el tipo que fija el semáforo.
 8. **El resto de N6** (criterios con más dificultades, lista de estudiantes que necesitan apoyo y comparación con el promedio del curso), que espera a D-33.
 9. **La edición de la descripción del instrumento desde una pantalla** (D-34) y la escritura de la declaración por el coordinador.
-10. **Los cambios de la tabla de la sección 2 y de la sección 10**, que se ajustan al reaprobar la spec (tarea T011).
 
 ## 14. Ruta de la spec 007, avance del registro para la coordinación
 

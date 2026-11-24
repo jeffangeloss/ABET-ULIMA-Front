@@ -10,7 +10,7 @@
 
 El R-17 se genera en el Back con openpyxl y Pillow sobre una copia vaciada y limpia de la plantilla vigente de Ambiental («Plantilla Base - Final.xlsx», hoja «Cursos de Carrera»), sin las referencias `#REF!` de la original. El generador escribe valores calculados, nunca fórmulas, en filas fijas y sin insertar filas.
 
-Los números salen de la base. La cabecera (facultad, carrera, código, asignatura, sección y periodo) sale de las tablas de la sección, y los conteos por nivel, el nivel esperado o superior, el porcentaje y la meta salen de `abet.v_r17_por_pi`. La tabla de estudiantes (SO, PI, código y calificación) sale de `abet.medicion` de la carga, con `abet.estudiante` y `abet.pi`, ordenada por PI y por fila de origen (regla BR-R17-08 de la spec viva `r17` del Back). Son las mismas filas que `abet.v_tabla_maestra_pi` da para la sección, y la tabla no sale de esta vista porque no expone `carga_id` ni `fila_origen`. Como `v_r17_por_pi` solo ve cargas en estado PUBLICADA, una carga rechazada no produce R-17. El profesor escribe a mano las causas, las acciones y el comentario.
+Los números salen de la base. La cabecera (facultad, carrera, código, asignatura, sección y periodo) sale de las tablas de la sección, y los conteos por nivel, el nivel esperado o superior, el porcentaje y la meta salen de `abet.v_r17_por_pi`. La tabla de estudiantes (SO, PI, código y calificación) sale de `abet.medicion` de la carga, con `abet.estudiante` y `abet.pi`, ordenada por PI y por fila de origen (regla BR-R17-08 de la spec viva `r17` del Back). Son las mismas filas que `abet.v_tabla_maestra_pi` da para la sección, y la tabla no sale de esta vista porque no expone `carga_id` ni `fila_origen`. Como `v_r17_por_pi` solo ve cargas en estado PUBLICADA, una carga rechazada no produce R-17. Desde la spec 005 (ADR-009, enmienda escrita con T011 el 2026-11-24), las causas y las acciones salen de la declaración que el profesor guarda en P4, con un párrafo por PI en los recuadros A y B, y la hoja no tiene recuadro de comentario.
 
 La vista no expone el número de calificados. El «(6 de 10)» que acompaña a cada porcentaje lo arma `r17.py` con `n_esperado_o_superior` sobre `n_total - n_sin_evidencia`, ambos de `v_r17_por_pi`, y el porcentaje mismo es `pct_logro_sobre_calificados`.
 
@@ -21,7 +21,7 @@ Escribir valores evita los rangos desalineados y las celdas vacías en los visor
 ## Invariantes
 
 1. Cada porcentaje del R-17 es igual a `pct_logro_sobre_calificados` de `v_r17_por_pi` para esa carga y ese PI.
-2. Ninguna celda del libro empieza por «=».
+2. Ninguna celda del libro es una fórmula (enmienda de ADR-009, J-35 de la spec 005). La versión anterior pide que ninguna celda empiece por «=», y desde la spec 005 una declaración puede empezar por «=» y queda como cadena.
 3. Solo una carga PUBLICADA produce R-17. Para otra, la ruta responde 409 con «La carga no está publicada y no tiene R-17.».
 4. El libro no contiene nombres de estudiantes, y sus propiedades autor y último autor están vacías o dicen «ABET_SIS_MED».
 5. La franja PROVISIONAL aparece si y solo si `provisional` es verdadero en la vista.

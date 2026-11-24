@@ -27,7 +27,7 @@ Antes de la ruta 12, cada router con datos declara la dependencia de sesión, y 
 5. La respuesta trae solo las claves de su lista cerrada, sin códigos ni nombres de estudiantes, correos, `subida_por`, `nombre_archivo` ni `sha256`.
 6. Un nulo de la vista viaja como `null`, y P6 nunca lo dibuja como una barra de 0 %.
 7. P6 no usa biblioteca de gráficos, y cada barra tiene su cifra y su estado escritos.
-8. P2 y P4 siguen sin mostrar porcentajes, que solo muestran P6 y el R-17.
+8. P2 sigue sin mostrar porcentajes. Desde la spec 005 (ADR-009, enmienda escrita con T011 el 2026-11-24), P4 muestra los porcentajes del semáforo con las cifras de la ruta 13, que son las del R-17 de la misma carga (US-46 y J-35). La versión anterior reserva los porcentajes a P6 y al R-17.
 
 ## Alternativas consideradas
 
