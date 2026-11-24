@@ -161,8 +161,8 @@ test("Con la siembra de la capacitación el humo no corre", async () => {
     lista = Array.from({ length: 18 }, (_, i) => seccion(801 + i));
     await expect(revisarSiembraInventada(simulada, "clave-simulada")).rejects.toThrow(CONGELADA);
     expect(pedidas.filter((p) => !["POST /api/sesion", `GET /api/secciones?periodo=${PERIODO}`].includes(p))).toEqual([]);
-    // Con las cuatro secciones inventadas, la misma guarda deja seguir.
-    lista = [701, 702, 703, 704].map(seccion);
+    // Con las cuatro secciones inventadas, en cualquier orden, la misma guarda deja seguir.
+    lista = [703, 701, 704, 702].map(seccion);
     await expect(revisarSiembraInventada(simulada, "clave-simulada")).resolves.toBeUndefined();
   } finally {
     await new Promise((listo) => servidor.close(listo));

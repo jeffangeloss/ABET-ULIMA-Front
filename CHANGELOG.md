@@ -20,6 +20,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Corregido
 
+- Avisos de SonarCloud del PR #39. Cada ruta de la API sale con un periodo AAAA-C, un identificador entero positivo y la consulta codificada con `URLSearchParams`, o el pedido no sale, así que ningún valor cambia la ruta ni el host (S8476). La guarda del humo de Química ordena con `localeCompare` (S2871), el contraste usa `Number.parseInt` (S7773), la cadena de la ruta 18 queda marcada con `void` (S9383) y el `tabIndex` de la región de rechazos queda con su razón, porque WebKit no enfoca solo un desplazable (S6845).
 - Revisión del segundo bloque del Front de la spec 008. Una prueba cubre el singular de P7, «1 de 1 sección con carga publicada.», la flecha de la prueba visual de P4 se repite hasta desplazar la región, Vitest sube su tope a 30 s y findBy espera hasta 10 s con la máquina cargada, la sección 14 del contrato da la ruta 17 por construida y sin el campo `profesores` y la guía ofrece «Ver la carga» solo con la carga publicada.
 - Regla de la tabla maestra de `scripts/preflight.sh` igual a la del Back (cierre del segundo bloque de la spec 008, FR-022). En un texto lee las primeras 20 líneas no vacías, sin el BOM y sin nulos, así que un export con una línea de título antes del encabezado ya no pasa sin aviso, y `scripts/probar_preflight.sh` suma sus tres casos.
 - Al ingresar, la coordinación del curso recibe sus rótulos sin recargar la página, porque P1 lee la ruta 2 con el alcance después de la ruta 1 (spec 008, T053).

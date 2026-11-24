@@ -10,7 +10,7 @@ function canal(valor: number): number {
 function luminancia(hex: string): number {
   const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex.trim());
   if (!m) throw new Error(`Color sin la forma #rrggbb: ${hex}`);
-  const [r, g, b] = m.slice(1).map((h) => canal(parseInt(h, 16)));
+  const [r, g, b] = m.slice(1).map((h) => canal(Number.parseInt(h, 16)));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 

@@ -14,7 +14,7 @@ export function TablaRechazos({ rechazos }: { rechazos: Rechazo[] }) {
       <div
         role="region"
         aria-label="Tabla de filas rechazadas"
-        tabIndex={0}
+        tabIndex={0} // NOSONAR: región desplazable con role y nombre; WebKit no enfoca un desplazable sin tabIndex (US-82).
         className="overflow-x-auto rounded-md border border-linea bg-superficie focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foco"
       >
         <table aria-label="Filas rechazadas" className="w-full border-collapse text-left text-sm">

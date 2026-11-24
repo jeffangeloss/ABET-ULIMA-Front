@@ -53,8 +53,8 @@ describe("api.ts", () => {
   });
 
   it("obtenerResultados convierte el 422 del periodo en ErrorApi con su detail", async () => {
-    simularApi({ "GET /api/resultados?periodo=2026-13": json(422, { detail: "El periodo no tiene la forma AAAA-C." }) });
-    await expect(obtenerResultados("2026-13")).rejects.toMatchObject({
+    simularApi({ "GET /api/resultados?periodo=2026-2": json(422, { detail: "El periodo no tiene la forma AAAA-C." }) });
+    await expect(obtenerResultados("2026-2")).rejects.toMatchObject({
       status: 422,
       detail: "El periodo no tiene la forma AAAA-C.",
     });

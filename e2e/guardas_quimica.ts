@@ -53,7 +53,7 @@ export async function revisarSiembraInventada(base: string, contrasena: string):
   if (!contexto) throw new Error(SIN_SIEMBRA_INVENTADA);
   try {
     const lista = await seccionesDe(contexto);
-    const numeros = lista.map((s) => s.numero).sort();
+    const numeros = lista.map((s) => s.numero).sort((a, b) => a.localeCompare(b));
     const inventada =
       lista.every((s) => s.asignatura.codigo === ASIGNATURA) && numeros.join(",") === SECCIONES_INVENTADAS.join(",");
     if (!inventada) throw new Error(CONGELADA);

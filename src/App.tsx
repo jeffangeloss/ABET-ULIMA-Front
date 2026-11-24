@@ -92,10 +92,11 @@ export function App() {
   }, []);
 
   // Spec 008, US-73. La ruta 18 se pide una vez por sesión, antes de P2. Si falla, P2 sigue como hoy y sin mensaje.
+  // El catch maneja el rechazo de listarPeriodos y el último then no rechaza, así que void solo marca la cadena.
   useEffect(() => {
     if (!correo) return;
     let vigente = true;
-    listarPeriodos()
+    void listarPeriodos()
       .then((p): EstadoPeriodo => ({ correo, periodos: p.periodos, elegido: periodoInicial(p) }))
       .catch((): EstadoPeriodo => ({ correo, periodos: [], elegido: undefined }))
       .then((e) => vigente && setEstadoPeriodo(e));
