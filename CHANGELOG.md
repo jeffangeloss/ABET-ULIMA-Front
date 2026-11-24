@@ -6,6 +6,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Agregado
 
+- Humo de punta a punta de Química General de la spec 008 (T053) en `e2e/humo_quimica.spec.ts`, con los escenarios `@playwright` de US-85 y US-87, las guardas de `e2e/guardas_quimica.ts`, que lo detienen sobre la siembra de la capacitación o sobre una 701 ya publicada, y `scripts/humo_quimica.sh`, que borra los resultados y el archivo de contraseñas al terminar.
 - Reglas de privacidad de US-88 de la spec 008 (T052) en `scripts/preflight.sh`, iguales a las del Back: el correo prohibido por su huella en `HUELLAS_CORREOS_PROHIBIDOS`, los códigos de ocho cifras en las líneas agregadas con la lista cerrada `CODIGOS_DE_PRUEBA`, las capturas de Playwright, la tabla maestra por su encabezado y las tarjetas de profesor, con `--historial` para barrer develop, main y HEAD.
 - Guía de la capacitación de Química General en Industrial (US-87 de la spec 008, T049) en `docs/capacitacion/guia_quimica.md`, por rol y en el orden de las pantallas, con «Fecha por confirmar», el ejercicio de error con un archivo inventado y solo correos de ejemplo, y la prueba `tests/spec008/guia_y_privacidad.test.ts`, que coteja cada texto entre comillas latinas con `src/` y con los mensajes del contrato.
 - Escenarios `@playwright` de US-82 de la spec 008 (T048) en `e2e/visual.spec.ts`, con la API simulada de `e2e/api_simulada.ts` y su propio Vite, que prueban a 375 y a 1100 px que Ingreso y P2 a P7 no se desplazan de lado, que cada control mide al menos 24 por 24 px, el foco visible en el orden de lectura de P3, el menú con teclado y la tabla de rechazos dentro de su región. La casilla del filtro de P7 pasa de 16 a 24 px.
@@ -19,6 +20,7 @@ Los cambios visibles de este repositorio quedan aquí. El formato sigue [Keep a 
 
 ### Corregido
 
+- Al ingresar, la coordinación del curso recibe sus rótulos sin recargar la página, porque P1 lee la ruta 2 con el alcance después de la ruta 1 (spec 008, T053).
 - Revisión del Front de la spec 008. La prueba de la ruta 18 caída comprueba que se pide la ruta 18, la prueba de contraste recorre las clases de `src` y suma el par tinta sobre pendiente-fondo, la prueba de recursos exige la construcción en `dist/` y la CI construye antes de probar, la sección 1 del contrato trae el mensaje de arranque nuevo del Back y `.gitignore` ignora `node_modules` también como enlace.
 
 ## [0.3.0] - 2026-11-23

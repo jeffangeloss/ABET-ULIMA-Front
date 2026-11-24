@@ -87,6 +87,37 @@ describe("US-71 · Rótulos de la coordinación del curso", () => {
     ]);
   });
 
+  // T053. El humo de Química encontró que, al ingresar, la coordinación del curso recibía los rótulos de la carrera
+  // hasta recargar la página, porque la ruta 1 responde solo el correo y el rol (contrato, sección 2) y el alcance llega
+  // en la ruta 2 (sección 15.3). Después del ingreso, el Front lee la ruta 2.
+  it("Al ingresar, la coordinación del curso recibe los rótulos del curso sin recargar", async () => {
+    let conSesion = false;
+    const { llamadas } = simularApi({
+      "GET /api/sesion": () =>
+        conSesion ? json(200, usuarioCoordinacionCurso) : json(401, { detail: "La sesión venció. Ingrese otra vez." }),
+      "POST /api/sesion": () => {
+        conSesion = true;
+        return json(200, { correo: usuarioCoordinacionCurso.correo, rol: "COORDINADOR" });
+      },
+      "GET /api/periodos": json(200, { vigente: "2026-2", periodos: ["2026-1"] }),
+      "GET /api/avance?periodo=2026-1": json(200, avance5643),
+    });
+    const u = userEvent.setup();
+    render(<App />);
+    await u.type(await screen.findByLabelText("Correo"), usuarioCoordinacionCurso.correo);
+    await u.type(screen.getByLabelText("Contraseña"), "clave-inventada");
+    await u.click(screen.getByRole("button", { name: "Ingresar" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Avance del registro del curso" })).toBeInTheDocument();
+    const menu = within(screen.getByRole("navigation", { name: "Menú principal" }));
+    expect(menu.getByRole("button", { name: "Secciones del curso" })).toBeInTheDocument();
+    expect(screen.queryByText(/de la carrera/)).toBeNull();
+    expect(llamadas.map((l) => l.clave).filter((c) => c.endsWith("/api/sesion"))).toEqual([
+      "GET /api/sesion",
+      "POST /api/sesion",
+      "GET /api/sesion",
+    ]);
+  });
+
   it("El consejo de una sección cruzada remite al profesor también para la coordinación del curso", () => {
     render(<ResultadoCarga cargaId={8} rol={usuarioCoordinacionCurso.rol} constanciaInicial={constanciaOtraSeccion701} alVolver={vi.fn()} />);
     expect(
