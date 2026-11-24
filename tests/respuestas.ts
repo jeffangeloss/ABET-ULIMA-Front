@@ -449,8 +449,8 @@ const AV_RESIDUOS = ["450010", "Gestión Sostenible de Residuos"] as const;
 const AV_IMPACTO = ["450020", "Evaluación del Impacto Ambiental"] as const;
 
 /**
- * La respuesta del primer escenario de US-64 de la spec 007 (contrato, sección 14.2), con el campo profesores de US-66,
- * que P7 no muestra mientras D-47 no se responda.
+ * La respuesta del primer escenario de US-64 de la spec 007 (contrato, sección 14.2), más el campo condicional profesores
+ * de US-66, que la ruta construida no emite (T038 del Back) y que P7 no muestra aunque llegue, mientras D-47 no se responda.
  */
 export const avanceAmbiental: Avance = {
   periodo: "2026-2",

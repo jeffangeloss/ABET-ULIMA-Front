@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
@@ -83,18 +83,21 @@ describe("US-65 · La coordinación entra a P7 y ve cuántas secciones faltan", 
     expect(filtro).not.toBeChecked();
     await u.click(filtro);
     expect(filtro).toBeChecked();
-    expect(filas()).toEqual([
-      "411 · La última carga se rechazó",
-      "412 · Sin carga",
-      "413 · Sin profesor asignado",
-      "414 · Sin plan de medición",
-    ]);
+    // La casilla cambia en el DOM antes de que React vuelva a pintar la lista, así que la lista filtrada se espera.
+    await waitFor(() =>
+      expect(filas()).toEqual([
+        "411 · La última carga se rechazó",
+        "412 · Sin carga",
+        "413 · Sin profesor asignado",
+        "414 · Sin plan de medición",
+      ]),
+    );
     expect(screen.queryByRole("button", { name: "Ver la carga" })).toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent("1 de 5 secciones con carga publicada.");
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
     await u.click(filtro);
-    expect(filas()).toHaveLength(5);
+    await waitFor(() => expect(filas()).toHaveLength(5));
   });
 
   it.each([
@@ -147,6 +150,21 @@ describe("US-65 · La coordinación entra a P7 y ve cuántas secciones faltan", 
     expect(screen.queryByText(/con carga publicada/)).toBeNull();
     expect(screen.queryByRole("checkbox")).toBeNull();
     expect(screen.queryByRole("listitem")).toBeNull();
+  });
+
+  // Caso borde de la spec 007 (spec.md, «Edge Cases»), que no tiene escenario propio en el .feature.
+  it("Con una sola sección publicada, P7 usa el singular", async () => {
+    simularApi({
+      "GET /api/avance": json(200, {
+        periodo: "2026-2",
+        conteo: { secciones: 1, PUBLICADA: 1, CON_RECHAZO: 0, SIN_CARGA: 0, SIN_PROFESOR: 0, SIN_PLAN: 0 },
+        secciones: [avanceAmbiental.secciones[0]],
+      }),
+    });
+    render(<Avance usuario={usuarioCoordinador} alVerCarga={vi.fn()} />);
+    expect(await screen.findByText("1 de 1 sección con carga publicada.")).toHaveAttribute("role", "status");
+    expect(screen.queryByText(/sin plan de medición/)).toBeNull();
+    expect(filas()).toEqual(["410 · Publicada"]);
   });
 
   it("P7 muestra el error de la ruta 17 con su detail y ninguna fila", async () => {

@@ -147,8 +147,13 @@ test.describe("US-82 · Uso a 375 px y con teclado", () => {
       await region.evaluate((el) => {
         el.scrollLeft = 0;
       });
-      await page.keyboard.press("ArrowRight");
-      await expect.poll(() => region.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+      // Chromium pierde a veces la primera flecha que llega justo después del cambio de ancho, así que cada intento
+      // vuelve a pulsarla con la región enfocada. Sin el desplazamiento por teclado, ningún intento mueve scrollLeft.
+      await expect(async () => {
+        await expect(region).toBeFocused();
+        await page.keyboard.press("ArrowRight");
+        expect(await region.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+      }).toPass({ timeout: 10_000 });
       expect(await page.evaluate(() => window.scrollX)).toBe(0);
     }
     expect(api.sinRespuesta).toEqual([]);

@@ -21,5 +21,9 @@ export default defineConfig({
     // Vitest 5 guarda en disco cada módulo transformado y lo reutiliza mientras el archivo de prueba no cambie, con el
     // resultado de import.meta.glob incluido. Así, la revisión de dist/ podía leer una construcción vieja o ninguna.
     fsModuleCache: false,
+    // Las pruebas que recorren App con userEvent tardan de 1 a 2 s solas y pasaban el tope de 5 s de Vitest con la
+    // máquina cargada (revisión del segundo bloque de la spec 008). El tope sube y las esperas de findBy suben en
+    // tests/preparar.ts, sin cambiar lo que cada prueba exige.
+    testTimeout: 30_000,
   },
 });

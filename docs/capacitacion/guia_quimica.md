@@ -129,7 +129,7 @@ La casilla «Mostrar solo las secciones que faltan» deja a la vista solo las se
 
 ### 4.3 Abrir la carga de una sección
 
-En una sección con carga, pulse «Ver la carga». El sistema abre «Resultado de la carga» con la constancia de esa sección, y una carga publicada ofrece «Descargar R-17».
+En una sección con su carga publicada, pulse «Ver la carga». El sistema abre «Resultado de la carga» con la constancia y «Descargar R-17». Una sección sin carga publicada, también la que dice «La última carga se rechazó», no ofrece «Ver la carga», y sus cargas rechazadas se revisan en «Cargas».
 
 ### 4.4 Revisar las secciones, las cargas y los logros
 
@@ -149,7 +149,7 @@ La coordinación de Ingeniería Industrial ve las secciones de las asignaturas d
 
 1. Ingrese en «Ingreso» con el correo de su tarjeta y la contraseña que recibió por el canal aparte, y pulse «Ingresar». El sistema abre «Avance del registro».
 2. Lea el resumen y la etapa de cada sección como en la sección 4.2. Las secciones aparecen agrupadas por asignatura.
-3. Use «Ver la carga» para abrir la constancia y el R-17 de una sección.
+3. Use «Ver la carga» para abrir la constancia y el R-17 de una sección con su carga publicada.
 4. «Secciones de la carrera» muestra la tarjeta de cada sección, y «Ver los logros por SO de la carrera» abre «Logros por SO de la carrera».
 
 Si la carrera no tiene secciones en el periodo elegido, la pantalla dice «La carrera no tiene secciones en este periodo.». En ese caso, revise en la cabecera el selector «Periodo».

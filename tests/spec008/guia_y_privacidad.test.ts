@@ -43,6 +43,16 @@ describe("US-87, guía de la capacitación con rótulos verificados contra el Fr
       const cierra = (linea.match(/»/g) ?? []).length;
       expect(abre, `la línea ${i + 1} no cierra sus comillas latinas`).toBe(cierra);
     });
+    // P7 muestra «Ver la carga» solo con carga_id, que la ruta 17 trae solo para una carga PUBLICADA (Avance.tsx y
+    // contrato, sección 14.2), así que cada línea que lo cita nombra esa condición y no la de una sección con cualquier carga.
+    expect(fuentes["../../src/pantallas/Avance.tsx"]).toMatch(/s\.carga_id !== null && \(/);
+    const lineasDeLaGuia = guia.split("\n");
+    expect(lineasQueCitan("Ver la carga")).not.toEqual([]);
+    for (const linea of new Set(lineasQueCitan("Ver la carga"))) {
+      expect(lineasDeLaGuia[linea - 1], `la línea ${linea} cita «Ver la carga» sin su condición`).toMatch(
+        /sección con su carga publicada/,
+      );
+    }
     expect(citasDeLaGuia(guia).length).toBeGreaterThanOrEqual(30);
     expect(cotejar(guia, piezas, contrato)).toEqual([]);
     expect(() => comprobarGuia(guia, piezas, contrato)).not.toThrow();
