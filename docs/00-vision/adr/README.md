@@ -16,6 +16,7 @@ Un ADR se escribe aquí cuando la decisión (a) es difícil de revertir, (b) con
 | [ADR-006](ADR-006-historias-gherkin-auditadas.md) | Ninguna historia entra a la spec sin Gherkin en español y sin pasar la auditoría de refutación | J-09 (dónde corre la prueba de humo) | Todas |
 | [ADR-008](ADR-008-logros-por-pi-en-el-sistema.md) | Los logros por PI se muestran en el sistema desde `v_r17_por_pi`, con el alcance de cada usuario (spec 004) | J-21 a J-26 de la spec 004 | US-37 a US-44 (spec 004) |
 | [ADR-009](ADR-009-declaracion-de-mejora-en-el-sistema.md) | Las causas y las acciones de mejora se declaran en el sistema y el R-17 las escribe desde la base (spec 005; enmienda ADR-005 y el invariante 8 de ADR-008) | J-29 a J-37 de la spec 005 | US-45 a US-54 (spec 005) |
+| [ADR-010](ADR-010-resumen-del-curso.md) | El resumen del curso se muestra a la coordinación en el sistema, desde la ruta 20 (spec 009; enmienda dos frases de ADR-008) | J-60 a J-63 de la spec 009 | US-91 a US-94 |
 
 ADR-007 queda para la spec 002 de Capstone, en revisión en la rama `docs/002-capstone`, y pasa a «Aceptada y vigente» con la fusión de su spec. ADR-008 está aceptado y vigente desde el 2026-11-18, con la aprobación de la spec 004. ADR-009 está aceptado y vigente desde el 2026-11-18, con la aprobación de la spec 005, y su enmienda de ADR-005 y de ADR-008 entra en esos documentos con la tarea T011.
 

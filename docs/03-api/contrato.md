@@ -31,6 +31,8 @@ En local, `scripts/api_local.sh --sin-https` del Back define `ABET_COOKIE_SIN_SE
 | 12 | GET | `/api/resultados?periodo=2026-2` | Sí | 200 | Devuelve los logros por SO y PI de las secciones al alcance del usuario (sección 12) | US-37 a US-44 (spec 004) | BR-RESULTADOS-01 a BR-RESULTADOS-11, BR-ACCESO-07 y BR-ACCESO-10 | spec 004 |
 | 17 | GET | `/api/avance?periodo=2026-2` | Sí | 200 | Devuelve a la coordinación la etapa de cada sección de su carrera o de su curso en el periodo y el conteo por etapa, secciones 14 y 15.5 | US-64 a US-66 (spec 007) y US-79 (spec 008) | Las reglas BR-AVANCE de la spec 007, BR-ACCESO-07, BR-ACCESO-12 y BR-ACCESO-13 | specs 007 y 008 |
 | 18 | GET | `/api/periodos` | Sí | 200 | Periodo vigente y periodos con secciones al alcance, sección 15.2 | US-73 (spec 008) | BR-PERIODO-05 | spec 008 |
+| 20 | GET | `/api/resumen-curso?periodo=2026-1&asignatura=5643` | Sí | 200 | Devuelve a la coordinación las cifras del curso y de cada sección por PI, sección 16 (propuesta hasta su código) | US-91 (spec 009) | BR-RESULTADOS-12 a BR-RESULTADOS-14 y BR-ACCESO-13 | spec 009 |
+| 21 | GET | `/api/resumen-curso/cursos?periodo=2026-1` | Sí | 200 | Devuelve a la coordinación los cursos con plan en el periodo dentro de su alcance, sección 16 (propuesta) | US-93 (spec 009) | BR-RESULTADOS-12 y BR-ACCESO-13 | spec 009 |
 
 ## 3. Convenciones
 
@@ -386,7 +388,7 @@ El código se verifica en `POST /api/sesion` con el correo y el código (propues
 
 ## 10. Cómo verificar este documento
 
-Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI. Las rutas 17 y 18 entran en esta comprobación desde la fase de contrato de la spec 008 (T011, 2026-11-23), y cada una aparece en el esquema cuando llega su código (T038 y T033 del Back).
+Cuando exista el Back, cada ruta de la tabla 2 debe aparecer en el esquema OpenAPI que publica FastAPI. Las rutas 17 y 18 entran en esta comprobación desde la fase de contrato de la spec 008 (T011, 2026-11-23), y cada una aparece en el esquema cuando llega su código (T038 y T033 del Back). Las rutas 20 y 21 de la spec 009 entran desde el 2026-11-24 (T011 de esa spec) y aparecen en el esquema con su código (T021 y T022 del Back), con 11 y 12 caminos.
 
 ```bash
 # Esperado: 5 caminos en el corte 1 (las 7 rutas, porque /api/sesion reúne tres métodos), 6 con el corte 2
@@ -962,6 +964,8 @@ La ruta 17 de la sección 14 conserva su forma, sus reglas y su orden de errores
 
 ### 15.6 El campo condicional `agregados` de la ruta 12 (propuesta, J-54)
 
+> **Sustituida el 2026-11-24 por la sección 16 (spec 009, J-61).** El agregado del curso sale de la ruta 20, solo para la coordinación, y la ruta 12 no suma el campo `agregados`. El texto de abajo queda como registro de la propuesta anterior.
+
 Solo existe si D-32 se responde con la suma de estudiantes por PI y curso, y solo para el rol COORDINADOR. Las cifras salen de `abet.v_r17_por_pi` de las cargas PUBLICADA del alcance, con `calificados` igual a `n_total` menos `n_sin_evidencia`, y con la meta y el nivel esperado del conjunto de reglas de la carrera.
 
 ```jsonc
@@ -985,3 +989,67 @@ Reglas y por qué existen.
 2. **El campo `profesores` de la ruta 17 en Industrial**, que espera a D-51.
 3. **El código de las rutas 17 y 18 y del campo `alcance`**, que construyen T030, T031, T033 y T038 del Back. Hasta entonces el Front sigue como hoy, porque la falla de la ruta 18 lo deja sin periodo y la sesión sin `alcance` lo deja con los rótulos de su rol.
 4. **Las rutas 13 a 16 de la spec 005**, que no entran antes de la capacitación (J-57).
+
+## 16. Rutas de la spec 009, resumen del curso para la coordinación
+
+> **Contrato del 2026-11-24 (T011 de la spec 009, aprobada por Jefferson en el chat el mismo día, «Sí, apruébala»).** Esta sección traslada las rutas nuevas de la spec 009 del Back (`specs/009-resumen-del-curso/`, US-91 y US-93, con J-60 a J-64) antes de su código. Sustituye la sección 15.6, US-80 y FR-016 de la spec 008, porque la ruta 12 es una por usuario, no recibe identificadores y también la usa el profesor (J-61).
+
+### 16.1 Resumen
+
+| # | Método | Ruta | Sesión | Éxito | Qué hace | Historia | Reglas | Cambio |
+|---|---|---|---|---|---|---|---|---|
+| 20 | GET | `/api/resumen-curso?periodo=2026-1&asignatura=5643` | Sí | 200 | Devuelve a la coordinación las cifras del curso y de cada sección, un elemento por PI del plan | US-91 (spec 009) | BR-RESULTADOS-12 a BR-RESULTADOS-14 y BR-ACCESO-13 | nueva |
+| 21 | GET | `/api/resumen-curso/cursos?periodo=2026-1` | Sí | 200 | Devuelve los cursos con plan en el periodo dentro del alcance de la coordinación | US-93 (spec 009) | BR-RESULTADOS-12 y BR-ACCESO-13 | nueva (propuesta) |
+
+### 16.2 `GET /api/resumen-curso`: cifras del curso y de cada sección (BR-RESULTADOS-12 a BR-RESULTADOS-14)
+
+La ruta atiende solo a la cuenta COORDINADOR, con el guardián de la ruta 17. El PROFESOR recibe 403 con el código `SOLO_COORDINACION` y el mensaje «Esta página es de la Coordinación.», una petición sin sesión recibe 401 y un periodo o una asignatura mal formados reciben 422 sin leer la base. Las secciones salen de `secciones_visibles()` filtradas por la asignatura y el periodo, así que fuera del alcance la respuesta es 200 con `indicadores` vacío.
+
+```jsonc
+// Respuesta 200 para coordinador.quimica@example.invalid, con datos inventados.
+// Niveles por sección: 701 [1, 2, 4, 3], 702 [0, 1, 5, 4] y 703 [2, 4, 4, 3] con un alumno sin evidencia, y 704 sin carga.
+{
+  "periodo": "2026-1",
+  "asignatura": { "codigo": "5643", "nombre": "Química General" },
+  "indicadores": [
+    { "so": 6, "pi": "6.1", "nivel_esperado": 3, "meta_pct": 80.0, "provisional": true,
+      "curso": { "estudiantes_por_nivel": [3, 7, 13, 10], "logrados": 23, "calificados": 33,
+                 "sin_evidencia": 1, "total": 34, "pct_sobre_calificados": 69.7,
+                 "promedio_nivel": 2.91, "en_meta": false },
+      "conteo_secciones": { "total": 4, "publicadas": 3, "en_meta": 1, "debajo_de_la_meta": 2, "sin_dato": 1 },
+      "secciones": [
+        { "seccion_id": 21, "numero": "701", "estado": "PUBLICADA", "carga_id": 31, "logrados": 7, "calificados": 10,
+          "sin_evidencia": 0, "pct_sobre_calificados": 70.0, "promedio_nivel": 2.90, "en_meta": false },
+        { "seccion_id": 22, "numero": "702", "estado": "PUBLICADA", "carga_id": 32, "logrados": 9, "calificados": 10,
+          "sin_evidencia": 0, "pct_sobre_calificados": 90.0, "promedio_nivel": 3.30, "en_meta": true },
+        { "seccion_id": 23, "numero": "703", "estado": "PUBLICADA", "carga_id": 33, "logrados": 7, "calificados": 13,
+          "sin_evidencia": 1, "pct_sobre_calificados": 53.8, "promedio_nivel": 2.62, "en_meta": false },
+        { "seccion_id": 24, "numero": "704", "estado": "SIN_CARGA", "carga_id": null, "logrados": null, "calificados": null,
+          "sin_evidencia": null, "pct_sobre_calificados": null, "promedio_nivel": null, "en_meta": null }
+      ] }
+  ]
+}
+```
+
+Reglas y por qué existen.
+
+- El curso suma estudiantes y no promedia porcentajes, así que tres secciones de 70,0, 90,0 y 53,8 dan 69,7 y no 71,3. El promedio es la suma de cada nivel por su conteo entre la suma de los conteos, 96 entre 33, y da 2,91. Ambos se redondean en PostgreSQL con numeric (BR-RESULTADOS-13).
+- `en_meta` sale de la función del plan de acción del R-17 sobre el porcentaje ya redondeado, y `conteo_secciones` cuenta la meta solo sobre las publicadas (BR-RESULTADOS-14).
+- Un curso sin cargas publicadas trae `calificados` 0 y el porcentaje, el promedio y `en_meta` en `null`, y P8 dice «Todavía no hay cargas publicadas en este curso.».
+- Si las secciones traen metas distintas, `meta_pct` y `en_meta` del curso quedan en `null`. `provisional` es verdadero si alguna sección lo es.
+- La lista de claves es cerrada y la respuesta no trae correos, nombres, códigos de estudiantes, `subida_por`, `nombre_archivo` ni `sha256` (BR-RESULTADOS-12).
+
+### 16.3 `GET /api/resumen-curso/cursos`: cursos del alcance (propuesta)
+
+```jsonc
+// Respuesta 200 para coordinacion@example.invalid en 2026-2, con datos inventados
+{ "periodo": "2026-2", "cursos": [ { "codigo": "450002", "nombre": "..." }, { "codigo": "450010", "nombre": "..." } ] }
+```
+
+La lista sale de `secciones_visibles()` con plan de medición en el periodo, en orden de código. La coordinación del curso recibe solo su curso, y P8 no muestra el selector cuando la lista trae uno.
+
+### 16.4 Lo que esta sección no cubre
+
+1. **Las vistas por profesor del tablero**, que esperan a D-57.
+2. **La descarga del resumen**, porque la ruta 19 sigue reservada (J-55).
+3. **El código de las rutas 20 y 21**, que construyen T021 y T022 del Back después del ensayo de la capacitación (J-64).
