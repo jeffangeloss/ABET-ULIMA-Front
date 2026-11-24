@@ -58,7 +58,11 @@ describe("US-79 · La ruta 17 y P7 alcanzan a la coordinación del curso", () =>
   });
 
   it("Desde P7 la coordinación abre la carga publicada de una sección", async () => {
-    const { llamadas } = sesionDelCurso({ "GET /api/cargas/31": json(200, constanciaPublicada701) });
+    // La ruta 13 de la spec 005 en 404, como un Back anterior, conserva el enlace del R-17 de esta prueba (AD-28).
+    const { llamadas } = sesionDelCurso({
+      "GET /api/cargas/31": json(200, constanciaPublicada701),
+      "GET /api/cargas/31/indicadores": json(404, { detail: "Not Found" }),
+    });
     const u = userEvent.setup();
     render(<App />);
     await screen.findByText(/con carga publicada/);
@@ -67,10 +71,13 @@ describe("US-79 · La ruta 17 y P7 alcanzan a la coordinación del curso", () =>
     expect(await screen.findByRole("heading", { level: 1, name: "Resultado de la carga" })).toBeInTheDocument();
     const constancia = await screen.findByRole("region", { name: "Constancia" });
     expect(constancia).toHaveTextContent("sintetico_20261_5643_701.xlsx");
-    expect(screen.getByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/31/r17.xlsx");
+    expect(await screen.findByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/31/r17.xlsx");
     expect(llamadas.map((l) => l.clave)).toContain("GET /api/cargas/31");
     // Las filas sin carga publicada no ofrecen abrir una carga.
-    expect(llamadas.map((l) => l.clave).filter((c) => c.startsWith("GET /api/cargas/"))).toEqual(["GET /api/cargas/31"]);
+    expect(llamadas.map((l) => l.clave).filter((c) => c.startsWith("GET /api/cargas/"))).toEqual([
+      "GET /api/cargas/31",
+      "GET /api/cargas/31/indicadores",
+    ]);
   });
 
   // La versión sin P7 es la de b2369c4, así que este «it» prueba P2 tal como ya la ve la coordinación del curso, y pasa

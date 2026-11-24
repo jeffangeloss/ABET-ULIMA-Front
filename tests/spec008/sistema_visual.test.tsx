@@ -186,6 +186,8 @@ describe("US-81 · Sistema visual común, claro y accesible AA", () => {
       "GET /api/secciones": json(200, [seccionPublicada, seccionSinCarga]),
       "GET /api/cargas": json(200, []),
       "GET /api/cargas/7": json(200, constanciaConError),
+      // La ruta 13 de la spec 005 en 404, como un Back anterior, conserva el enlace «Descargar R-17» de P4 (AD-28).
+      "GET /api/cargas/7/indicadores": json(404, { detail: "Not Found" }),
       "GET /api/resultados": json(200, resultados410),
     });
     const u = userEvent.setup();

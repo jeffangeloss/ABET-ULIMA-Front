@@ -5,7 +5,7 @@ import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { botonSecundario, tarjeta } from "../componentes/estilos";
 import { ErrorApi, obtenerResultados } from "../servicios/api";
-import { fraccion, meta, porcentaje } from "../servicios/formato";
+import { franjaProvisional, fraccion, meta, porcentaje } from "../servicios/formato";
 import { esperaDeLogros, sinSecciones, tituloDeLogros } from "../servicios/rotulos";
 import type { Indicador, Resultados, SeccionConLogros, Usuario } from "../servicios/tipos";
 
@@ -61,21 +61,6 @@ function textoDeLaFila(i: Indicador, s: SeccionConLogros): string {
     partes.push(i.en_meta === true ? "En la meta" : i.en_meta === false ? "Debajo de la meta" : "Sin meta definida");
   }
   return partes.join(" · ");
-}
-
-/** Texto de la franja provisional de la sección, como _franja del R-17, o null si no es provisional. */
-function franjaProvisional(s: SeccionConLogros): string | null {
-  if (s.provisional !== true) return null;
-  if (s.conjunto_reglas_estado === "APROBADO") {
-    return (
-      `Resultados provisionales. El conjunto de reglas ${s.conjunto_reglas} está aprobado, pero no define todos los ` +
-      "parámetros que usan estos resultados. No usar como evidencia oficial."
-    );
-  }
-  return (
-    `Resultados provisionales. Las reglas de la carrera (conjunto ${s.conjunto_reglas}) aún no están aprobadas. ` +
-    "No usar como evidencia oficial."
-  );
 }
 
 /**
