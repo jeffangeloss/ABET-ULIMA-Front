@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { EnlaceR17 } from "../componentes/EnlaceR17";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario, tarjeta } from "../componentes/estilos";
-import { ErrorApi, listarCargas, listarSecciones, urlR17 } from "../servicios/api";
+import { ErrorApi, listarCargas, listarSecciones } from "../servicios/api";
 import { etiquetaSeccion, horaDeLima, resumenFilas } from "../servicios/formato";
 import { sinSecciones } from "../servicios/rotulos";
 import type { CargaResumida, EstadoCarga, Seccion, Usuario } from "../servicios/tipos";
@@ -101,9 +102,9 @@ export function Cargas({ usuario, periodo, alVerResultado, alReemplazar }: Props
                             Ver constancia
                           </button>
                           {c.estado === "PUBLICADA" && (
-                            <a className={botonSecundario} href={urlR17(c.carga_id)}>
+                            <EnlaceR17 className={botonSecundario} cargaId={c.carga_id}>
                               Descargar R-17
-                            </a>
+                            </EnlaceR17>
                           )}
                           {c.estado === "PUBLICADA" && puedeReemplazar && (
                             <button type="button" className={boton} onClick={() => alReemplazar(s, c.carga_id)}>

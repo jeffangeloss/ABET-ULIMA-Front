@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { AvisosCarga } from "../componentes/AvisosCarga";
+import { EnlaceR17 } from "../componentes/EnlaceR17";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { TablaRechazos } from "../componentes/TablaRechazos";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario, tarjeta } from "../componentes/estilos";
-import { ErrorApi, obtenerCarga, urlR17 } from "../servicios/api";
+import { ErrorApi, obtenerCarga } from "../servicios/api";
 import { consejosDeAvisos, queCorregir, REMISION_AL_REEMPLAZO } from "../servicios/ayudas";
 import { horaDeLima, resumenFilas } from "../servicios/formato";
 import type { Constancia, EstadoCarga, Rol } from "../servicios/tipos";
@@ -116,9 +117,9 @@ export function ResultadoCarga({ cargaId, rol, constanciaInicial, alVolver, alVe
             </dl>
           </section>
           {constancia.estado === "PUBLICADA" ? (
-            <a className={boton} href={urlR17(constancia.carga_id)}>
+            <EnlaceR17 className={boton} cargaId={constancia.carga_id}>
               Descargar R-17
-            </a>
+            </EnlaceR17>
           ) : constancia.estado === "REEMPLAZADA" && constancia.reemplazada_por !== null ? (
             <p className="text-tinta-suave">La carga {constancia.reemplazada_por} la reemplaza, así que esta carga no tiene R-17.</p>
           ) : (

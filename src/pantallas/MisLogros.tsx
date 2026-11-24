@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { EnlaceR17 } from "../componentes/EnlaceR17";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { botonSecundario, tarjeta } from "../componentes/estilos";
-import { ErrorApi, obtenerResultados, urlR17 } from "../servicios/api";
+import { ErrorApi, obtenerResultados } from "../servicios/api";
 import { fraccion, meta, porcentaje } from "../servicios/formato";
 import { esperaDeLogros, sinSecciones, tituloDeLogros } from "../servicios/rotulos";
 import type { Indicador, Resultados, SeccionConLogros, Usuario } from "../servicios/tipos";
@@ -154,9 +155,9 @@ function SeccionDelReporte({ seccion }: { seccion: SeccionConLogros }) {
         <>
           <p className="mt-1 text-sm text-tinta-suave">Publicada</p>
           {franja && <p className="my-3 rounded-md border-l-4 border-aviso-borde bg-aviso-fondo px-3 py-2 text-sm text-aviso-texto">{franja}</p>}
-          <a className={botonSecundario} href={urlR17(seccion.carga_id!)}>
+          <EnlaceR17 className={botonSecundario} cargaId={seccion.carga_id}>
             Descargar R-17 de la {nombreDeSeccion(seccion).toLowerCase()}
-          </a>
+          </EnlaceR17>
         </>
       ) : (
         <>

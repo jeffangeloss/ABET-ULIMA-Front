@@ -62,8 +62,11 @@ function idCerrado(id: number): string {
   return String(id);
 }
 
-/** La ruta fija y su consulta codificada por URLSearchParams. Sin parámetros, la ruta va sola. */
-function conConsulta(ruta: RutaApi, parametros: Record<string, string> = {}): RutaApi {
+/**
+ * La ruta fija y su consulta codificada por URLSearchParams. Sin parámetros, la ruta va sola. Se exporta para que
+ * tests/servicios/api_rutas_cerradas.test.ts pruebe la codificación aparte de los validadores.
+ */
+export function conConsulta(ruta: RutaApi, parametros: Record<string, string> = {}): RutaApi {
   const consulta = new URLSearchParams(parametros).toString();
   return consulta ? `${ruta}?${consulta}` : ruta;
 }
@@ -207,7 +210,11 @@ export async function obtenerAvance(periodo?: string): Promise<Avance> {
   return leer<Avance>(await pedir(ruta));
 }
 
-/** Enlace normal de descarga, para que el navegador use el nombre de archivo que fija la API. */
-export function urlR17(cargaId: number): string {
-  return `/api/cargas/${cargaId}/r17.xlsx`;
+/**
+ * Enlace normal de descarga, para que el navegador use el nombre de archivo que fija la API. El carga_id llega de una
+ * respuesta de la API, así que pasa por idCerrado como en obtenerCarga: fuera de entero positivo, lanza ErrorApi y la
+ * pantalla no muestra el enlace (componentes/EnlaceR17.tsx).
+ */
+export function urlR17(cargaId: number): RutaApi {
+  return `/api/cargas/${idCerrado(cargaId)}/r17.xlsx`;
 }

@@ -1,9 +1,10 @@
 import { useEffect, useId, useState } from "react";
+import { EnlaceR17 } from "../componentes/EnlaceR17";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { boton, botonSecundario, tarjeta } from "../componentes/estilos";
-import { ErrorApi, listarSecciones, urlR17 } from "../servicios/api";
+import { ErrorApi, listarSecciones } from "../servicios/api";
 import { etiquetaSeccion } from "../servicios/formato";
 import { rotuloDeSecciones, sinSecciones } from "../servicios/rotulos";
 import { seccionesDelProfesor } from "../servicios/secciones_del_profesor";
@@ -206,9 +207,9 @@ export function MisSecciones({ usuario, periodo, conSelector = false, alSubir, a
                     </button>
                   )}
                   {!esProfesor && s.carga_id !== null && (
-                    <a className={botonSecundario} href={urlR17(s.carga_id)}>
+                    <EnlaceR17 className={botonSecundario} cargaId={s.carga_id}>
                       Descargar R-17
-                    </a>
+                    </EnlaceR17>
                   )}
                 </div>
               </li>

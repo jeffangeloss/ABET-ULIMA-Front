@@ -70,6 +70,14 @@ describe("P5 Cargas", () => {
     expect(within(li).getByRole("button", { name: "Reemplazar carga" })).toBeInTheDocument();
   });
 
+  it("una publicada con un carga_id que no es entero positivo no ofrece el R-17 y el resto de la pantalla sigue", async () => {
+    api([{ ...cargaVigente410, carga_id: "../../sesion?x=" }]);
+    montar();
+    const li = await carga("../../sesion?x=" as unknown as number);
+    expect(within(li).queryByRole("link", { name: "Descargar R-17" })).not.toBeInTheDocument();
+    expect(within(li).getByRole("button", { name: "Ver constancia" })).toBeInTheDocument();
+  });
+
   it("una publicada que no reemplaza a nadie dice solo «Vigente»", async () => {
     api([{ ...cargaVigente410, reemplaza_carga_id: null }]);
     montar();

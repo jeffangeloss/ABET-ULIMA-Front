@@ -2,6 +2,7 @@
 // host del pedido: el periodo cumple AAAA-C y cada identificador es un entero positivo, o el pedido no sale.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  conConsulta,
   ErrorApi,
   listarCargas,
   listarPeriodos,
@@ -10,6 +11,7 @@ import {
   obtenerCarga,
   obtenerResultados,
   subirExport,
+  urlR17,
 } from "../../src/servicios/api";
 import { json, simularApi } from "../ayudas";
 
@@ -89,5 +91,34 @@ describe("api.ts, rutas cerradas (S8476)", () => {
     await expect(listarPeriodos()).rejects.toMatchObject({ detail: "La petición no tiene la forma esperada." });
     simularApi({ "GET /api/periodos": json(200, { vigente: "//otro.host", periodos: ["2026-1"] }) });
     await expect(listarPeriodos()).rejects.toBeInstanceOf(ErrorApi);
+  });
+
+  // urlR17 arma el enlace durante el render con el carga_id de la respuesta, la misma fuente que listarPeriodos cierra.
+  it.each([...MALICIOSOS, "../../sesion", "1/../../avance?periodo=2026-1#", null, 0, -1, 1.5, Number.NaN])(
+    "un carga_id %j no arma el enlace del R-17",
+    (valor) => {
+      expect(() => urlR17(valor as unknown as number)).toThrow(ErrorApi);
+    },
+  );
+
+  it("un carga_id entero positivo arma el enlace del R-17 bajo /api/cargas/ del mismo origen", () => {
+    const ruta = urlR17(7);
+    expect(ruta).toBe("/api/cargas/7/r17.xlsx");
+    const url = new URL(ruta, BASE);
+    expect(url.host).toBe("front.example");
+    expect(url.pathname).toBe("/api/cargas/7/r17.xlsx");
+  });
+
+  // Los validadores ya dejan pasar solo dígitos y un guion, así que esta prueba ejercita la codificación por sí sola:
+  // falla si conConsulta deja de pasar los valores por URLSearchParams.
+  it("conConsulta codifica &, =, #, ? y / del valor, y la ruta y el host no cambian", () => {
+    const ruta = conConsulta("/api/cargas", { periodo: "1&x=2#a?b/../c" });
+    expect(ruta).toBe("/api/cargas?periodo=1%26x%3D2%23a%3Fb%2F..%2Fc");
+    const url = new URL(ruta, BASE);
+    expect(url.host).toBe("front.example");
+    expect(url.pathname).toBe("/api/cargas");
+    expect([...url.searchParams.entries()]).toEqual([["periodo", "1&x=2#a?b/../c"]]);
+    expect(url.hash).toBe("");
+    expect(conConsulta("/api/cargas")).toBe("/api/cargas");
   });
 });
