@@ -12,12 +12,12 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Punto actual
 
-- **Fecha**: 2026-11-24
+- **Fecha**: 2026-11-25
 - **Rama de trabajo**: `feat/009-resumen-curso`, desde `develop` 3b0247e, con P8 «Resumen del curso» de la spec 009 (T030 a T033)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: prueba de humo de P8 en `e2e/humo_resumen.spec.ts`, escrita y sin correr (T033). Antes, P8 en `e2e/visual.spec.ts` (T032) y P8 con sus rutas y su menú (T030 y T031)
-- **En curso**: el Front de la spec 009 está completo salvo la corrida de T033. Quedan el cierre con T040 en el Back y las contraseñas de Jefferson
-- **Siguiente paso**: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` contra la vista previa después de `humo_quimica.spec.ts`, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson (T043)
+- **Último cambio**: Cierre de la spec 009 en el Front (T040), con la suite verde. Antes, prueba de humo de P8 en `e2e/humo_resumen.spec.ts`, escrita y sin correr (T033). Antes, P8 en `e2e/visual.spec.ts` (T032) y P8 con sus rutas y su menú (T030 y T031)
+- **En curso**: el Front de la spec 009 está completo y verificado, salvo la corrida de T033, sin push.
+- **Siguiente paso**: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` contra la vista previa, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson.
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-25 06:00 (Lima) · feat/009-resumen-curso · Cierre de la spec 009 en el Front (T040)
+- Quién: Implementer (Sonnet) delegado por la sesión principal, solo. No usó subagentes.
+- Qué cambió: `CHANGELOG.md` suma el cierre en «Sin publicar» y esta memoria queda al día. Sin cambios de código.
+- Por qué: T040 de la spec 009, con el cruce de historias y pruebas en `specs/009-resumen-del-curso/audit.md` del Back.
+- Lo que debe hacer, cómo se probó: `npm run build` y `npx tsc --noEmit` salen con 0, `npm test` da 28 archivos y 420 pruebas aprobadas con 1 todo, `npx playwright test e2e/visual.spec.ts` da 12 passed (P8 a 375 y 1100 px y con teclado) y `bash scripts/preflight.sh` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: el preflight no halla correos prohibidos ni códigos de ocho cifras fuera del rango inventado.
+- Correcciones: ninguna falla de la corrida.
+- Cómo se reporta: CHANGELOG y `audit.md` del Back.
+- Pendiente y siguiente paso: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` (T033) con las contraseñas de Jefferson, y empujar solo con su permiso.
 
 ### 2026-11-25 00:20 (Lima) · feat/009-resumen-curso · Revisión independiente del Front de la spec 009
 - Quién: Claude Code, revisor Opus independiente de un workflow, que no escribió el código revisado, solo y sin Codex.
