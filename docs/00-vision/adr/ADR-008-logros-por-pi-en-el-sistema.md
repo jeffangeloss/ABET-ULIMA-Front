@@ -4,6 +4,7 @@
 |---|---|
 | **Estado** | Aceptada y vigente (spec 004 del Back, aprobada por Jefferson en el chat el 2026-11-18) |
 | **Fecha** | 2026-11-18 |
+| **Enmienda** | ADR-010 (2026-11-24) modifica en parte dos frases de esta decisión, «Power BI queda para la coordinación, en una spec aparte» y «Mientras D-32 siga abierta, P6 no suma secciones ni resume un SO en una cifra», porque la ruta 20 y P8 llevan el resumen del curso a la coordinación. P6 y la ruta 12 siguen como están, y los invariantes 1 a 8 no cambian |
 | **Ámbito** | `GET /api/resultados` (ruta 12 de `docs/03-api/contrato.md`), `app/rutas/resultados.py`, `abet_carga/resultados.py`, `_plan_de_accion` de `abet_carga/r17.py`, `app/permisos.py` (sin cambios), los routers de `app/rutas/`, `src/pantallas/MisLogros.tsx` (P6), `src/servicios/api.ts`, la sección 3.4 del contrato y la vista `abet.v_r17_por_pi` |
 
 ## Decisión

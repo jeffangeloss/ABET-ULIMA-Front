@@ -37,6 +37,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-24 23:59 (Lima) · feat/009-resumen-curso · Documentos de P8 y CHANGELOG (T011 y T012 al día)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: `docs/01-arquitectura/frontend.md` suma P8 a la tabla de pantallas, el fragmento `#/resumen` a la tabla de la sección 10.3 y la sección 13 con lo que cambia en `src/`, lo que muestra P8 y sus pruebas. `docs/specs/feature-index.md` y `docs/specs/api-contracts.md` pasan a BR-RESULTADOS-01 a BR-RESULTADOS-15, y ADR-008 señala en su cabecera la enmienda parcial de ADR-010. `CHANGELOG.md` anota P8.
+- Por qué: T011 y T012 de la spec 009. El contrato de las rutas 20 y 21 (sección 16), la sección 15.6 sustituida, la fila de `api-contracts.md` y ADR-010 ya estaban en `develop` desde 76b2428, así que solo se cierran los huecos que dejaba la pantalla.
+- Lo que debe hacer, cómo se probó: `npx vitest run tests/spec008/guia_y_privacidad.test.ts` y la suite completa siguen en verde, porque la sección 10 del contrato y sus mensajes no cambian.
+- Lo que no debe hacer, cómo se probó: ningún archivo de `src/` ni de `tests/` cambia en este commit, como muestra `git diff --stat`.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada.
+- Pendiente y siguiente paso: los de «Punto actual».
+
 ### 2026-11-24 23:58 (Lima) · feat/009-resumen-curso · Prueba de humo de P8, escrita y sin correr (T033)
 - Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
 - Qué cambió: nace `e2e/humo_resumen.spec.ts`, con dos casos que siguen a `e2e/humo_quimica.spec.ts` y leen la misma siembra inventada. El primero ingresa como `coordinador.quimica@example.invalid`, abre «Resumen del curso» y compara las cifras de cada sección publicada y del curso con el conteo por nivel del `manifiesto.json` del generador de US-74, con el redondeo de numeric de PostgreSQL. El segundo pide la ruta 20 y exige su lista cerrada de claves, y comprueba que `docente701@example.invalid` no ve el botón y recibe 403.
