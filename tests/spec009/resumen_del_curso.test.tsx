@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { App } from "../../src/App";
 import { ResumenCurso, TRAMOS } from "../../src/pantallas/ResumenCurso";
 import { COLORES } from "../../src/pantallas/MisLogros";
@@ -42,6 +42,16 @@ function filas(): HTMLElement[] {
 }
 
 describe("US-92 · P8 muestra el resumen del curso", () => {
+  it("El tramo debajo del nivel esperado sale de los conteos con el redondeo de PostgreSQL, no de restar a 100", async () => {
+    // 1 de 80 da 1,3 % en la API y 79 de 80 da 98,8 % con ROUND(numeric, 1); restar 1,3 a 100 daría 98,7 %.
+    const curso = { ...indicadorDelResumen61.curso, estudiantes_por_nivel: [40, 39, 1, 0], logrados: 1, calificados: 80, total: 81, pct_sobre_calificados: 1.3, promedio_nivel: 1.51 };
+    conRespuesta(con({ curso }));
+    render(<ResumenCurso periodo="2026-1" />);
+    expect(await screen.findByText("Debajo del nivel esperado, 79 alumnos, 98,8 %")).toBeInTheDocument();
+    expect(screen.queryByText(/98,7 %/)).toBeNull();
+    expect(document.querySelector("[data-tramo='debajo']")).toHaveStyle({ width: "98.8%" });
+  });
+
   it("P8 escribe las cifras del curso con su barra de dos tramos", async () => {
     conRespuesta();
     render(<ResumenCurso periodo="2026-1" />);
@@ -258,6 +268,26 @@ describe("US-93 · La coordinación elige el curso", () => {
       "GET /api/resumen-curso?periodo=2026-2&asignatura=450002",
       "GET /api/resumen-curso?periodo=2026-2&asignatura=450010",
     ]);
+  });
+
+  it("Un curso que llega desde P7 y no está en la ruta 21 queda elegido en el selector, y otra elección cambia de curso", async () => {
+    const alCambiarCurso = vi.fn();
+    simularApi({
+      [DOS_CURSOS]: json(200, cursosDeAmbiental),
+      "GET /api/resumen-curso?periodo=2026-2&asignatura=450099": json(200, resumen("450099", "Curso Inventado Fuera de la Lista")),
+    });
+    const u = userEvent.setup();
+    render(<ResumenCurso periodo="2026-2" asignaturaInicial="450099" alCambiarCurso={alCambiarCurso} />);
+    expect(await screen.findByText("450099 Curso Inventado Fuera de la Lista, periodo 2026-2")).toBeInTheDocument();
+    const selector = (await screen.findByRole("combobox", { name: "Curso" })) as HTMLSelectElement;
+    expect(selector.value).toBe("450099");
+    expect(within(selector).getAllByRole("option").map((o) => o.textContent)).toEqual([
+      "450099 Curso Inventado Fuera de la Lista",
+      "450002 Principios de Ingeniería Sostenible",
+      "450010 Gestión Sostenible de Residuos",
+    ]);
+    await u.selectOptions(selector, "450010");
+    expect(alCambiarCurso).toHaveBeenCalledWith("450010");
   });
 
   it("Un curso de la lista que llega desde P7 se abre sin esperar la ruta 21", async () => {

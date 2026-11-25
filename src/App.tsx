@@ -374,7 +374,7 @@ export function App() {
             />
           )}
           {usuario && periodoListo && vista.pantalla === "resumen" && usuario.rol === "COORDINADOR" && (
-            <ResumenCurso key={`${llave}-${vista.asignatura ?? ""}`} periodo={periodo} asignaturaInicial={vista.asignatura} />
+            <ResumenCurso key={`${llave}-${vista.asignatura ?? ""}`} periodo={periodo} asignaturaInicial={vista.asignatura} alCambiarCurso={verResumen} />
           )}
           {usuario && periodoListo && vista.pantalla === "secciones" && (
             <MisSecciones

@@ -37,6 +37,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-25 01:30 (Lima) · feat/009-resumen-curso · Tramo de la barra de P8 desde los conteos y selector con el curso de P7
+- Quién: Claude Code en la sesión principal, sin subagentes ni Codex, con los dos pendientes que dejó el revisor Opus del workflow.
+- Qué cambió: `porcentajeDeConteos()` de `src/servicios/formato.ts` reemplaza a `complementoDelPorcentaje()` y da la parte sobre el total con un decimal y la mitad hacia arriba, en enteros. `BarraDelCurso` de `src/pantallas/ResumenCurso.tsx` calcula el tramo «Debajo del nivel esperado» desde los conteos. El selector de P8 pone primero el curso que llega desde P7 cuando la ruta 21 no lo trae, y `App.tsx` pasa `alCambiarCurso`, que cambia el fragmento al elegir otro curso.
+- Por qué: con 1 de 80 calificados, restar 1,3 a 100 daba 98,7 % y ROUND(numeric, 1) de PostgreSQL da 98,8 % (BR-RESULTADOS-15). Con un curso de P7 fuera de la ruta 21, el selector mostraba un curso y P8 otro, y recargar perdía la elección.
+- Lo que debe hacer, cómo se probó: las pruebas nuevas fallan antes del cambio (3 en rojo) y pasan después. `npm run build` y `npx tsc --noEmit` terminan en 0, `npm test` da 28 archivos y 423 aprobadas con 1 todo, y `npx playwright test e2e/visual.spec.ts` da 12 passed.
+- Lo que no debe hacer, cómo se probó: `porcentajeDeConteos` lanza `RangeError` sin total, con una parte negativa, mayor que el total o no entera, y P8 ya no escribe 98,7 % en el caso de 1 de 80.
+- Correcciones: los dos pendientes del revisor Opus de la spec 009 en el Front.
+- Cómo se reporta: esta entrada y el PR de `feat/009-resumen-curso` del Front.
+- Pendiente y siguiente paso: los PR de la spec 009 en el Back y el Front; T033 contra la vista previa con las contraseñas de Jefferson.
+
 ### 2026-11-25 06:00 (Lima) · feat/009-resumen-curso · Cierre de la spec 009 en el Front (T040)
 - Quién: Implementer (Sonnet) delegado por la sesión principal, solo. No usó subagentes.
 - Qué cambió: `CHANGELOG.md` suma el cierre en «Sin publicar» y esta memoria queda al día. Sin cambios de código.

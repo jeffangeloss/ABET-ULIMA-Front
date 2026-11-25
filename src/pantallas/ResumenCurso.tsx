@@ -4,7 +4,7 @@ import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
 import { tarjeta } from "../componentes/estilos";
 import { ErrorApi, listarCursosDelResumen, obtenerResumenCurso } from "../servicios/api";
-import { complementoDelPorcentaje, fraccion, meta, porcentaje, promedio } from "../servicios/formato";
+import { fraccion, meta, porcentaje, porcentajeDeConteos, promedio } from "../servicios/formato";
 import { ROTULO_RESUMEN } from "../servicios/rotulos";
 import type {
   CifrasDelCurso,
@@ -33,6 +33,8 @@ interface Props {
   periodo?: string;
   /** El curso que trae el enlace de P7. Con él, la ruta 20 no espera a la lista de la ruta 21. */
   asignaturaInicial?: string;
+  /** Cambia el fragmento al elegir otro curso, para que recargar la página deje el curso elegido. Sin él, P8 cambia sola. */
+  alCambiarCurso?: (asignatura: string) => void;
 }
 
 function mensajeDe(e: unknown): string {
@@ -71,8 +73,8 @@ function LineaDeMeta({ metaPct }: { metaPct: number | null }) {
 /** La barra de dos tramos del curso. El dibujo se oculta al lector de pantalla y la leyenda escribe cada cifra. */
 function BarraDelCurso({ curso, metaPct }: { curso: CifrasDelCurso; metaPct: number | null }) {
   const logro = curso.pct_sobre_calificados!;
-  const resto = complementoDelPorcentaje(logro);
   const debajo = curso.calificados - curso.logrados;
+  const resto = porcentajeDeConteos(debajo, curso.calificados);
   return (
     <div className="mt-4">
       <div data-barra="curso" aria-hidden="true" className="relative flex h-4 w-full rounded bg-superficie">
@@ -260,7 +262,7 @@ function SelectorDeCurso({ cursos, valor, alCambiar }: { cursos: CursosDelResume
       >
         {cursos.map((c) => (
           <option key={c.codigo} value={c.codigo}>
-            {`${c.codigo} ${c.nombre}`}
+            {`${c.codigo} ${c.nombre}`.trim()}
           </option>
         ))}
       </select>
@@ -269,7 +271,7 @@ function SelectorDeCurso({ cursos, valor, alCambiar }: { cursos: CursosDelResume
 }
 
 /** P8. Las cifras del curso y de cada sección por PI, y el selector de curso cuando la cuenta alcanza más de uno. */
-export function ResumenCurso({ periodo, asignaturaInicial }: Props) {
+export function ResumenCurso({ periodo, asignaturaInicial, alCambiarCurso }: Props) {
   const [cursos, setCursos] = useState<CursosDelResumen["cursos"] | null>(null);
   const [errorCursos, setErrorCursos] = useState<string | null>(null);
   const [elegida, setElegida] = useState<string | undefined>(undefined);
@@ -303,6 +305,14 @@ export function ResumenCurso({ periodo, asignaturaInicial }: Props) {
   }, [periodo, asignatura]);
 
   const sinCursos = cursos !== null && cursos.length === 0 && asignaturaInicial === undefined;
+  // El curso que llega desde P7 y no está en la ruta 21 encabeza el selector, para que lo elegido y lo mostrado coincidan.
+  const fueraDeLaLista = asignatura !== undefined && cursos !== null && !cursos.some((c) => c.codigo === asignatura);
+  const opciones =
+    cursos === null
+      ? []
+      : fueraDeLaLista
+        ? [{ codigo: asignatura, nombre: resumen?.asignatura.codigo === asignatura ? resumen.asignatura.nombre : "" }, ...cursos]
+        : cursos;
   const error = errorResumen ?? (asignaturaInicial === undefined ? errorCursos : null);
   const cargando = periodo !== undefined && !error && !sinCursos && resumen === null;
 
@@ -320,7 +330,7 @@ export function ResumenCurso({ periodo, asignaturaInicial }: Props) {
           No hay cursos con plan de medición en este periodo para su cuenta.
         </p>
       )}
-      {cursos !== null && cursos.length > 1 && <SelectorDeCurso cursos={cursos} valor={asignatura} alCambiar={setElegida} />}
+      {opciones.length > 1 && <SelectorDeCurso cursos={opciones} valor={asignatura} alCambiar={alCambiarCurso ?? setElegida} />}
       {cargando && <Espera>Cargando el resumen del curso…</Espera>}
       {resumen !== null && !errorResumen && (
         <>

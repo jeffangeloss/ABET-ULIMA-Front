@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { complementoDelPorcentaje, fraccion, horaDeLima, meta, porcentaje, promedio, resumenFilas } from "../../src/servicios/formato";
+import { fraccion, porcentajeDeConteos, horaDeLima, meta, porcentaje, promedio, resumenFilas } from "../../src/servicios/formato";
 
 describe("horaDeLima", () => {
   it("conserva la hora cuando ya viene con el desfase de Lima", () => {
@@ -57,11 +57,20 @@ describe("cifras de P8 (spec 009)", () => {
     expect(promedio(3)).toBe("3,00");
   });
 
-  it("el complemento de un porcentaje de un decimal no arrastra el error del punto flotante", () => {
-    expect(complementoDelPorcentaje(69.7)).toBe(30.3);
-    expect(complementoDelPorcentaje(70.1)).toBe(29.9);
-    expect(complementoDelPorcentaje(0.1)).toBe(99.9);
-    expect(complementoDelPorcentaje(100)).toBe(0);
-    expect(complementoDelPorcentaje(0)).toBe(100);
+  it("porcentajeDeConteos redondea la parte sobre el total a un decimal como ROUND(numeric, 1) de PostgreSQL", () => {
+    expect(porcentajeDeConteos(79, 80)).toBe(98.8);
+    expect(porcentajeDeConteos(1, 80)).toBe(1.3);
+    expect(porcentajeDeConteos(2, 3)).toBe(66.7);
+    expect(porcentajeDeConteos(1, 3)).toBe(33.3);
+    expect(porcentajeDeConteos(10, 33)).toBe(30.3);
+    expect(porcentajeDeConteos(0, 5)).toBe(0);
+    expect(porcentajeDeConteos(5, 5)).toBe(100);
+  });
+
+  it("porcentajeDeConteos no inventa una cifra sin total ni con conteos inválidos", () => {
+    expect(() => porcentajeDeConteos(1, 0)).toThrow();
+    expect(() => porcentajeDeConteos(-1, 5)).toThrow();
+    expect(() => porcentajeDeConteos(6, 5)).toThrow();
+    expect(() => porcentajeDeConteos(1.5, 5)).toThrow();
   });
 });

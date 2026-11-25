@@ -47,11 +47,15 @@ export function promedio(valor: number): string {
 }
 
 /**
- * El resto hasta 100 de un porcentaje de un decimal, como el 30,3 % que sigue al 69,7 % en la barra de dos tramos de P8.
- * Resta en décimas enteras para no arrastrar el error del punto flotante, y no vuelve a calcular ninguna cifra de la API.
+ * La parte sobre el total en porcentaje con un decimal, redondeada como ROUND(numeric, 1) de PostgreSQL, que lleva la
+ * mitad hacia arriba. Trabaja con enteros, así que no arrastra el error del punto flotante. P8 la usa para el tramo
+ * «Debajo del nivel esperado», que la ruta 20 no trae y que restar a 100 alejaría una décima (BR-RESULTADOS-15).
  */
-export function complementoDelPorcentaje(valor: number): number {
-  return (1000 - Math.round(valor * 10)) / 10;
+export function porcentajeDeConteos(parte: number, total: number): number {
+  if (!Number.isSafeInteger(parte) || !Number.isSafeInteger(total) || total <= 0 || parte < 0 || parte > total) {
+    throw new RangeError("Los conteos no forman un porcentaje.");
+  }
+  return Math.floor((2000 * parte + total) / (2 * total)) / 10;
 }
 
 /** «9 de 11», cuántos estudiantes logran el nivel esperado de cuántos. */
