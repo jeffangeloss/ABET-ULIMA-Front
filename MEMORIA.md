@@ -13,9 +13,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-25
-- **Rama de trabajo**: `feat/010-nombre-del-profesor`, con la prueba de humo de D10 escrita (T040) y, antes, con el contrato de la spec 010 (D10 del R-17 con los profesores asignados). La spec 005 ya está en `develop` (PR #41, 45732de) y el contrato de los recuadros del R-17 está en `docs/r17-recuadros-y-filas-de-pi`, ya en `develop` (PR #42, 3b0247e)
+- **Rama de trabajo**: `fix/humo-quimica-mejora`, con el humo de Química corregido para la declaración de la spec 005 (J-32). Antes, `feat/010-nombre-del-profesor`, con la prueba de humo de D10 escrita (T040) y, antes, con el contrato de la spec 010 (D10 del R-17 con los profesores asignados). La spec 005 ya está en `develop` (PR #41, 45732de) y el contrato de los recuadros del R-17 está en `docs/r17-recuadros-y-filas-de-pi`, ya en `develop` (PR #42, 3b0247e)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: el CHANGELOG de la spec 010 (2026-11-25). Antes, la revisión del revisor Opus, que suma a la prueba de humo de D10 el rótulo «Profesor:» de B10 (2026-11-25). Antes, la prueba de humo de D10 (T040) y el contrato que dice, en la ruta 7 y en la sección 13.6, que D10 del R-17 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (spec 010, propuesta). Antes, el contrato de los recuadros del R-17 con el rótulo del PI en su propia línea
+- **Último cambio**: el humo de Química declara causa y acción por PI antes de cada descarga del R-17 (2026-11-25). Antes, el CHANGELOG de la spec 010 (2026-11-25). Antes, la revisión del revisor Opus, que suma a la prueba de humo de D10 el rótulo «Profesor:» de B10 (2026-11-25). Antes, la prueba de humo de D10 (T040) y el contrato que dice, en la ruta 7 y en la sección 13.6, que D10 del R-17 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (spec 010, propuesta). Antes, el contrato de los recuadros del R-17 con el rótulo del PI en su propia línea
 - **En curso**: la prueba de humo de D10 (T040) escrita y a la espera de su corrida contra la vista previa, que necesita las contraseñas de Jefferson.
 - **Siguiente paso**: fusionar los dos PR de la spec 010 con el permiso de Jefferson y correr el humo contra la vista previa.
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-25 12:57 (Lima) · fix/humo-quimica-mejora · El humo de Química declara antes de descargar el R-17
+- Quién: agente Implementer, bajo el líder; sin subagentes.
+- Qué cambió: `e2e/humo_quimica.spec.ts` suma `declararSiHaceFalta`, que llama `descargarR17`. Si el enlace «Descargar R-17» no está, llena «Causa probable» y «Acción de mejora» de cada PI de «Análisis por indicador» con textos inventados, pulsa «Guardar declaración» y espera «Declarado el …». Si la declaración ya existe (guía del profesor y coordinación), descarga sin declarar de nuevo. No cambia `src/`.
+- Por qué: el humo se escribió antes de la spec 005, y desde J-32 P4 deja «Descargar R-17» deshabilitado hasta la declaración y la ruta 7 responde 409 sin ella. La prueba 2 fallaba por tiempo de espera.
+- Lo que debe hacer, cómo se probó: con clúster desechable por socket y la API en 127.0.0.1:8000, `bash scripts/humo_quimica.sh --reporter=list` da 11 de 11, y `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` da 2 de 2. `npm run build`, `npm test` y `bash scripts/preflight.sh` pasan.
+- Lo que no debe hacer, cómo se probó: la comparación del R-17 de la coordinación con el del profesor sigue exigiendo celdas iguales y pasa, así que la declaración no altera el libro entre roles. No se tocó Neon ni localhost:5432.
+- Correcciones: ninguna. El selector del R-17 habilitado sigue siendo enlace, y el botón solo existe deshabilitado.
+- Cómo se reporta: CHANGELOG «[Sin publicar]» y este registro.
+- Pendiente y siguiente paso: el humo contra la vista previa sigue a la espera de las contraseñas de Jefferson.
 
 ### 2026-11-25 07:00 (Lima) · feat/010-nombre-del-profesor · Cierre de la spec 010 en el Front (T050)
 - Quién: agente Implementer (Sonnet), sin subagentes.
