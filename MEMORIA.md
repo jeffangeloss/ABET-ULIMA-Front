@@ -15,9 +15,9 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-24
 - **Rama de trabajo**: `feat/009-resumen-curso`, desde `develop` 3b0247e, con P8 «Resumen del curso» de la spec 009 (T030 y T031)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: P8 «Resumen del curso» en `src/pantallas/ResumenCurso.tsx`, con las rutas 20 y 21 en `src/servicios/api.ts`, el botón del menú de la coordinación, el enlace desde cada curso de P7 y el fragmento `#/resumen`
-- **En curso**: la spec 009 en el Front. Quedan T032 (P8 en `e2e/visual.spec.ts`), T033 (humo de P8, sin correr hasta que Jefferson ponga las contraseñas) y el cierre con T040 en el Back
-- **Siguiente paso**: seguir con T032 y T033, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson (T043)
+- **Último cambio**: P8 en `e2e/visual.spec.ts` con las rutas 20 y 21 en `e2e/api_simulada.ts`, a 375 y a 1100 px y con teclado (T032). Antes, P8 con sus rutas y su menú (T030 y T031)
+- **En curso**: la spec 009 en el Front. Quedan T033 (humo de P8, sin correr hasta que Jefferson ponga las contraseñas) y el cierre con T040 en el Back
+- **Siguiente paso**: seguir con T033, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson (T043)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-24 23:55 (Lima) · feat/009-resumen-curso · P8 a 375 px y con teclado en e2e/visual.spec.ts (T032)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: `e2e/api_simulada.ts` responde las rutas 20 y 21 con `resumen5643` y `cursosDeQuimica` de `tests/respuestas.ts`. `e2e/visual.spec.ts` suma P8 a la lista `PANTALLAS`, que se recorre a 375 y a 1100 px (sin desplazamiento lateral y con controles de al menos 24 por 24 px), y el caso «P8 a 375 px no se desplaza a lo ancho y se recorre con teclado».
+- Por qué: escenario `@playwright` de US-92 en `pantalla_resumen_del_curso.feature` de la spec 009 (T032).
+- Lo que debe hacer, cómo se probó: `npx playwright test e2e/visual.spec.ts` da 12 passed (10 de antes y 2 nuevos). El caso nuevo exige las cuatro barras ocultas con `aria-hidden`, la cifra de cada fila y de la leyenda en texto, la fila de la 704 sin carga y el foco, con su anillo, por «Salir», el menú, «Periodo» y la región de la tabla, en ese orden.
+- Lo que no debe hacer, cómo se probó: `api.sinRespuesta` queda vacío en los dos anchos, así que P8 no pide ninguna ruta fuera de las dos simuladas, y la página no se desplaza de lado.
+- Correcciones: la primera versión del caso esperaba el foco en la región después del recorrido, y el último Tab ya lo había sacado de ella. Se comprueba el último elemento del recorrido. A 375 px las dos últimas columnas de la tabla (promedio y estado) quedan dentro del desplazamiento de su región, que el teclado alcanza.
+- Cómo se reporta: esta entrada.
+- Pendiente y siguiente paso: T033 y el cierre, que son los de «Punto actual».
 
 ### 2026-11-24 23:40 (Lima) · feat/009-resumen-curso · P8 Resumen del curso, rutas 20 y 21 y menú de la coordinación (T030 y T031)
 - Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
