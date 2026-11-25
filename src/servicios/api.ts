@@ -1,7 +1,22 @@
 // Única puerta HTTP del Front (docs/01-arquitectura/frontend.md, sección 2). Ningún componente
 // llama a fetch. La sesión viaja en la cookie abet_sesion, que el navegador manda solo porque el Front
 // y la API comparten origen (ADR-004), así que este archivo no lee ni guarda ningún token.
-import type { Avance, CargaResumida, Constancia, Periodos, ResultadoSubida, Resultados, Seccion, Usuario } from "./tipos";
+import type {
+  Avance,
+  Borrador,
+  BorradorGuardado,
+  CargaResumida,
+  Constancia,
+  CuerpoBorrador,
+  Declaracion,
+  IndicadoresCarga,
+  Mejora,
+  Periodos,
+  ResultadoSubida,
+  Resultados,
+  Seccion,
+  Usuario,
+} from "./tipos";
 
 const MSG_NO_RESPONDE = "El servicio no respondió. Intente de nuevo.";
 const MSG_ENTORNO = "El entorno de pruebas no está disponible.";
@@ -26,13 +41,25 @@ export class ErrorApi extends Error {
   readonly requiereConfirmacion: boolean;
   /** El carga_id del 409 de una sección con carga publicada, o null. */
   readonly cargaPublicada: number | null;
-  constructor(status: number, detail: string, requiereConfirmacion = false, cargaPublicada: number | null = null) {
+  /** Spec 005. El borrador guardado del 409 por versión de las rutas 15 y 16, o null (contrato, sección 13.4). */
+  readonly borrador: Borrador | null;
+  /** Spec 005, AD-27. La carga que reemplaza a la del 409 de las rutas 15 y 16, o null. */
+  readonly reemplazadaPor: number | null;
+  constructor(
+    status: number,
+    detail: string,
+    requiereConfirmacion = false,
+    cargaPublicada: number | null = null,
+    extra: { borrador?: Borrador | null; reemplazadaPor?: number | null } = {},
+  ) {
     super(detail);
     this.name = "ErrorApi";
     this.status = status;
     this.detail = detail;
     this.requiereConfirmacion = requiereConfirmacion;
     this.cargaPublicada = cargaPublicada;
+    this.borrador = extra.borrador ?? null;
+    this.reemplazadaPor = extra.reemplazadaPor ?? null;
   }
 }
 
@@ -56,10 +83,15 @@ function periodoCerrado(periodo: string): string {
   return periodo;
 }
 
-/** Un identificador de la API es un entero positivo. Cualquier otro valor no arma una ruta. */
+/**
+ * Un identificador de la API es un entero positivo. Cualquier otro valor no arma una ruta. El segmento sale del
+ * número que devuelve Number.parseInt, no del valor recibido, y SonarCloud reconoce esa conversión como limpieza
+ * (S7044 y S8476 del PR #41, con el carga_id que llega de la respuesta de la API).
+ */
 function idCerrado(id: number): string {
-  if (!Number.isSafeInteger(id) || id <= 0) throw new ErrorApi(422, MSG_FORMA);
-  return String(id);
+  const n = Number.parseInt(String(id), 10);
+  if (!Number.isSafeInteger(id) || n !== id || n <= 0) throw new ErrorApi(422, MSG_FORMA);
+  return n.toString(10);
 }
 
 /**
@@ -71,18 +103,41 @@ export function conConsulta(ruta: RutaApi, parametros: Record<string, string> = 
   return consulta ? `${ruta}?${consulta}` : ruta;
 }
 
+/** Un borrador del 409 con la forma de la ruta 14, o null, para que P4 no muestre un texto que no sabe leer. */
+function borradorDelError(valor: unknown): Borrador | null {
+  if (typeof valor !== "object" || valor === null) return null;
+  const b = valor as Partial<Borrador>;
+  const texto = (x: unknown) => x === null || typeof x === "string";
+  const bien =
+    Number.isSafeInteger(b.version) &&
+    Array.isArray(b.indicadores) &&
+    b.indicadores.every((i) => typeof i?.pi === "string" && typeof i?.tipo === "string" && texto(i?.causa) && texto(i?.accion));
+  return bien ? { version: b.version!, actualizado_en: typeof b.actualizado_en === "string" ? b.actualizado_en : null, indicadores: b.indicadores! } : null;
+}
+
 async function aErrorApi(r: Response): Promise<ErrorApi> {
   const tipo = r.headers.get("content-type") ?? "";
   if (tipo.includes("json")) {
     try {
-      const cuerpo = (await r.json()) as { detail?: unknown; requiere_confirmacion?: unknown; carga_publicada?: unknown } | null;
+      const cuerpo = (await r.json()) as {
+        detail?: unknown;
+        requiere_confirmacion?: unknown;
+        carga_publicada?: unknown;
+        borrador?: unknown;
+        reemplazada_por?: unknown;
+      } | null;
       const detail = cuerpo?.detail;
       const cargaPublicada = cuerpo?.carga_publicada;
+      const reemplazadaPor = cuerpo?.reemplazada_por;
       return new ErrorApi(
         r.status,
         typeof detail === "string" ? detail : MSG_FORMA,
         cuerpo?.requiere_confirmacion === true,
         typeof cargaPublicada === "number" ? cargaPublicada : null,
+        {
+          borrador: borradorDelError(cuerpo?.borrador),
+          reemplazadaPor: Number.isSafeInteger(reemplazadaPor) && (reemplazadaPor as number) > 0 ? (reemplazadaPor as number) : null,
+        },
       );
     } catch {
       return new ErrorApi(r.status, MSG_NO_RESPONDE);
@@ -217,4 +272,46 @@ export async function obtenerAvance(periodo?: string): Promise<Avance> {
  */
 export function urlR17(cargaId: number): RutaApi {
   return `/api/cargas/${idCerrado(cargaId)}/r17.xlsx`;
+}
+
+/** Spec 005, US-45. Cifras, semáforo, hallazgo y tipo de registro de cada PI de una carga publicada (ruta 13). */
+export async function obtenerIndicadores(cargaId: number): Promise<IndicadoresCarga> {
+  return leer<IndicadoresCarga>(await pedir(`/api/cargas/${idCerrado(cargaId)}/indicadores`));
+}
+
+/** Spec 005, US-47. Declaración vigente y borrador por PI, y si la sesión puede editar (ruta 14). */
+export async function obtenerMejora(cargaId: number): Promise<Mejora> {
+  return leer<Mejora>(await pedir(`/api/cargas/${idCerrado(cargaId)}/mejora`));
+}
+
+/**
+ * Spec 005, US-48. Guarda el borrador entero con la versión leída (ruta 15). El cuerpo se arma de nuevo con las claves del
+ * contrato, porque la ruta rechaza cualquier otra con 422, y keepalive deja salir el guardado de pagehide.
+ */
+export async function guardarBorrador(
+  cargaId: number,
+  cuerpo: CuerpoBorrador,
+  opciones: { keepalive?: boolean } = {},
+): Promise<BorradorGuardado> {
+  const cerrado: CuerpoBorrador = {
+    version: cuerpo.version,
+    indicadores: cuerpo.indicadores.map(({ pi, tipo, causa, accion }) => ({ pi, tipo, causa, accion })),
+  };
+  const r = await pedir(`/api/cargas/${idCerrado(cargaId)}/mejora/borrador`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cerrado),
+    ...(opciones.keepalive ? { keepalive: true } : {}),
+  });
+  return leer<BorradorGuardado>(r);
+}
+
+/** Spec 005, US-47 y US-49. Declara la versión exacta del borrador guardado (ruta 16), con el 201 de la declaración. */
+export async function declarar(cargaId: number, version: number): Promise<Declaracion> {
+  const r = await pedir(`/api/cargas/${idCerrado(cargaId)}/mejora/declaracion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ version }),
+  });
+  return leer<Declaracion>(r);
 }

@@ -9,7 +9,7 @@ import {
   usuarioCoordinacionCurso,
   usuarioDocente701,
 } from "../tests/respuestas";
-import type { CargaResumida, Constancia, Rechazo, Resultados, Seccion, Usuario } from "../src/servicios/tipos";
+import type { CargaResumida, Constancia, IndicadoresCarga, Mejora, Rechazo, Resultados, Seccion, Usuario } from "../src/servicios/tipos";
 
 // API simulada de los escenarios @playwright de US-82 de la spec 008 (e2e/visual.spec.ts). El navegador nunca sale de
 // la página: page.route responde cada /api con las respuestas del contrato y datos inventados de tests/respuestas.ts, la
@@ -66,6 +66,32 @@ export const resultados701: Resultados = {
   secciones: [seccionConCarga(21, "5643", "Química General", "701", 31, [indicador(6, "6.1", [2, 3, 10, 7], 77.3, false)])],
 };
 
+/**
+ * Spec 005. La ruta 13 de la carga 31, con el 6.1 en ROJO y una oportunidad de mejora, para que P4 muestre «Cómo va su
+ * sección» y «Análisis por indicador» a 375 px (contrato, sección 13.2).
+ */
+export const indicadores31: IndicadoresCarga = {
+  carga_id: 31,
+  estado: "PUBLICADA",
+  provisional: true,
+  conjunto_reglas: "R-IND-2026-BORRADOR",
+  conjunto_reglas_estado: "BORRADOR",
+  parametros_pendientes: ["CORTE_ROJO"],
+  meta_pct: 80.0,
+  corte_rojo_pct: null,
+  indicadores: [
+    {
+      ...resultados701.secciones[0].indicadores[0],
+      semaforo: "ROJO",
+      hallazgo: "6.1: 77,3 % en Satisfactorio o más, meta 80,0 %",
+      tipo_registro: "OPORTUNIDAD_MEJORA",
+    },
+  ],
+};
+
+/** Spec 005. La ruta 14 de la carga 31 sin texto, para su profesor. */
+const mejora31: Mejora = { declaracion: null, borrador: null, borrador_pendiente: false, heredado_de: null, puede_editar: true };
+
 export type Cuenta = "ninguna" | "docente701" | "coordinacion_curso";
 
 const USUARIOS: Record<Exclude<Cuenta, "ninguna">, Usuario> = {
@@ -104,6 +130,8 @@ export async function simularApi(page: Page, cuenta: Cuenta) {
       "GET /api/secciones": [seccion701Publicada],
       "GET /api/cargas": [carga31, cargaRechazada701],
       "GET /api/cargas/31": constancia31,
+      "GET /api/cargas/31/indicadores": indicadores31,
+      "GET /api/cargas/31/mejora": mejora31,
       "GET /api/resultados": resultados701,
       "GET /api/avance": avance5643,
     };

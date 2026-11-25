@@ -45,3 +45,30 @@ export function meta(valor: number): string {
 export function fraccion(logrados: number, de: number): string {
   return `${logrados} de ${de}`;
 }
+
+/**
+ * Texto de la franja provisional de una sección de la ruta 12 o de una carga de la ruta 13, como _franja del R-17, o null si
+ * no es provisional (spec 004 y US-46 de la spec 005).
+ */
+export function franjaProvisional(s: {
+  provisional: boolean | null;
+  conjunto_reglas: string | null;
+  conjunto_reglas_estado: string | null;
+}): string | null {
+  if (s.provisional !== true) return null;
+  if (s.conjunto_reglas_estado === "APROBADO") {
+    return (
+      `Resultados provisionales. El conjunto de reglas ${s.conjunto_reglas} está aprobado, pero no define todos los ` +
+      "parámetros que usan estos resultados. No usar como evidencia oficial."
+    );
+  }
+  return (
+    `Resultados provisionales. Las reglas de la carrera (conjunto ${s.conjunto_reglas}) aún no están aprobadas. ` +
+    "No usar como evidencia oficial."
+  );
+}
+
+/** «15:10», la hora de Lima de un instante ISO 8601, para «Borrador guardado a las 15:10» (spec 005, US-48). */
+export function horaCorta(iso: string): string {
+  return horaDeLima(iso).slice(-5);
+}

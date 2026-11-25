@@ -54,7 +54,7 @@ describe("P5 Cargas", () => {
     expect(ids).toEqual(["Carga 11", "Carga 10", "Carga 9"]);
   });
 
-  it("la vigente que reemplaza a otra muestra su marca, sus datos, el R-17 y el reemplazo", async () => {
+  it("la vigente que reemplaza a otra muestra su marca, sus datos y el reemplazo, y P5 no ofrece el R-17", async () => {
     api();
     montar();
     const li = await carga(11);
@@ -65,7 +65,8 @@ describe("P5 Cargas", () => {
     expect(li).toHaveTextContent("sintetico_20262_450002_410.xlsx");
     expect(within(li).getByText("Huella 3f2a9c1b7d4e")).toBeInTheDocument();
     expect(within(li).getByText("Subida por docente410@example.invalid")).toBeInTheDocument();
-    expect(within(li).getByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/11/r17.xlsx");
+    // Spec 005, J-32. P5 no ofrece el R-17, porque «Ver constancia» abre P4, el único lugar que lo ofrece.
+    expect(within(li).queryByRole("link", { name: "Descargar R-17" })).toBeNull();
     expect(within(li).getByRole("button", { name: "Ver constancia" })).toBeInTheDocument();
     expect(within(li).getByRole("button", { name: "Reemplazar carga" })).toBeInTheDocument();
   });

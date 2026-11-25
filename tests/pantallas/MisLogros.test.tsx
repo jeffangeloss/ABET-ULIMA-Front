@@ -1,4 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { COLORES, MisLogros } from "../../src/pantallas/MisLogros";
 import type { Resultados, Usuario } from "../../src/servicios/tipos";
@@ -26,8 +27,9 @@ const profesorVarias: Usuario = { correo: "docente.varias@example.invalid", rol:
 async function abrir(respuesta: Resultados | Respuesta, usuario: Usuario = profesorVarias) {
   simularApi({ "GET /api/resultados": "status" in respuesta ? respuesta : json(200, respuesta) });
   const alVolver = vi.fn();
-  const vista = render(<MisLogros usuario={usuario} alVolver={alVolver} />);
-  return { ...vista, alVolver };
+  const alVerCarga = vi.fn();
+  const vista = render(<MisLogros usuario={usuario} alVolver={alVolver} alVerCarga={alVerCarga} />);
+  return { ...vista, alVolver, alVerCarga };
 }
 
 function region(nombre: string) {
@@ -114,11 +116,16 @@ describe("P6 Mis logros por SO", () => {
     expect(contraste(COLORES.meta, COLORES.debajo)).toBeGreaterThanOrEqual(3);
   });
 
-  it("ofrece el R-17 solo de cada sección publicada, con el carga_id de su carga", async () => {
-    await abrir(resultadosConUnaPublicada);
-    const enlace = await screen.findByRole("link", { name: "Descargar R-17 de la sección 412 de 450002" });
-    expect(enlace).toHaveAttribute("href", "/api/cargas/9/r17.xlsx");
-    expect(screen.getAllByRole("link", { name: /Descargar R-17/ })).toHaveLength(1);
+  // Spec 005, J-32. Hasta el 2026-11-24 este caso comprobaba el enlace al R-17 de «P6 ofrece el R-17 de cada sección
+  // publicada» (spec 004). Desde la spec 005 la sección publicada ofrece «Ver la carga de la sección N de A», que abre P4,
+  // el único lugar del R-17.
+  it("ofrece Ver la carga solo de cada sección publicada, con el carga_id de su carga, y ningún enlace al R-17", async () => {
+    const { alVerCarga } = await abrir(resultadosConUnaPublicada);
+    const ver = await screen.findByRole("button", { name: "Ver la carga de la sección 412 de 450002" });
+    expect(screen.getAllByRole("button", { name: /^Ver la carga de la/ })).toHaveLength(1);
+    expect(screen.queryByRole("link", { name: /Descargar R-17/ })).toBeNull();
+    await userEvent.click(ver);
+    expect(alVerCarga).toHaveBeenCalledWith(9);
   });
 
   it("una sección publicada sin carga_id válido no ofrece el R-17 y el resto del reporte sigue", async () => {
@@ -126,6 +133,7 @@ describe("P6 Mis logros por SO", () => {
     await abrir({ ...resultadosConUnaPublicada, secciones: [{ ...publicada, carga_id: null }, ...resto] });
     expect(await screen.findByText("Publicada")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Descargar R-17/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Ver la carga de la/ })).not.toBeInTheDocument();
   });
 
   it("no ofrece Subir export al profesor ni al coordinador", async () => {

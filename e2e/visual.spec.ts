@@ -85,6 +85,9 @@ async function abrir(page: Page, pantalla: Pantalla) {
     await tarjeta.getByRole("button", { name: "Ver resultado" }).click();
     await expect(titulo("Resultado de la carga")).toBeVisible();
     await expect(page.getByText("34 filas leídas, 22 aceptadas y 12 rechazadas")).toBeVisible();
+    // Spec 005. La tabla del semáforo y el análisis por indicador entran también en la revisión a 375 px.
+    await expect(page.getByRole("region", { name: "Cómo va su sección" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Análisis por indicador" })).toBeVisible();
   }
   if (pantalla === "P5") {
     await menu.getByRole("button", { name: "Cargas" }).click();

@@ -17,7 +17,12 @@ import {
   SHA,
 } from "../respuestas";
 
+// La ruta 13 de la spec 005 en 404, como un Back anterior, para que P4 conserve el enlace del R-17 de estas pruebas (AD-28).
+// Lo nuevo de P4 de la spec 005 se prueba en tests/spec005/.
+const BACK_ANTERIOR = { detail: "Not Found" };
+
 function montar(constancia: Constancia, rol: Rol = "PROFESOR") {
+  simularApi({ [`GET /api/cargas/${constancia.carga_id}/indicadores`]: json(404, BACK_ANTERIOR) });
   const alVolver = vi.fn();
   render(<ResultadoCarga cargaId={constancia.carga_id} rol={rol} constanciaInicial={constancia} alVolver={alVolver} />);
   return { alVolver };
@@ -111,7 +116,7 @@ describe("US-62 · Esta carga no tiene R-17", () => {
 });
 
 describe("P4 Resultado de la carga", () => {
-  it("con el rechazo de la fila 3 muestra estado, conteos, tabla de rechazos y descarga del R-17", () => {
+  it("con el rechazo de la fila 3 muestra estado, conteos, tabla de rechazos y descarga del R-17", async () => {
     montar(constanciaConError);
     expect(screen.getByRole("heading", { level: 1, name: "Resultado de la carga" })).toHaveFocus();
     expect(screen.getByText("Publicada")).toBeInTheDocument();
@@ -125,7 +130,7 @@ describe("P4 Resultado de la carga", () => {
       "5.2",
       "Fila 3, PI 5.2, nivel fuera de la escala 1 a 4. La fila completa queda fuera, también de 5.1 y 5.3.",
     ]);
-    expect(screen.getByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/7/r17.xlsx");
+    expect(await screen.findByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/7/r17.xlsx");
     // Cambio del 2026-11-23 (FR-012 de la spec 008, US-77). Una carga PUBLICADA con rechazos de fila dice qué corregir,
     // y la que no tiene rechazos ni avisos sigue sin consejo, como pedía «Una carga publicada no muestra «Qué corregir»».
     expect(screen.getByText(`Qué corregir. ${QUE_CORREGIR_FILA.get("NIVEL_FUERA_DE_ESCALA")}`)).toBeInTheDocument();
@@ -217,10 +222,15 @@ describe("P4 Resultado de la carga", () => {
   });
 
   it("sin constancia inicial la pide a la API por el identificador", async () => {
-    const { llamadas } = simularApi({ "GET /api/cargas/7": json(200, constanciaConError) });
+    const { llamadas } = simularApi({
+      "GET /api/cargas/7": json(200, constanciaConError),
+      "GET /api/cargas/7/indicadores": json(404, BACK_ANTERIOR),
+    });
     render(<ResultadoCarga cargaId={7} rol="PROFESOR" alVolver={vi.fn()} />);
     expect(await screen.findByText("11 filas leídas, 10 aceptadas y 1 rechazada")).toBeInTheDocument();
-    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/cargas/7"]);
+    // Desde la spec 005, la carga PUBLICADA pide además la ruta 13, y con su 404 no pide la 14.
+    await screen.findByRole("link", { name: "Descargar R-17" });
+    expect(llamadas.map((l) => l.clave)).toEqual(["GET /api/cargas/7", "GET /api/cargas/7/indicadores"]);
   });
 
   it("si la API niega la carga muestra su detail y ningún dato", async () => {
@@ -262,13 +272,13 @@ describe("P4 Resultado de la carga", () => {
     expect(within(constancia).queryByText("Reemplazada por la carga")).toBeNull();
   });
 
-  it("la carga vigente que reemplaza a otra lo dice en la constancia y ofrece el R-17", () => {
+  it("la carga vigente que reemplaza a otra lo dice en la constancia y ofrece el R-17", async () => {
     montar(constanciaVigenteQueReemplaza);
     const constancia = screen.getByRole("region", { name: "Constancia" });
     const termino = within(constancia).getByText("Reemplaza a la carga");
     expect(termino.nextElementSibling).toHaveTextContent("10");
     expect(within(constancia).queryByText("Reemplazada por la carga")).toBeNull();
-    expect(screen.getByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/11/r17.xlsx");
+    expect(await screen.findByRole("link", { name: "Descargar R-17" })).toHaveAttribute("href", "/api/cargas/11/r17.xlsx");
   });
 
   it("una carga REEMPLAZADA nombra a su sucesora como la publicada y no ofrece el R-17", () => {

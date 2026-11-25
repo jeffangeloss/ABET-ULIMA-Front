@@ -12,6 +12,10 @@ import {
   porcentajeDeP6,
 } from "./comun";
 
+// Spec 005 (T046). Desde US-49 el R-17 sale solo con el análisis por indicador declarado, así que la carga con error
+// deja el R-17 deshabilitado en P4 y con 409 en la ruta 7, y el reemplazo con el export correcto recorre «Cómo va su
+// sección», escribe la causa y la acción de cada PI, declara y descarga un R-17 con un párrafo por PI en A y en B (SC-007).
+// Corre contra la vista previa de develop después del despliegue del Back de la spec 005 (T062).
 // Prueba de humo de P1 a P4 con la API real sobre un clúster desechable (api_local.sh) o contra la vista previa de
 // develop. Las contraseñas se leen de ABET_CLAVES_ARCHIVO (e2e/comun.ts). Datos inventados. Necesita una API recién
 // arrancada, porque la carga de la 410 se hace una sola vez (la huella repetida responde 200 y no recorre P4 con el
@@ -33,6 +37,15 @@ test.beforeEach(async ({ context }) => {
 });
 
 let seccion410 = "";
+
+// Spec 005. Los textos de prueba de la 410 (spec.md del Back), los tres OM, y los textos de pantalla de P4.
+const TEXTOS_410: Record<string, { causa: string; accion: string }> = {
+  "5.1": { causa: "La entrega coincidió con la semana de parciales.", accion: "Mover la entrega a la semana 10 y revisar el avance en clase." },
+  "5.2": { causa: "Los grupos no recibieron la rúbrica antes de la entrega.", accion: "Publicar la rúbrica en la semana 8." },
+  "5.3": { causa: "El trabajo en equipo se evaluó solo al final.", accion: "Revisar el trabajo en equipo en dos avances." },
+};
+const R17_SIN_DECLARAR = "El R-17 se habilita cuando registre y declare la causa y la acción de cada indicador.";
+const R17_409 = "Complete la causa y la acción de cada indicador en la página de la carga antes de descargar el R-17.";
 
 test.beforeAll(() => {
   expect(ARCHIVO_CLAVES, "falta ABET_CLAVES_ARCHIVO").not.toBe("");
@@ -71,13 +84,15 @@ test("docente410 recorre P1, P2, P3 y P4", async ({ page }) => {
   await expect(avisos).toContainText("PI 5.3. La columna declara 20 puntos y sus notas están entre 1 y 4. Se cargó igual.");
   await capturar(page, "P4_resultado_con_rechazo_y_aviso.png");
 
-  // Descarga del R-17.
-  const descarga = page.waitForEvent("download");
-  await page.getByRole("link", { name: "Descargar R-17" }).click();
-  const archivo = await descarga;
-  expect(archivo.suggestedFilename()).toMatch(/^R017_450002_410_2026-2.*\.xlsx$/);
-  const ruta = await archivo.path();
-  expect(readFileSync(ruta).subarray(0, 2).toString()).toBe("PK");
+  // Spec 005, US-49. Sin declaración, P4 deja el R-17 deshabilitado y la ruta 7 responde 409.
+  await expect(page.getByRole("region", { name: "Cómo va su sección" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Descargar R-17" })).toBeDisabled();
+  await expect(page.getByText(R17_SIN_DECLARAR)).toBeVisible();
+  const carga = /#\/cargas\/(\d+)$/.exec(page.url())?.[1] ?? "";
+  expect(carga).not.toBe("");
+  const r17 = await page.request.get(`/api/cargas/${carga}/r17.xlsx`);
+  expect(r17.status()).toBe(409);
+  expect(await r17.json()).toEqual({ detail: R17_409 });
 });
 
 test(`${AJENO.correo} ve solo sus secciones y recibe 403 en la 410`, async ({ page }) => {
@@ -118,12 +133,46 @@ test("docente410 reemplaza en P5 la carga con error por el export correcto", asy
   await expect(page.getByRole("heading", { level: 1, name: "Resultado de la carga" })).toBeVisible();
   await expect(page.getByText("11 filas leídas, 11 aceptadas y 0 rechazadas")).toBeVisible();
 
-  // R-17 de la carga nueva.
+  // Spec 005, US-46. Los tres PI de la 410 en rojo, con sus cifras del R-17 (escenario 1 de US-45).
+  const comoVa = page.getByRole("region", { name: "Cómo va su sección" });
+  for (const [pi, fraccion, logro] of [["5.1", "7 de 11", "63,6 %"], ["5.2", "7 de 11", "63,6 %"], ["5.3", "8 de 11", "72,7 %"]]) {
+    const fila = comoVa.getByRole("row").filter({ has: page.getByRole("rowheader", { name: pi, exact: true }) });
+    await expect(fila).toContainText(fraccion);
+    await expect(fila).toContainText(logro);
+    await expect(fila).toContainText("Debajo de la meta");
+  }
+
+  // Spec 005, US-47 y US-48. Un bloque por PI con su hallazgo y el rótulo de la OM, y el borrador que se guarda solo. La
+  // carga con error del primer test no tiene texto, así que la carga nueva no hereda nada (US-54).
+  const analisis = page.getByRole("region", { name: "Análisis por indicador" });
+  for (const pi of ["5.1", "5.2", "5.3"]) {
+    const bloque = analisis.locator(`[data-pi="${pi}"]`);
+    await expect(bloque.getByRole("heading", { name: `${pi} · Oportunidad de mejora` })).toBeVisible();
+    const logro = pi === "5.3" ? "72,7" : "63,6";
+    await expect(bloque.getByText(`${pi}: ${logro} % en Satisfactorio o más, meta 80,0 %`, { exact: true })).toBeVisible();
+    await bloque.getByLabel("Causa probable").fill(TEXTOS_410[pi].causa);
+    await bloque.getByLabel("Acción de mejora").fill(TEXTOS_410[pi].accion);
+  }
+  await analisis.getByLabel("Acción de mejora").last().blur();
+  await expect(analisis.getByText(/^Borrador guardado a las \d{2}:\d{2}$/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Descargar R-17" })).toBeDisabled();
+  await capturar(page, "P4_analisis_por_indicador.png");
+  await analisis.getByRole("button", { name: "Guardar declaración" }).click();
+  await expect(analisis.getByText(/^Declarado el \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/)).toBeVisible();
+  await expect(analisis.getByText("Propuesta", { exact: true })).toHaveCount(3);
+
+  // R-17 de la carga nueva, con un párrafo por PI en los recuadros A (B29) y B (B34), en el orden del plan (US-50).
   const descarga = page.waitForEvent("download");
   await page.getByRole("link", { name: "Descargar R-17" }).click();
   const archivo = await descarga;
   expect(archivo.suggestedFilename()).toMatch(/^R017_450002_410_2026-2.*\.xlsx$/);
-  expect(readFileSync(await archivo.path()).subarray(0, 2).toString()).toBe("PK");
+  const libro = readFileSync(await archivo.path());
+  expect(libro.subarray(0, 2).toString()).toBe("PK");
+  const recuadros = celdasDelLibro(libro, "Cursos de Carrera", ["B29", "B34"]);
+  const parrafos = (que: "causa" | "accion") =>
+    ["5.1", "5.2", "5.3"].map((pi) => `${pi} · Oportunidad de mejora. ${TEXTOS_410[pi][que]}`).join("\n");
+  expect(recuadros.B29).toBe(parrafos("causa"));
+  expect(recuadros.B34).toBe(parrafos("accion"));
   // Con el nombre que fija la API, porque herramientas_neon/revisar_r17.py coteja su sufijo _PROVISIONAL con el título.
   if (DIR_CAPTURAS) {
     const carpeta = path.join(DIR_CAPTURAS, "reemplazo");
@@ -149,11 +198,16 @@ test("docente410 ve en P6 las cifras del R-17 de su carga de la 410", async ({ p
   await page.getByRole("banner").getByRole("button", { name: "Ver mis logros por SO" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Mis logros por SO" })).toBeVisible();
   const secciones = page.getByRole("region", { name: "Secciones" });
-  const enlace = secciones.getByRole("link", { name: "Descargar R-17 de la sección 410 de 450002" });
+  await expect(secciones).toContainText("Resultados provisionales.");
+  // Spec 005, J-32. P6 lleva a P4, el único lugar del R-17, que ya tiene la declaración del test anterior.
+  await secciones.getByRole("button", { name: "Ver la carga de la sección 410 de 450002" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Resultado de la carga" })).toBeVisible();
+  const enlace = page.getByRole("link", { name: "Descargar R-17" });
   await expect(enlace).toBeVisible();
   const destino = (await enlace.getAttribute("href")) ?? "";
   expect(destino).toMatch(/^\/api\/cargas\/\d+\/r17\.xlsx$/);
-  await expect(secciones).toContainText("Resultados provisionales.");
+  await page.goBack();
+  await expect(page.getByRole("heading", { level: 1, name: "Mis logros por SO" })).toBeVisible();
 
   // El R-17 de esa misma carga, con el bloque II en B24:H26 de la hoja «Cursos de Carrera».
   const libro = await page.request.get(destino);

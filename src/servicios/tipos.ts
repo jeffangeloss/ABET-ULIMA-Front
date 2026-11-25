@@ -201,3 +201,84 @@ export interface Avance {
   conteo: { secciones: number } & Record<Etapa, number>;
   secciones: SeccionDeAvance[];
 }
+
+/** Spec 005, J-29. Color del semáforo de un PI, que decide el Back con en_meta y CORTE_ROJO. P4 lo muestra y nunca lo calcula. */
+export type Semaforo = "VERDE" | "AMBAR" | "ROJO" | "SIN_DATO";
+
+/** Spec 005, D-39. Tipo del registro de un PI, que fija el semáforo. Un PI SIN_DATO no lleva registro (D-40). */
+export type TipoRegistro = "OPORTUNIDAD_MEJORA" | "BUENA_PRACTICA";
+
+/** Spec 005, US-45. Un PI de la ruta 13, con las claves de la ruta 12 más el semáforo, el hallazgo y el tipo. */
+export interface IndicadorDeCarga extends Indicador {
+  semaforo: Semaforo;
+  /** Frase del Back, como «5.2: 54,5 % en Satisfactorio o más, meta 80,0 %». P4 la copia sin cambios. */
+  hallazgo: string;
+  tipo_registro: TipoRegistro | null;
+}
+
+/** Spec 005. Cuerpo de GET /api/cargas/{carga_id}/indicadores, la ruta 13 (contrato, sección 13.2). */
+export interface IndicadoresCarga {
+  carga_id: number;
+  estado: EstadoCarga;
+  provisional: boolean;
+  conjunto_reglas: string;
+  conjunto_reglas_estado: string;
+  parametros_pendientes: string[];
+  meta_pct: number | null;
+  /** Nulo mientras CORTE_ROJO siga PENDIENTE, y entonces no hay banda ámbar (D-35). */
+  corte_rojo_pct: number | null;
+  indicadores: IndicadorDeCarga[];
+}
+
+/** Spec 005. La causa y la acción de un PI en el borrador, nulas mientras el profesor no las escribe. */
+export interface RegistroBorrador {
+  pi: string;
+  tipo: TipoRegistro;
+  causa: string | null;
+  accion: string | null;
+}
+
+/** Spec 005. Borrador de la ruta 14 y del 409 de la ruta 15, con una sola versión por carga (contrato, sección 13.3). */
+export interface Borrador {
+  version: number;
+  actualizado_en: string | null;
+  indicadores: RegistroBorrador[];
+}
+
+/** Spec 005, D-42. Un registro declarado, con el estado PROPUESTA que deriva la ruta 14 sin guardarlo. */
+export interface RegistroDeclarado {
+  pi: string;
+  tipo: TipoRegistro;
+  causa: string;
+  accion: string;
+  estado: "PROPUESTA";
+}
+
+/** Spec 005. La declaración vigente de la ruta 14 y el cuerpo del 201 de la ruta 16. */
+export interface Declaracion {
+  declarada_en: string;
+  indicadores: RegistroDeclarado[];
+}
+
+/** Spec 005. Cuerpo de GET /api/cargas/{carga_id}/mejora, la ruta 14 (contrato, sección 13.3). */
+export interface Mejora {
+  declaracion: Declaracion | null;
+  /** Nulo para el coordinador, que nunca recibe el texto del borrador. */
+  borrador: Borrador | null;
+  borrador_pendiente: boolean;
+  /** US-54. La carga que esta reemplaza, si el borrador viene de ella, o null. */
+  heredado_de: number | null;
+  puede_editar: boolean;
+}
+
+/** Spec 005. Cuerpo del PUT de la ruta 15, que reemplaza el borrador entero (contrato, sección 13.4). */
+export interface CuerpoBorrador {
+  version: number;
+  indicadores: RegistroBorrador[];
+}
+
+/** Spec 005. Respuesta 200 de la ruta 15. */
+export interface BorradorGuardado {
+  version: number;
+  actualizado_en: string | null;
+}

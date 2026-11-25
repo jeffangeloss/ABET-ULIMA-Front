@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { EnlaceR17 } from "../componentes/EnlaceR17";
 import { Espera } from "../componentes/Espera";
 import { Mensaje } from "../componentes/Mensaje";
 import { Titulo } from "../componentes/Titulo";
@@ -97,15 +96,11 @@ export function Cargas({ usuario, periodo, alVerResultado, alReemplazar }: Props
                           <p>Huella {c.sha256_corto}</p>
                           {c.subida_por !== null && <p className="break-all">Subida por {c.subida_por}</p>}
                         </div>
+                        {/* J-32 de la spec 005. El R-17 se ofrece solo en P4, que sabe si la carga tiene declaración. */}
                         <div className="mt-3 flex flex-wrap gap-2">
                           <button type="button" className={botonSecundario} onClick={() => alVerResultado(c.carga_id)}>
                             Ver constancia
                           </button>
-                          {c.estado === "PUBLICADA" && (
-                            <EnlaceR17 className={botonSecundario} cargaId={c.carga_id}>
-                              Descargar R-17
-                            </EnlaceR17>
-                          )}
                           {c.estado === "PUBLICADA" && puedeReemplazar && (
                             <button type="button" className={boton} onClick={() => alReemplazar(s, c.carga_id)}>
                               Reemplazar carga

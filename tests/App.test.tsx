@@ -19,6 +19,7 @@ import {
   usuarioCoordinador,
   usuarioProfesor,
 } from "./respuestas";
+import { indicadores410, mejoraVacia } from "./respuestas_mejora";
 
 describe("App", () => {
   it("sin sesión muestra P1", async () => {
@@ -197,16 +198,21 @@ describe("App", () => {
       "GET /api/sesion": json(200, usuarioProfesor),
       "GET /api/secciones": json(200, [seccionPublicada]),
       "GET /api/cargas/7": json(200, constanciaConError),
+      "GET /api/cargas/7/indicadores": json(200, indicadores410),
+      "GET /api/cargas/7/mejora": json(200, mejoraVacia),
       "GET /api/resultados": json(200, resultados410),
     });
     const u = userEvent.setup();
     render(<App />);
     const fila = (await screen.findAllByRole("listitem"))[0];
+    // P2 sigue sin porcentajes (invariante 8 de ADR-008, con la enmienda de ADR-009).
+    expect(screen.getByRole("main").textContent).not.toContain("%");
     await u.click(within(fila).getByRole("button", { name: "Ver resultado" }));
     await screen.findByText("11 filas leídas, 10 aceptadas y 1 rechazada");
     const enP4 = within(screen.getByRole("main")).getByRole("button", { name: "Ver mis logros por SO" });
-    // P4 sigue sin porcentajes, que solo muestran P6 y el R-17 (invariante 8 de ADR-008).
-    expect(screen.getByRole("main").textContent).not.toContain("%");
+    // Desde la spec 005, P4 muestra los porcentajes de la ruta 13 en «Cómo va su sección» (J-35, que cambia el invariante 8
+    // de ADR-008).
+    expect(await screen.findByRole("region", { name: "Cómo va su sección" })).toHaveTextContent("63,6 %");
     await u.click(enP4);
     expect(await screen.findByRole("heading", { level: 1, name: "Mis logros por SO" })).toBeInTheDocument();
   });
