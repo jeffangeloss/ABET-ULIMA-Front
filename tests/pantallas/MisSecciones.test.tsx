@@ -78,14 +78,14 @@ describe("P2 Mis secciones", () => {
     expect(within(fila).getByRole("button", { name: "Subir export" })).toBeDisabled();
   });
 
-  it("el coordinador no ve Subir export y sí el resultado y la descarga del R-17 publicada", async () => {
+  it("el coordinador no ve Subir export, ve Ver resultado y P2 ya no ofrece Descargar R-17", async () => {
     const { llamadas } = simularApi({ "GET /api/secciones": json(200, [seccionPublicada, seccionSinCarga]) });
     render(<MisSecciones usuario={usuarioCoordinador} {...acciones()} />);
     const filas = await screen.findAllByRole("listitem");
     expect(screen.queryByRole("button", { name: "Subir export" })).toBeNull();
     expect(within(filas[0]).getByRole("button", { name: "Ver resultado" })).toBeInTheDocument();
-    // Spec 005, J-32. El título sigue el del enlace de cumplimiento del Back, y desde la spec 005 P2 no ofrece el R-17,
-    // porque «Ver resultado» abre P4, el único lugar que lo ofrece con la declaración.
+    // Spec 005, J-32. Hasta el 2026-11-24 este caso comprobaba la descarga del R-17 publicada. Desde la spec 005 P2 no
+    // ofrece el R-17 y el título lo dice, porque «Ver resultado» abre P4, el único lugar que lo ofrece con la declaración.
     expect(within(filas[0]).queryByRole("link", { name: "Descargar R-17" })).toBeNull();
     expect(within(filas[1]).queryByRole("link", { name: "Descargar R-17" })).toBeNull();
     expect(screen.queryByText(revisarPublicada)).toBeNull();

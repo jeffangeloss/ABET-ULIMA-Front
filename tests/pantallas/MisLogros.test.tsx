@@ -116,10 +116,10 @@ describe("P6 Mis logros por SO", () => {
     expect(contraste(COLORES.meta, COLORES.debajo)).toBeGreaterThanOrEqual(3);
   });
 
-  // Spec 005, J-32. El título sigue el del enlace de cumplimiento del Back para «P6 ofrece el R-17 de cada sección
-  // publicada» (spec 004), y desde la spec 005 la sección publicada ofrece «Ver la carga de la sección N de A», que abre P4,
+  // Spec 005, J-32. Hasta el 2026-11-24 este caso comprobaba el enlace al R-17 de «P6 ofrece el R-17 de cada sección
+  // publicada» (spec 004). Desde la spec 005 la sección publicada ofrece «Ver la carga de la sección N de A», que abre P4,
   // el único lugar del R-17.
-  it("ofrece el R-17 solo de cada sección publicada, con el carga_id de su carga", async () => {
+  it("ofrece Ver la carga solo de cada sección publicada, con el carga_id de su carga, y ningún enlace al R-17", async () => {
     const { alVerCarga } = await abrir(resultadosConUnaPublicada);
     const ver = await screen.findByRole("button", { name: "Ver la carga de la sección 412 de 450002" });
     expect(screen.getAllByRole("button", { name: /^Ver la carga de la/ })).toHaveLength(1);

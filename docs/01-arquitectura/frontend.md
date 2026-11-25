@@ -441,7 +441,7 @@ Las pruebas que ya existían y cambian son las que nombran FR-006 y SC-002 de la
 | `App.test.tsx` | «P4 de una carga que no está publicada no ofrece el enlace a P6» | Llega a P4 por «Ver por qué se rechazó» y espera «Esta carga no tiene R-17.» (FR-006) |
 | `App.test.tsx` | «el coordinador abre P6 con «Ver los logros por SO de la carrera»» | Espera el título «Secciones de la carrera» y el menú con `aria-current` (SC-002) |
 | `App.test.tsx` | ««Subir export» de P2 abre P3 sin modo reemplazo» | Suma la primera línea de «Antes de subir» |
-| `MisSecciones.test.tsx` | «el coordinador no ve Subir export y sí el resultado y la descarga del R-17 publicada» y «sin secciones muestra un texto y no una lista vacía» | Suman las líneas de US-59 y la ausencia de la ruta 8 |
+| `MisSecciones.test.tsx` | «el coordinador no ve Subir export, ve Ver resultado y P2 ya no ofrece Descargar R-17» y «sin secciones muestra un texto y no una lista vacía» | Suman las líneas de US-59 y la ausencia de la ruta 8 |
 | `SubirExport.test.tsx` | «en modo reemplazo dice qué carga reemplaza y envía reemplaza desde la primera subida» y «fuera del modo reemplazo no nombra ninguna carga a reemplazar ni manda reemplaza» | Suman el párrafo «Si la carga nueva queda rechazada, la carga 7 sigue publicada.» y su ausencia |
 
 En la etapa B cambian además las pruebas de `App.test.tsx` que esperan el título «Mis secciones» después del ingreso del coordinador (J-46). La prueba de humo con Playwright suma en la etapa A la línea de P2 y el apartado de P3 del profesor (T052), y en la etapa B la llegada del coordinador a P7, con `ingresar()` de `e2e/comun.ts` que espera la página de llegada de cada rol.

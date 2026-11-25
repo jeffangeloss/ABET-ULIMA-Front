@@ -54,7 +54,7 @@ describe("P5 Cargas", () => {
     expect(ids).toEqual(["Carga 11", "Carga 10", "Carga 9"]);
   });
 
-  it("la vigente que reemplaza a otra muestra su marca, sus datos, el R-17 y el reemplazo", async () => {
+  it("la vigente que reemplaza a otra muestra su marca, sus datos y el reemplazo, y P5 no ofrece el R-17", async () => {
     api();
     montar();
     const li = await carga(11);
