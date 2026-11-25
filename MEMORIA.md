@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-24
-- **Rama de trabajo**: `feat/009-resumen-curso`, desde `develop` 3b0247e, con P8 «Resumen del curso» de la spec 009 (T030 y T031)
+- **Rama de trabajo**: `feat/009-resumen-curso`, desde `develop` 3b0247e, con P8 «Resumen del curso» de la spec 009 (T030 a T033)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: P8 en `e2e/visual.spec.ts` con las rutas 20 y 21 en `e2e/api_simulada.ts`, a 375 y a 1100 px y con teclado (T032). Antes, P8 con sus rutas y su menú (T030 y T031)
-- **En curso**: la spec 009 en el Front. Quedan T033 (humo de P8, sin correr hasta que Jefferson ponga las contraseñas) y el cierre con T040 en el Back
-- **Siguiente paso**: seguir con T033, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson (T043)
+- **Último cambio**: prueba de humo de P8 en `e2e/humo_resumen.spec.ts`, escrita y sin correr (T033). Antes, P8 en `e2e/visual.spec.ts` (T032) y P8 con sus rutas y su menú (T030 y T031)
+- **En curso**: el Front de la spec 009 está completo salvo la corrida de T033. Quedan el cierre con T040 en el Back y las contraseñas de Jefferson
+- **Siguiente paso**: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` contra la vista previa después de `humo_quimica.spec.ts`, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson (T043)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-24 23:58 (Lima) · feat/009-resumen-curso · Prueba de humo de P8, escrita y sin correr (T033)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: nace `e2e/humo_resumen.spec.ts`, con dos casos que siguen a `e2e/humo_quimica.spec.ts` y leen la misma siembra inventada. El primero ingresa como `coordinador.quimica@example.invalid`, abre «Resumen del curso» y compara las cifras de cada sección publicada y del curso con el conteo por nivel del `manifiesto.json` del generador de US-74, con el redondeo de numeric de PostgreSQL. El segundo pide la ruta 20 y exige su lista cerrada de claves, y comprueba que `docente701@example.invalid` no ve el botón y recibe 403.
+- Por qué: T033 y el escenario de US-92 de la spec 009. Las cifras del curso salen de sumar las secciones publicadas y no de promediar porcentajes (BR-RESULTADOS-13).
+- Lo que debe hacer, cómo se probó: `npx playwright test e2e/humo_resumen.spec.ts --list` carga el archivo y lista los dos casos. La aritmética del manifiesto se revisó a mano con la 701 de ejemplo, [1, 2, 4, 3], que da 70,0 % y 2,90. La corrida contra la vista previa no se hizo, porque necesita contraseñas que solo asigna Jefferson.
+- Lo que no debe hacer, cómo se probó: el caso exige que el texto principal de P8 no traiga correos ni la palabra profesor o docente. El humo solo lee y no sube nada. Sin secciones publicadas se detiene y pide correr antes el humo de Química.
+- Correcciones: ninguna. No hay un guion nuevo, porque `scripts/humo_quimica.sh` borra el archivo de contraseñas al terminar y T033 pide el suyo, con `scripts/e2e.sh`.
+- Cómo se reporta: esta entrada y `CHANGELOG.md`.
+- Pendiente y siguiente paso: la corrida real, que es de Jefferson, y los de «Punto actual».
 
 ### 2026-11-24 23:55 (Lima) · feat/009-resumen-curso · P8 a 375 px y con teclado en e2e/visual.spec.ts (T032)
 - Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
