@@ -41,6 +41,19 @@ export function meta(valor: number): string {
   return `${Number.isInteger(valor) ? String(valor) : valor.toFixed(1).replace(".", ",")} %`;
 }
 
+/** «2,91», el promedio de calificación de la ruta 20 con dos decimales y coma, sin redondear otra vez (spec 009). */
+export function promedio(valor: number): string {
+  return valor.toFixed(2).replace(".", ",");
+}
+
+/**
+ * El resto hasta 100 de un porcentaje de un decimal, como el 30,3 % que sigue al 69,7 % en la barra de dos tramos de P8.
+ * Resta en décimas enteras para no arrastrar el error del punto flotante, y no vuelve a calcular ninguna cifra de la API.
+ */
+export function complementoDelPorcentaje(valor: number): number {
+  return (1000 - Math.round(valor * 10)) / 10;
+}
+
 /** «9 de 11», cuántos estudiantes logran el nivel esperado de cuántos. */
 export function fraccion(logrados: number, de: number): string {
   return `${logrados} de ${de}`;

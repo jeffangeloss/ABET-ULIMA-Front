@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fraccion, horaDeLima, meta, porcentaje, resumenFilas } from "../../src/servicios/formato";
+import { complementoDelPorcentaje, fraccion, horaDeLima, meta, porcentaje, promedio, resumenFilas } from "../../src/servicios/formato";
 
 describe("horaDeLima", () => {
   it("conserva la hora cuando ya viene con el desfase de Lima", () => {
@@ -47,5 +47,21 @@ describe("cifras de P6 (spec 004)", () => {
   it("la fracción dice cuántos logran de cuántos", () => {
     expect(fraccion(9, 11)).toBe("9 de 11");
     expect(fraccion(0, 10)).toBe("0 de 10");
+  });
+});
+
+describe("cifras de P8 (spec 009)", () => {
+  it("el promedio lleva dos decimales y coma", () => {
+    expect(promedio(2.91)).toBe("2,91");
+    expect(promedio(2.9)).toBe("2,90");
+    expect(promedio(3)).toBe("3,00");
+  });
+
+  it("el complemento de un porcentaje de un decimal no arrastra el error del punto flotante", () => {
+    expect(complementoDelPorcentaje(69.7)).toBe(30.3);
+    expect(complementoDelPorcentaje(70.1)).toBe(29.9);
+    expect(complementoDelPorcentaje(0.1)).toBe(99.9);
+    expect(complementoDelPorcentaje(100)).toBe(0);
+    expect(complementoDelPorcentaje(0)).toBe(100);
   });
 });

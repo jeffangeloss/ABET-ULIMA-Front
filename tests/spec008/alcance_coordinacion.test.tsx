@@ -41,6 +41,7 @@ describe("US-71 · Rótulos de la coordinación del curso", () => {
     expect(await screen.findByRole("heading", { level: 1, name: "Secciones del curso" })).toBeInTheDocument();
     expect(menu.getAllByRole("button").map((b) => b.textContent)).toEqual([
       "Avance del registro del curso",
+      "Resumen del curso",
       "Secciones del curso",
       "Cargas",
       "Ver los logros por SO del curso",

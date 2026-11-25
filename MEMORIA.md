@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-24
-- **Rama de trabajo**: `docs/r17-recuadros-y-filas-de-pi`, con el contrato de los recuadros del R-17. La spec 005 ya está en `develop` (PR #41, 45732de)
+- **Rama de trabajo**: `feat/009-resumen-curso`, desde `develop` 3b0247e, con P8 «Resumen del curso» de la spec 009 (T030 y T031)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: la sección 13 del contrato describe los recuadros A y B del R-17 con el rótulo del PI en su propia línea y las filas de PI sobrantes ocultas. Antes, la fusión del PR #41 con la spec 005 en `develop`
-- **En curso**: el PR de este contrato, que acompaña al de `fix/r17-recuadros-y-filas-de-pi` del Back
-- **Siguiente paso**: fusionar los dos PR con el permiso de Jefferson y seguir la demo de Química con la coordinación; T046 contra la vista previa de `develop` sigue pendiente
+- **Último cambio**: P8 «Resumen del curso» en `src/pantallas/ResumenCurso.tsx`, con las rutas 20 y 21 en `src/servicios/api.ts`, el botón del menú de la coordinación, el enlace desde cada curso de P7 y el fragmento `#/resumen`
+- **En curso**: la spec 009 en el Front. Quedan T032 (P8 en `e2e/visual.spec.ts`), T033 (humo de P8, sin correr hasta que Jefferson ponga las contraseñas) y el cierre con T040 en el Back
+- **Siguiente paso**: seguir con T032 y T033, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson (T043)
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
 
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-24 23:40 (Lima) · feat/009-resumen-curso · P8 Resumen del curso, rutas 20 y 21 y menú de la coordinación (T030 y T031)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: nace `src/pantallas/ResumenCurso.tsx` (P8) con las cifras del curso, la barra de dos tramos, la tabla por sección con su barra y la línea de la meta, la franja provisional, el selector de curso y los textos de lo que no se mide. `src/servicios/api.ts` suma `obtenerResumenCurso()` y `listarCursosDelResumen()` con el periodo AAAA-C y la asignatura de uno a doce dígitos validados antes de armar la ruta, `tipos.ts` suma los tipos de las rutas 20 y 21, `formato.ts` suma `promedio()` y `complementoDelPorcentaje()` y `rotulos.ts` suma `ROTULO_RESUMEN`. `src/App.tsx` suma la vista «resumen» con los fragmentos `#/resumen` y `#/resumen?asignatura=5643` y el botón «Resumen del curso» entre «Avance del registro» y la pantalla de secciones, solo para el COORDINADOR. `src/pantallas/Avance.tsx` ofrece «Ver el resumen del curso» en cada asignatura. Cuatro pruebas viejas suman el botón nuevo a la lista de su menú, con cambio fechado.
+- Por qué: US-92 y US-93 de la spec 009 del Back, BR-RESULTADOS-12 a BR-RESULTADOS-15 y ADR-010. Sin gráficos de biblioteca (J-24), sin torta (J-62) y sin profesores (D-57).
+- Lo que debe hacer, cómo se probó: la prueba va primero y falla (22 de 31 en rojo antes de tener `ResumenCurso.tsx`). `tests/spec009/resumen_del_curso.test.tsx` cubre los seis escenarios `@delegado_a_vitest` de US-92 y los de US-93 del selector, y `tests/spec009/api_resumen.test.ts` las validaciones de las rutas 20 y 21. Con el código, `npm run build`, `npx tsc --noEmit` y `npm test` terminan en 0, con 28 archivos y 420 pruebas aprobadas y 1 `todo`.
+- Lo que no debe hacer, cómo se probó: P8 no muestra correos ni profesores, no ordena por porcentaje, no dibuja barras de 0 % ni torta, no guarda nada en el navegador, no pide la ruta 20 sin periodo y el profesor ni ve el botón ni abre `#/resumen`. Un periodo o una asignatura mal formados no salen a la red (`api_resumen.test.ts`).
+- Correcciones: ninguna. Valores provisionales de texto, que decide Jefferson o la coordinación. La franja dice «Cifras provisionales.» con un texto general, porque la ruta 20 no trae el conjunto de reglas. La región de la tabla se desplaza dentro de sí a 375 px, y el segundo tramo de la barra es el resto hasta 100 de la cifra de la API. T011 y T012 ya estaban en `develop` desde el contrato de la spec 009 (76b2428).
+- Cómo se reporta: esta entrada. No marca `tasks.md` del Back, que lo hace el agente del Back.
+- Pendiente y siguiente paso: T032, T033 y el cierre, que son los de «Punto actual».
 
 ### 2026-11-24 23:10 (Lima) · docs/r17-recuadros-y-filas-de-pi · Contrato con el formato nuevo de los recuadros del R-17
 - Quién: Claude Code en la sesión principal, sin subagentes ni Codex.
