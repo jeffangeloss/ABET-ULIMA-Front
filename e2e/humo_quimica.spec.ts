@@ -197,6 +197,18 @@ test("El profesor sube su export y descarga su R-17 en la vista previa", async (
   expect(celdasDelLibro(r17DelProfesor, HOJA_R17, ["B6"]).B6).toBe("Carrera de Ingeniería Industrial");
 });
 
+test("El R-17 del profesor de la 701 lleva su nombre inventado en D10 y en ninguna otra celda", async () => {
+  // Spec 010 (T040, US-97). D10 sale con los profesores asignados a la sección, y la 701 tiene uno solo.
+  const NOMBRE_701 = "Profesor Inventado Setecientos Uno";
+  expect(r17DelProfesor, "el R-17 del primer escenario").not.toBeNull();
+  const cabecera = celdasDelLibro(r17DelProfesor!, HOJA_R17, ["B10", "D10"]);
+  expect(cabecera.B10, "el rótulo de B10 no cambia").toBe("Profesor:");
+  expect(cabecera.D10).toBe(NOMBRE_701);
+  const otras = Object.entries(todasLasCeldas(r17DelProfesor!, HOJA_R17)).filter(([ref]) => ref !== "D10");
+  expect(otras.filter(([, valor]) => valor !== null && valor.includes("Profesor Inventado")), "otras celdas con un nombre").toEqual([]);
+  expect(otras.filter(([, valor]) => valor === NOMBRE_701)).toEqual([]);
+});
+
 test("El profesor sigue la guía de su rol de punta a punta en la vista previa", async ({ page }) => {
   // La tarjeta inventada de docente701, con la 701 y el archivo que el manifiesto le da.
   const tarjeta = { correo: DOCENTE_701, seccion: "701", archivo: "gc_SINTETICO_20261_5643_701_fullgc_2026-07-15-00-00-00.xlsx" };
