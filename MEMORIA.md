@@ -37,6 +37,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-24 20:55 (Lima) · feat/005-oportunidades-de-mejora · Aviso S8476 de SonarCloud que siguió en el PR #41
+- Quién: Claude Code en la sesión principal, sin subagentes ni Codex.
+- Qué cambió: `idCerrado` de `src/servicios/api.ts` arma el segmento con el número que devuelve `Number.parseInt(String(id), 10)`, y lanza el 422 si ese número no es el mismo entero positivo recibido. Deja `encodeURIComponent`.
+- Por qué: tras el commit `a80b889`, SonarCloud cerró S7044 y dejó abierta S8476 (falsificación de pedidos del cliente) en la línea de `fetch` de `pedir`, con el mismo recorrido desde el `carga_id` de la respuesta. `encodeURIComponent` no limpia para esa regla, porque deja pasar `..`, y la conversión a número sí.
+- Lo que debe hacer, cómo se probó: `npm run build`, `npx tsc --noEmit` y `npm test` con los mismos 26 archivos, 378 pruebas aprobadas y 1 pendiente, porque un entero positivo arma la misma ruta.
+- Lo que no debe hacer, cómo se probó: un identificador que no es entero positivo sigue lanzando el 422 de `MSG_FORMA` antes de armar la ruta, como prueban `tests/servicios/api_rutas_cerradas.test.ts` y `api.test.ts`.
+- Correcciones: la entrada de las 20:40 suponía que `encodeURIComponent` bastaba para las dos reglas, y bastó solo para S7044.
+- Cómo se reporta: esta entrada y el PR #41, donde SonarCloud vuelve a analizar el cambio.
+- Pendiente y siguiente paso: la fusión del PR #41 con SonarCloud en verde y después la del PR #57 del Back.
+
 ### 2026-11-24 20:40 (Lima) · feat/005-oportunidades-de-mejora · Avisos S7044 y S8476 de SonarCloud en el PR #41
 - Quién: Claude Code en la sesión principal, sin subagentes ni Codex.
 - Qué cambió: `idCerrado` de `src/servicios/api.ts` devuelve `encodeURIComponent(String(id))` en lugar de `String(id)`, con su comentario.

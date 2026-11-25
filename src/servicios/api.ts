@@ -84,13 +84,14 @@ function periodoCerrado(periodo: string): string {
 }
 
 /**
- * Un identificador de la API es un entero positivo. Cualquier otro valor no arma una ruta. Sale además por
- * encodeURIComponent, que no cambia un entero y que SonarCloud reconoce como limpieza del segmento de la ruta
+ * Un identificador de la API es un entero positivo. Cualquier otro valor no arma una ruta. El segmento sale del
+ * número que devuelve Number.parseInt, no del valor recibido, y SonarCloud reconoce esa conversión como limpieza
  * (S7044 y S8476 del PR #41, con el carga_id que llega de la respuesta de la API).
  */
 function idCerrado(id: number): string {
-  if (!Number.isSafeInteger(id) || id <= 0) throw new ErrorApi(422, MSG_FORMA);
-  return encodeURIComponent(String(id));
+  const n = Number.parseInt(String(id), 10);
+  if (!Number.isSafeInteger(id) || n !== id || n <= 0) throw new ErrorApi(422, MSG_FORMA);
+  return n.toString(10);
 }
 
 /**
