@@ -15,7 +15,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - **Fecha**: 2026-11-25
 - **Rama de trabajo**: `feat/010-nombre-del-profesor`, con la prueba de humo de D10 escrita (T040) y, antes, con el contrato de la spec 010 (D10 del R-17 con los profesores asignados). La spec 005 ya está en `develop` (PR #41, 45732de) y el contrato de los recuadros del R-17 está en `docs/r17-recuadros-y-filas-de-pi`, ya en `develop` (PR #42, 3b0247e)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: el contrato dice, en la ruta 7 y en la sección 13.6, que D10 del R-17 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (spec 010, propuesta). Antes, el contrato de los recuadros del R-17 con el rótulo del PI en su propia línea
+- **Último cambio**: la revisión del revisor Opus, que suma a la prueba de humo de D10 el rótulo «Profesor:» de B10 (2026-11-25). Antes, la prueba de humo de D10 (T040) y el contrato que dice, en la ruta 7 y en la sección 13.6, que D10 del R-17 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (spec 010, propuesta). Antes, el contrato de los recuadros del R-17 con el rótulo del PI en su propia línea
 - **En curso**: la prueba de humo de D10 (T040 de la spec 010) queda escrita en `e2e/humo_quimica.spec.ts` y espera su corrida contra la vista previa, que necesita las contraseñas de Jefferson
 - **Siguiente paso**: fusionar los dos PR de la spec 010 con el permiso de Jefferson y, después de la fusión de `fix/r17-recuadros-y-filas-de-pi`, construir la spec 010 en el Back; la demo de Química sigue con la coordinación y T046 contra la vista previa de `develop` sigue pendiente
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-25 05:30 (Lima) · feat/010-nombre-del-profesor · Revisión del Front de la spec 010 (revisor Opus)
+- Quién: revisor Opus independiente, delegado por la sesión principal, sin subagentes ni Codex.
+- Qué cambió: la prueba «El R-17 del profesor de la 701 lleva su nombre inventado en D10 y en ninguna otra celda» de `e2e/humo_quimica.spec.ts` exige además que B10 siga diciendo «Profesor:». La prueba leía B10 y no lo comprobaba.
+- Por qué: el escenario 1 de US-97 de la spec 010 pide D10 con el nombre y B10 igual a «Profesor:».
+- Lo que debe hacer, cómo se probó: `npx tsc --noEmit` sin errores y `npx playwright test e2e/humo_quimica.spec.ts --list` lista 11 pruebas. El diff contra `origin/docs/010-nombre-del-profesor` toca solo esta prueba y `MEMORIA.md`, sin rutas, pantallas ni datos reales.
+- Lo que no debe hacer, cómo se probó: la prueba falla si B10 cambia, si D10 no trae «Profesor Inventado Setecientos Uno» o si otra celda trae «Profesor Inventado». No se corrió contra la vista previa, porque necesita las contraseñas de Jefferson.
+- Correcciones: la entrada de T040 no dice que B10 se leía sin comprobarse, y esta entrada lo corrige.
+- Cómo se reporta: esta entrada, en un commit local de `feat/010-nombre-del-profesor` sin push.
+- Pendiente y siguiente paso: correr el humo contra la vista previa con la construcción de la spec 010 desplegada, y resolver el choque de `MEMORIA.md` con `origin/docs/010-nombre-del-profesor`, que ya integra la spec 009, antes del PR.
 
 ### 2026-11-25 01:10 (Lima) · feat/010-nombre-del-profesor · Prueba de humo de D10 del R-17 (T040)
 - Quién: Implementer (Sonnet) delegado por la sesión principal, sin subagentes ni Codex.
