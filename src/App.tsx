@@ -6,11 +6,12 @@ import { Ingreso } from "./pantallas/Ingreso";
 import { MisLogros } from "./pantallas/MisLogros";
 import { MisSecciones } from "./pantallas/MisSecciones";
 import { ResultadoCarga } from "./pantallas/ResultadoCarga";
+import { ResumenCurso } from "./pantallas/ResumenCurso";
 import { SubirExport } from "./pantallas/SubirExport";
 import { Espera } from "./componentes/Espera";
 import { botonSecundario } from "./componentes/estilos";
 import { alSesionVencida, cerrarSesion, listarPeriodos, sesionActual } from "./servicios/api";
-import { rotuloDeAvance, rotuloDeLogros, rotuloDeSecciones } from "./servicios/rotulos";
+import { ROTULO_RESUMEN, rotuloDeAvance, rotuloDeLogros, rotuloDeSecciones } from "./servicios/rotulos";
 import type { Constancia, Periodos, Seccion, Usuario } from "./servicios/tipos";
 
 type Vista =
@@ -27,7 +28,9 @@ type Vista =
       /** Spec 005, US-52. La sección de la subida que terminó aquí, para «Subir otro archivo». */
       seccion?: Seccion;
     }
-  | { pantalla: "logros" };
+  | { pantalla: "logros" }
+  /** Spec 009, US-92. P8, solo de la coordinación. La asignatura viene del enlace de P7 y va en el fragmento. */
+  | { pantalla: "resumen"; asignatura?: string };
 
 type Pantalla = Vista["pantalla"];
 
@@ -43,6 +46,7 @@ interface EstadoDelHistorial {
 const ID = "([1-9][0-9]{0,14})";
 const RUTA_CARGA = new RegExp(`^#/cargas/${ID}$`);
 const RUTA_SUBIR = new RegExp(`^#/secciones/${ID}/subir(?:\\?reemplaza=${ID})?$`);
+const RUTA_RESUMEN = /^#\/resumen(?:\?asignatura=([0-9]{1,12}))?$/;
 const RUTAS_FIJAS: Record<string, Vista> = {
   "#/avance": { pantalla: "avance" },
   "#/secciones": { pantalla: "secciones" },
@@ -57,6 +61,8 @@ export function fragmentoDe(v: Vista): string {
       return `#/secciones/${v.seccion.seccion_id}/subir${v.reemplaza === undefined ? "" : `?reemplaza=${v.reemplaza}`}`;
     case "resultado":
       return `#/cargas/${v.cargaId}`;
+    case "resumen":
+      return v.asignatura === undefined ? "#/resumen" : `#/resumen?asignatura=${v.asignatura}`;
     default:
       return `#/${v.pantalla}`;
   }
@@ -64,11 +70,13 @@ export function fragmentoDe(v: Vista): string {
 
 /**
  * La pantalla de un fragmento, o null si es desconocido. P3 necesita la sección, así que solo vuelve si esta sesión ya la
- * abrió, y P3 recargada cae a la pantalla de llegada. P7 es solo de la coordinación.
+ * abrió, y P3 recargada cae a la pantalla de llegada. P7 y P8 son solo de la coordinación.
  */
 function vistaDe(fragmento: string, usuario: Usuario, secciones: Map<number, Seccion>): Vista | null {
   const fija = RUTAS_FIJAS[fragmento];
   if (fija) return fija.pantalla === "avance" && usuario.rol !== "COORDINADOR" ? null : fija;
+  const resumen = RUTA_RESUMEN.exec(fragmento);
+  if (resumen) return usuario.rol === "COORDINADOR" ? { pantalla: "resumen", asignatura: resumen[1] } : null;
   const carga = RUTA_CARGA.exec(fragmento);
   if (carga) return { pantalla: "resultado", cargaId: Number(carga[1]) };
   const subir = RUTA_SUBIR.exec(fragmento);
@@ -253,6 +261,7 @@ export function App() {
 
   const volver = () => ir({ pantalla: "secciones" });
   const verLogros = () => ir({ pantalla: "logros" });
+  const verResumen = (asignatura?: string) => ir({ pantalla: "resumen", asignatura });
   const verCarga = (cargaId: number) => ir({ pantalla: "resultado", cargaId });
   const subir = (seccion: Seccion, reemplaza?: number) => {
     seccionesRef.current.set(seccion.seccion_id, seccion);
@@ -303,6 +312,16 @@ export function App() {
                     {rotuloDeAvance(usuario)}
                   </button>
                 )}
+                {usuario.rol === "COORDINADOR" && (
+                  <button
+                    type="button"
+                    className={botonDelMenu}
+                    aria-current={actual(vista.pantalla, "resumen")}
+                    onClick={() => verResumen()}
+                  >
+                    {ROTULO_RESUMEN}
+                  </button>
+                )}
                 <button type="button" className={botonDelMenu} aria-current={actual(vista.pantalla, "secciones")} onClick={volver}>
                   {rotuloDeSecciones(usuario)}
                 </button>
@@ -351,7 +370,11 @@ export function App() {
               usuario={usuario}
               periodo={periodo}
               alVerCarga={verCarga}
+              alVerResumen={verResumen}
             />
+          )}
+          {usuario && periodoListo && vista.pantalla === "resumen" && usuario.rol === "COORDINADOR" && (
+            <ResumenCurso key={`${llave}-${vista.asignatura ?? ""}`} periodo={periodo} asignaturaInicial={vista.asignatura} alCambiarCurso={verResumen} />
           )}
           {usuario && periodoListo && vista.pantalla === "secciones" && (
             <MisSecciones

@@ -42,10 +42,12 @@ describe("US-79 · La ruta 17 y P7 alcanzan a la coordinación del curso", () =>
       "703 · Sin carga",
       "704 · Sin profesor asignado",
     ]);
-    // El menú del curso empieza por P7, marcada como la pantalla actual, y no habla de la carrera.
+    // El menú del curso empieza por P7, marcada como la pantalla actual, y no habla de la carrera. Cambio del 2026-11-24 (spec 009,
+    // T031), «Resumen del curso» sigue a P7.
     const menu = within(screen.getByRole("navigation", { name: "Menú principal" }));
     expect(menu.getAllByRole("button").map((b) => b.textContent)).toEqual([
       "Avance del registro del curso",
+      "Resumen del curso",
       "Secciones del curso",
       "Cargas",
       "Ver los logros por SO del curso",

@@ -54,11 +54,11 @@ async function controlesDe24(page: Page) {
   expect(chicos).toEqual([]);
 }
 
-type Pantalla = "Ingreso" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7";
+type Pantalla = "Ingreso" | "P2" | "P3" | "P4" | "P5" | "P6" | "P7" | "P8";
 
 /** Abre la pantalla con la API simulada y devuelve las rutas sin respuesta, que deben quedar vacías. */
 async function abrir(page: Page, pantalla: Pantalla) {
-  const cuenta: Cuenta = pantalla === "Ingreso" ? "ninguna" : pantalla === "P7" ? "coordinacion_curso" : "docente701";
+  const cuenta: Cuenta = pantalla === "Ingreso" ? "ninguna" : pantalla === "P7" || pantalla === "P8" ? "coordinacion_curso" : "docente701";
   const api = await simularApi(page, cuenta);
   await page.goto("/");
   const titulo = (nombre: string) => page.getByRole("heading", { level: 1, name: nombre, exact: true });
@@ -70,6 +70,15 @@ async function abrir(page: Page, pantalla: Pantalla) {
     await expect(titulo("Avance del registro del curso")).toBeVisible();
     await expect(page.getByText(/^701 · /)).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: "5643 Química General" })).toBeVisible();
+    return api;
+  }
+  if (pantalla === "P8") {
+    // Spec 009, T032. La coordinación llega a P7 y abre P8 desde el menú.
+    await expect(titulo("Avance del registro del curso")).toBeVisible();
+    await page.getByRole("navigation", { name: "Menú principal" }).getByRole("button", { name: "Resumen del curso" }).click();
+    await expect(titulo("Resumen del curso")).toBeVisible();
+    await expect(page.getByText("23 de 33 alumnos en el nivel esperado o superior (69,7 %)")).toBeVisible();
+    await expect(page.getByRole("table", { name: "Secciones del PI 6.1" }).getByRole("row")).toHaveCount(5);
     return api;
   }
   await expect(titulo("Mis secciones")).toBeVisible();
@@ -102,7 +111,7 @@ async function abrir(page: Page, pantalla: Pantalla) {
   return api;
 }
 
-const PANTALLAS: Pantalla[] = ["Ingreso", "P2", "P3", "P4", "P5", "P6", "P7"];
+const PANTALLAS: Pantalla[] = ["Ingreso", "P2", "P3", "P4", "P5", "P6", "P7", "P8"];
 
 test.describe("US-82 · Uso a 375 px y con teclado", () => {
   for (const pantalla of PANTALLAS) {
@@ -233,6 +242,57 @@ test.describe("US-82 · Uso a 375 px y con teclado", () => {
         };
       });
       expect(orden).toEqual({ despuesDelPeriodo: true, antesDelArchivo: true, enfocables: 0 });
+      expect(api.sinRespuesta).toEqual([]);
+      await page.unrouteAll({ behavior: "ignoreErrors" });
+    }
+  });
+
+  // Escenario @playwright de US-92 en pantalla_resumen_del_curso.feature de la spec 009 (T032).
+  test("P8 a 375 px no se desplaza a lo ancho y se recorre con teclado", async ({ page }) => {
+    for (const ancho of ANCHOS) {
+      await page.setViewportSize({ width: ancho, height: ALTO });
+      const api = await abrir(page, "P8");
+      await sinDesplazamientoLateral(page);
+      await controlesDe24(page);
+
+      // Cada barra es un dibujo oculto al lector de pantalla, y su cifra está escrita en la fila o en la leyenda.
+      const barras = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>("[data-barra]")].map((b) => ({
+          tipo: b.dataset.barra,
+          oculta: b.getAttribute("aria-hidden") === "true",
+        })),
+      );
+      expect(barras.map((b) => b.tipo)).toEqual(["curso", "seccion", "seccion", "seccion"]);
+      expect(barras.every((b) => b.oculta)).toBe(true);
+      const tabla = page.getByRole("table", { name: "Secciones del PI 6.1" });
+      await expect(tabla.getByRole("row").nth(1)).toContainText("70,0 % (7 de 10)");
+      await expect(tabla.getByRole("row").nth(4)).toContainText("Sin carga publicada");
+      await expect(page.getByText("Nivel esperado o superior, 23 alumnos, 69,7 %")).toBeVisible();
+      await expect(page.getByText("Debajo del nivel esperado, 10 alumnos, 30,3 %")).toBeVisible();
+
+      // El foco recorre la cabecera, el periodo y la tabla en orden, y la tabla se desplaza con las flechas si lo necesita.
+      await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+      await page.mouse.click(1, 1);
+      const recorrido: string[] = [];
+      for (let i = 0; i < 12; i++) {
+        await page.keyboard.press("Tab");
+        const actual = await enfocado(page);
+        if (actual === null || recorrido.includes(actual.control)) break;
+        expect(actual.anillo, `anillo de foco en ${actual.control}`).toBe(true);
+        recorrido.push(actual.control);
+      }
+      // La región de la tabla es el último foco, y su nombre accesible es el texto de la tabla, que empieza por «Sección».
+      expect(recorrido.at(-1)).toMatch(/^div: Sección/);
+      expect(recorrido.slice(0, -1)).toEqual([
+        "button: Salir",
+        "button: Avance del registro del curso",
+        "button: Resumen del curso",
+        "button: Secciones del curso",
+        "button: Cargas",
+        "button: Ver los logros por SO del curso",
+        "select: Periodo",
+      ]);
+      expect(await tabla.getByRole("rowheader").allTextContents()).toEqual(["701", "702", "703", "704"]);
       expect(api.sinRespuesta).toEqual([]);
       await page.unrouteAll({ behavior: "ignoreErrors" });
     }

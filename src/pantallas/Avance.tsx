@@ -13,6 +13,8 @@ interface Props {
   periodo?: string;
   /** Abre P4 de la carga publicada de una sección, el único lugar del R-17 (J-32 de la spec 005). */
   alVerCarga: (cargaId: number) => void;
+  /** Spec 009, US-92. Abre P8 del curso. Sin esta función, P7 no ofrece el enlace. */
+  alVerResumen?: (asignatura: string) => void;
 }
 
 /** Texto de cada etapa de J-48 (propuestas de US-65 de la spec 007). Una etapa que la API sume después se muestra tal cual. */
@@ -65,7 +67,7 @@ function porAsignatura(secciones: SeccionDeAvance[]): SeccionDeAvance[][] {
  * coordinación, con un resumen y un filtro que viven solo en el estado de React, sin el almacenamiento del navegador
  * (FR-012 de la spec 007). No muestra los correos del campo profesores, que esperan a D-47 y a D-51.
  */
-export function Avance({ usuario, periodo, alVerCarga }: Props) {
+export function Avance({ usuario, periodo, alVerCarga, alVerResumen }: Props) {
   const [avance, setAvance] = useState<RespuestaAvance | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [soloFaltan, setSoloFaltan] = useState(false);
@@ -119,9 +121,16 @@ export function Avance({ usuario, periodo, alVerCarga }: Props) {
               const idTitulo = `${prefijo}-asignatura-${codigo}`;
               return (
                 <section key={codigo} aria-labelledby={idTitulo} className={tarjeta}>
-                  <h2 id={idTitulo} className="font-titulo text-seccion font-semibold text-tinta">
-                    {`${codigo} ${nombre}`}
-                  </h2>
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                    <h2 id={idTitulo} className="font-titulo text-seccion font-semibold text-tinta">
+                      {`${codigo} ${nombre}`}
+                    </h2>
+                    {alVerResumen && (
+                      <button type="button" className={botonSecundario} aria-describedby={idTitulo} onClick={() => alVerResumen(codigo)}>
+                        Ver el resumen del curso
+                      </button>
+                    )}
+                  </div>
                   <ul className="mt-2 divide-y divide-linea">
                     {grupo.map((s) => {
                       const idFila = `${prefijo}-seccion-${s.seccion_id}`;

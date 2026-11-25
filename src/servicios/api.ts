@@ -8,11 +8,13 @@ import type {
   CargaResumida,
   Constancia,
   CuerpoBorrador,
+  CursosDelResumen,
   Declaracion,
   IndicadoresCarga,
   Mejora,
   Periodos,
   ResultadoSubida,
+  ResumenCurso,
   Resultados,
   Seccion,
   Usuario,
@@ -26,6 +28,9 @@ const MSG_PERIODO = "El periodo no tiene la forma AAAA-C.";
 
 /** AAAA-C con C de 0 a 2, el patrón cerrado de la API (contrato, secciones 15.2 y 15.5, y ck_periodo_ciclo). */
 const PERIODO = /^\d{4}-[0-2]$/;
+
+/** El código de una asignatura de la ruta 20, solo dígitos y a lo más doce, como 5643 o 450002 (contrato, sección 16.2). */
+const ASIGNATURA = /^[0-9]{1,12}$/;
 
 /** Toda ruta empieza en /api/ del mismo origen (ADR-004). Ninguna lleva host. */
 type RutaApi = `/api/${string}`;
@@ -81,6 +86,12 @@ export function alSesionVencida(oyente: Oyente): () => void {
 function periodoCerrado(periodo: string): string {
   if (typeof periodo !== "string" || !PERIODO.test(periodo)) throw new ErrorApi(422, MSG_PERIODO);
   return periodo;
+}
+
+/** Spec 009. Un código de asignatura fuera de su patrón cerrado no sale a la red, con el 422 que la API daría. */
+function asignaturaCerrada(codigo: string): string {
+  if (typeof codigo !== "string" || !ASIGNATURA.test(codigo)) throw new ErrorApi(422, MSG_FORMA);
+  return codigo;
 }
 
 /**
@@ -314,4 +325,19 @@ export async function declarar(cargaId: number, version: number): Promise<Declar
     body: JSON.stringify({ version }),
   });
   return leer<Declaracion>(r);
+}
+
+/**
+ * Spec 009, US-91. Cifras del curso y de cada sección por PI, solo para la coordinación (ruta 20, contrato, sección 16.2).
+ * La ruta pide los dos parámetros, así que sin periodo elegido la pantalla no llega a llamarla.
+ */
+export async function obtenerResumenCurso(periodo: string, asignatura: string): Promise<ResumenCurso> {
+  const ruta = conConsulta("/api/resumen-curso", { periodo: periodoCerrado(periodo), asignatura: asignaturaCerrada(asignatura) });
+  return leer<ResumenCurso>(await pedir(ruta));
+}
+
+/** Spec 009, US-93. Cursos con plan en el periodo dentro del alcance de la coordinación (ruta 21, contrato, sección 16.3). */
+export async function listarCursosDelResumen(periodo: string): Promise<CursosDelResumen> {
+  const ruta = conConsulta("/api/resumen-curso/cursos", { periodo: periodoCerrado(periodo) });
+  return leer<CursosDelResumen>(await pedir(ruta));
 }

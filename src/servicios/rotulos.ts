@@ -32,6 +32,9 @@ export function rotuloDeAvance(usuario: Usuario): string {
   });
 }
 
+/** Botón del menú y título de P8, el mismo para la coordinación de la carrera y la del curso (spec 009, US-92). */
+export const ROTULO_RESUMEN = "Resumen del curso";
+
 /** Enlace a P6, que no se parece a «Ver resultado», el de P4 (spec 004, AD-11). */
 export function rotuloDeLogros(usuario: Usuario): string {
   return segun(usuario, {

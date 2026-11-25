@@ -37,6 +37,26 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-25 06:00 (Lima) · feat/009-resumen-curso · Cierre de la spec 009 en el Front (T040)
+- Quién: Implementer (Sonnet) delegado por la sesión principal, solo. No usó subagentes.
+- Qué cambió: `CHANGELOG.md` suma el cierre en «Sin publicar» y esta memoria queda al día. Sin cambios de código.
+- Por qué: T040 de la spec 009, con el cruce de historias y pruebas en `specs/009-resumen-del-curso/audit.md` del Back.
+- Lo que debe hacer, cómo se probó: `npm run build` y `npx tsc --noEmit` salen con 0, `npm test` da 28 archivos y 420 pruebas aprobadas con 1 todo, `npx playwright test e2e/visual.spec.ts` da 12 passed (P8 a 375 y 1100 px y con teclado) y `bash scripts/preflight.sh` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: el preflight no halla correos prohibidos ni códigos de ocho cifras fuera del rango inventado.
+- Correcciones: ninguna falla de la corrida.
+- Cómo se reporta: CHANGELOG y `audit.md` del Back.
+- Pendiente y siguiente paso: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` (T033) con las contraseñas de Jefferson, y empujar solo con su permiso.
+
+### 2026-11-25 01:30 (Lima) · feat/009-resumen-curso · Tramo de la barra de P8 desde los conteos y selector con el curso de P7
+- Quién: Claude Code en la sesión principal, sin subagentes ni Codex, con los dos pendientes que dejó el revisor Opus del workflow.
+- Qué cambió: `porcentajeDeConteos()` de `src/servicios/formato.ts` reemplaza a `complementoDelPorcentaje()` y da la parte sobre el total con un decimal y la mitad hacia arriba, en enteros. `BarraDelCurso` de `src/pantallas/ResumenCurso.tsx` calcula el tramo «Debajo del nivel esperado» desde los conteos. El selector de P8 pone primero el curso que llega desde P7 cuando la ruta 21 no lo trae, y `App.tsx` pasa `alCambiarCurso`, que cambia el fragmento al elegir otro curso.
+- Por qué: con 1 de 80 calificados, restar 1,3 a 100 daba 98,7 % y ROUND(numeric, 1) de PostgreSQL da 98,8 % (BR-RESULTADOS-15). Con un curso de P7 fuera de la ruta 21, el selector mostraba un curso y P8 otro, y recargar perdía la elección.
+- Lo que debe hacer, cómo se probó: las pruebas nuevas fallan antes del cambio (3 en rojo) y pasan después. `npm run build` y `npx tsc --noEmit` terminan en 0, `npm test` da 28 archivos y 423 aprobadas con 1 todo, y `npx playwright test e2e/visual.spec.ts` da 12 passed.
+- Lo que no debe hacer, cómo se probó: `porcentajeDeConteos` lanza `RangeError` sin total, con una parte negativa, mayor que el total o no entera, y P8 ya no escribe 98,7 % en el caso de 1 de 80.
+- Correcciones: los dos pendientes del revisor Opus de la spec 009 en el Front.
+- Cómo se reporta: esta entrada y el PR de `feat/009-resumen-curso` del Front.
+- Pendiente y siguiente paso: los PR de la spec 009 en el Back y el Front; T033 contra la vista previa con las contraseñas de Jefferson.
+
 ### 2026-11-25 00:50 (Lima) · docs/010-nombre-del-profesor · Contrato de la spec 010, D10 del R-17 con los profesores asignados
 - Quién: Implementer (Sonnet) delegado por la sesión principal, sin subagentes ni Codex. La sesión principal revisa el diff antes de aceptarlo.
 - Qué cambió: `docs/03-api/contrato.md` suma una línea «Cambio del 2026-11-25 (spec 010, propuesta)» en las reglas de la ruta 7 y en la sección 13.6, que dice que D10 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (AD-76). El punto 2 de la sección 13.7 aclara que el nombre del docente sale solo en D10.
@@ -46,6 +66,57 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Correcciones: ninguna.
 - Cómo se reporta: esta entrada y el PR del Front que acompaña al de `docs/010-nombre-del-profesor` del Back.
 - Pendiente y siguiente paso: la fusión de los dos PR con el permiso de Jefferson y la prueba de humo de D10 (T040 de la spec 010) después de construir el Back.
+
+### 2026-11-25 00:20 (Lima) · feat/009-resumen-curso · Revisión independiente del Front de la spec 009
+- Quién: Claude Code, revisor Opus independiente de un workflow, que no escribió el código revisado, solo y sin Codex.
+- Qué cambió: la sección 13.3 de `docs/01-arquitectura/frontend.md` ya no dice que los dos escenarios de US-93 tienen un `it` con su título, porque son del Back y los prueba pytest-bdd. Un comentario de `e2e/humo_resumen.spec.ts` decía «las dos barras de cada fila» y cada fila tiene una. Un comentario de `tests/respuestas.ts` pierde los dos puntos.
+- Por qué: revisión del diff contra `origin/develop` de T030 a T033 de la spec 009, con BR-RESULTADOS-15 y los escenarios de `pantalla_resumen_del_curso.feature`.
+- Lo que debe hacer, cómo se probó: `npx tsc --noEmit`, `npm run build` y `npx vitest run` terminan en 0, con 420 pruebas aprobadas y 1 `todo`. `npx playwright test e2e/visual.spec.ts` da 12 passed y `bash scripts/preflight.sh --pr origin/develop` no falla.
+- Lo que no debe hacer, cómo se probó: ningún archivo de `src/` cambia, como muestra `git diff --stat`.
+- Correcciones: las tres de «Qué cambió». Quedan descritas sin corregir la cifra del segundo tramo, que P8 calcula como 100 menos la de la API y puede diferir en una décima del redondeo de PostgreSQL (BR-RESULTADOS-15), y el selector, que muestra el primer curso cuando el de P7 no viene en la ruta 21.
+- Cómo se reporta: esta entrada y el informe del revisor al workflow.
+- Pendiente y siguiente paso: los de «Punto actual».
+
+### 2026-11-24 23:59 (Lima) · feat/009-resumen-curso · Documentos de P8 y CHANGELOG (T011 y T012 al día)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: `docs/01-arquitectura/frontend.md` suma P8 a la tabla de pantallas, el fragmento `#/resumen` a la tabla de la sección 10.3 y la sección 13 con lo que cambia en `src/`, lo que muestra P8 y sus pruebas. `docs/specs/feature-index.md` y `docs/specs/api-contracts.md` pasan a BR-RESULTADOS-01 a BR-RESULTADOS-15, y ADR-008 señala en su cabecera la enmienda parcial de ADR-010. `CHANGELOG.md` anota P8.
+- Por qué: T011 y T012 de la spec 009. El contrato de las rutas 20 y 21 (sección 16), la sección 15.6 sustituida, la fila de `api-contracts.md` y ADR-010 ya estaban en `develop` desde 76b2428, así que solo se cierran los huecos que dejaba la pantalla.
+- Lo que debe hacer, cómo se probó: `npx vitest run tests/spec008/guia_y_privacidad.test.ts` y la suite completa siguen en verde, porque la sección 10 del contrato y sus mensajes no cambian.
+- Lo que no debe hacer, cómo se probó: ningún archivo de `src/` ni de `tests/` cambia en este commit, como muestra `git diff --stat`.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada.
+- Pendiente y siguiente paso: los de «Punto actual».
+
+### 2026-11-24 23:58 (Lima) · feat/009-resumen-curso · Prueba de humo de P8, escrita y sin correr (T033)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: nace `e2e/humo_resumen.spec.ts`, con dos casos que siguen a `e2e/humo_quimica.spec.ts` y leen la misma siembra inventada. El primero ingresa como `coordinador.quimica@example.invalid`, abre «Resumen del curso» y compara las cifras de cada sección publicada y del curso con el conteo por nivel del `manifiesto.json` del generador de US-74, con el redondeo de numeric de PostgreSQL. El segundo pide la ruta 20 y exige su lista cerrada de claves, y comprueba que `docente701@example.invalid` no ve el botón y recibe 403.
+- Por qué: T033 y el escenario de US-92 de la spec 009. Las cifras del curso salen de sumar las secciones publicadas y no de promediar porcentajes (BR-RESULTADOS-13).
+- Lo que debe hacer, cómo se probó: `npx playwright test e2e/humo_resumen.spec.ts --list` carga el archivo y lista los dos casos. La aritmética del manifiesto se revisó a mano con la 701 de ejemplo, [1, 2, 4, 3], que da 70,0 % y 2,90. La corrida contra la vista previa no se hizo, porque necesita contraseñas que solo asigna Jefferson.
+- Lo que no debe hacer, cómo se probó: el caso exige que el texto principal de P8 no traiga correos ni la palabra profesor o docente. El humo solo lee y no sube nada. Sin secciones publicadas se detiene y pide correr antes el humo de Química.
+- Correcciones: ninguna. No hay un guion nuevo, porque `scripts/humo_quimica.sh` borra el archivo de contraseñas al terminar y T033 pide el suyo, con `scripts/e2e.sh`.
+- Cómo se reporta: esta entrada y `CHANGELOG.md`.
+- Pendiente y siguiente paso: la corrida real, que es de Jefferson, y los de «Punto actual».
+
+### 2026-11-24 23:55 (Lima) · feat/009-resumen-curso · P8 a 375 px y con teclado en e2e/visual.spec.ts (T032)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: `e2e/api_simulada.ts` responde las rutas 20 y 21 con `resumen5643` y `cursosDeQuimica` de `tests/respuestas.ts`. `e2e/visual.spec.ts` suma P8 a la lista `PANTALLAS`, que se recorre a 375 y a 1100 px (sin desplazamiento lateral y con controles de al menos 24 por 24 px), y el caso «P8 a 375 px no se desplaza a lo ancho y se recorre con teclado».
+- Por qué: escenario `@playwright` de US-92 en `pantalla_resumen_del_curso.feature` de la spec 009 (T032).
+- Lo que debe hacer, cómo se probó: `npx playwright test e2e/visual.spec.ts` da 12 passed (10 de antes y 2 nuevos). El caso nuevo exige las cuatro barras ocultas con `aria-hidden`, la cifra de cada fila y de la leyenda en texto, la fila de la 704 sin carga y el foco, con su anillo, por «Salir», el menú, «Periodo» y la región de la tabla, en ese orden.
+- Lo que no debe hacer, cómo se probó: `api.sinRespuesta` queda vacío en los dos anchos, así que P8 no pide ninguna ruta fuera de las dos simuladas, y la página no se desplaza de lado.
+- Correcciones: la primera versión del caso esperaba el foco en la región después del recorrido, y el último Tab ya lo había sacado de ella. Se comprueba el último elemento del recorrido. A 375 px las dos últimas columnas de la tabla (promedio y estado) quedan dentro del desplazamiento de su región, que el teclado alcanza.
+- Cómo se reporta: esta entrada.
+- Pendiente y siguiente paso: T033 y el cierre, que son los de «Punto actual».
+
+### 2026-11-24 23:40 (Lima) · feat/009-resumen-curso · P8 Resumen del curso, rutas 20 y 21 y menú de la coordinación (T030 y T031)
+- Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
+- Qué cambió: nace `src/pantallas/ResumenCurso.tsx` (P8) con las cifras del curso, la barra de dos tramos, la tabla por sección con su barra y la línea de la meta, la franja provisional, el selector de curso y los textos de lo que no se mide. `src/servicios/api.ts` suma `obtenerResumenCurso()` y `listarCursosDelResumen()` con el periodo AAAA-C y la asignatura de uno a doce dígitos validados antes de armar la ruta, `tipos.ts` suma los tipos de las rutas 20 y 21, `formato.ts` suma `promedio()` y `complementoDelPorcentaje()` y `rotulos.ts` suma `ROTULO_RESUMEN`. `src/App.tsx` suma la vista «resumen» con los fragmentos `#/resumen` y `#/resumen?asignatura=5643` y el botón «Resumen del curso» entre «Avance del registro» y la pantalla de secciones, solo para el COORDINADOR. `src/pantallas/Avance.tsx` ofrece «Ver el resumen del curso» en cada asignatura. Cuatro pruebas viejas suman el botón nuevo a la lista de su menú, con cambio fechado.
+- Por qué: US-92 y US-93 de la spec 009 del Back, BR-RESULTADOS-12 a BR-RESULTADOS-15 y ADR-010. Sin gráficos de biblioteca (J-24), sin torta (J-62) y sin profesores (D-57).
+- Lo que debe hacer, cómo se probó: la prueba va primero y falla (22 de 31 en rojo antes de tener `ResumenCurso.tsx`). `tests/spec009/resumen_del_curso.test.tsx` cubre los seis escenarios `@delegado_a_vitest` de US-92 y los de US-93 del selector, y `tests/spec009/api_resumen.test.ts` las validaciones de las rutas 20 y 21. Con el código, `npm run build`, `npx tsc --noEmit` y `npm test` terminan en 0, con 28 archivos y 420 pruebas aprobadas y 1 `todo`.
+- Lo que no debe hacer, cómo se probó: P8 no muestra correos ni profesores, no ordena por porcentaje, no dibuja barras de 0 % ni torta, no guarda nada en el navegador, no pide la ruta 20 sin periodo y el profesor ni ve el botón ni abre `#/resumen`. Un periodo o una asignatura mal formados no salen a la red (`api_resumen.test.ts`).
+- Correcciones: ninguna. Valores provisionales de texto, que decide Jefferson o la coordinación. La franja dice «Cifras provisionales.» con un texto general, porque la ruta 20 no trae el conjunto de reglas. La región de la tabla se desplaza dentro de sí a 375 px, y el segundo tramo de la barra es el resto hasta 100 de la cifra de la API. T011 y T012 ya estaban en `develop` desde el contrato de la spec 009 (76b2428).
+- Cómo se reporta: esta entrada. No marca `tasks.md` del Back, que lo hace el agente del Back.
+- Pendiente y siguiente paso: T032, T033 y el cierre, que son los de «Punto actual».
+
 
 ### 2026-11-24 23:10 (Lima) · docs/r17-recuadros-y-filas-de-pi · Contrato con el formato nuevo de los recuadros del R-17
 - Quién: Claude Code en la sesión principal, sin subagentes ni Codex.
