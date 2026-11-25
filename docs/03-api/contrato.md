@@ -292,6 +292,7 @@ Reglas y por qué existen.
 - La hoja «Constancia» va al final con los datos de la constancia, los avisos en la forma «PUNTAJE_MAXIMO_DISTINTO en el PI 5.3» y los rechazos en la forma «Fila 3, PI 5.2, NIVEL_FUERA_DE_ESCALA, RECHAZA_FILA», sin el valor leído (BR-R17-09).
 - Ni el nombre del archivo ni sus propiedades llevan nombres de personas. El autor y el último autor del libro están vacíos o dicen «ABET_SIS_MED» (BR-R17-06 y BR-R17-07).
 - El profesor descarga el R-17 de sus secciones y el coordinador el de cualquier sección (BR-ACCESO-08).
+- **Cambio del 2026-11-25 (spec 010, propuesta).** D10 de la hoja «Cursos de Carrera» lleva los nombres de los profesores asignados a la sección, separados por comas, y queda vacía si ninguno tiene nombre. Ninguna ruta ni JSON cambia (AD-76), y el nombre no sale en la hoja «Constancia», en el nombre del archivo ni en las propiedades del libro (BR-R17-07 y BR-R17-14).
 
 Errores 401, 403 («La sección no está a su cargo.», también para una carga que no existe, propuesta de la sección 9), 409 («La carga no está publicada y no tiene R-17.», con el código 409 como propuesta) y 422 («La sección supera las filas de la plantilla del R-17.», propuesta, para una sección de más de 47 estudiantes con 3 PI).
 
@@ -788,6 +789,7 @@ El 409 de la carga que no está PUBLICADA manda sobre los demás 409, y el de la
 
 - El R-17 compone el recuadro A (B29:I31) con un bloque de causa por PI y el recuadro B (B34:I36) con un bloque de acción por PI, en el orden de los PI. Cada bloque lleva en su propia línea un rótulo sin cifras, como «PI 5.1 · Buena práctica» o «PI 5.2 · Oportunidad de mejora», y debajo el texto del profesor, y una línea vacía separa un bloque del siguiente (cambio del 2026-11-24, propuesta). Un PI SIN_DATO escribe la línea «PI 5.3 · Sin calificaciones en esta carga.» (propuesta) en los dos recuadros (D-41, provisional). Con menos de 3 PI, las filas de PI que sobran en los bloques I y II quedan ocultas, sin borrarse (BR-R17-02 del Back).
 - La plantilla oficial no cambia, ni los enunciados de B28 y B33, que hablan de «no alcanzar el indicador» y cuyo ajuste es D-08, de la carrera. Una hoja aparte para las OM y las BP queda para después (D-41).
+- **Cambio del 2026-11-25 (spec 010, propuesta).** D10 lleva los profesores asignados a la sección, en orden alfabético sin tildes ni mayúsculas y separados por «, », sin el correo de relleno cuando un profesor no tiene nombre (BR-R17-14). Ninguna ruta ni JSON cambia (AD-76), la hoja «Constancia» y la constancia en JSON siguen con el correo de quien sube la carga, y la fila 10 crece según el texto sin mover el resto de la cabecera.
 - El 409 de una carga que no está PUBLICADA manda sobre el de la declaración, así que una carga RECHAZADA responde «La carga no está publicada y no tiene R-17.» aunque no tenga declaración.
 - Con solo un borrador, la ruta sigue en 409. Con la declaración responde 200 con el archivo `R017_450002_412_2026-2_PROVISIONAL.xlsx`.
 - Toda carga publicada antes de V1_12, como la 410 y la 411 de la vista previa y de Production, queda en 409 hasta declarar, sin excepción por fecha (J-37). Por eso el Front se despliega antes que el Back.
@@ -799,7 +801,7 @@ El Front no ofrece el enlace a la ruta 7 sin declaración, porque P4 es el únic
 ### 13.7 Lo que esta sección no cubre
 
 1. **El R-18, los roles de coordinador de curso y de área, los estados Revisado y Aprobado y el responsable y el plazo de cada acción** (D-42), que esperan la plantilla del R-18 y la definición del área. La ruta 14 deriva solo PROPUESTA.
-2. **La ficha completa del R-17 en pantalla** (C-P04), la rúbrica de cada estadio en pantalla (C-P05) y el nombre del docente en el R-17 (D-12 de la spec 001).
+2. **La ficha completa del R-17 en pantalla** (C-P04), la rúbrica de cada estadio en pantalla (C-P05) y el nombre del docente en la hoja «Constancia» (D-12 de la spec 001). Desde el cambio del 2026-11-25 (spec 010, propuesta), el nombre del docente sale solo en D10 del R-17.
 3. **La muestra para el archivo ABET** (C-B04) y la observación del evaluador por estudiante, que no entra a la base.
 4. **El aviso de una columna ABET mal nombrada en el export** (C-C04). Hasta entonces el lector acepta una actividad por PI con la forma «ABET SO4.1», y la carrera fija el nombre estándar con D-43 antes de capacitar a los profesores en la semana 14.
 5. **Quién declaró, en la hoja «Constancia» del R-17 y en la constancia en JSON** (C-12). La base guarda `declarada_por` y `declarada_en`, pero ninguna respuesta muestra `declarada_por`.
