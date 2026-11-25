@@ -68,6 +68,7 @@ Ningún componente llama a `fetch` directamente. `api.ts` expone una función po
 | P5 Cargas | `pantallas/Cargas.tsx` | US-18, US-19 | `GET /api/secciones` (sección 5), `GET /api/cargas` (sección 7) y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | 2 |
 | P6 Mis logros por SO | `pantallas/MisLogros.tsx` | US-37 a US-44 de la spec 004 | `GET /api/resultados` (sección 12) y `GET /api/cargas/{carga_id}/r17.xlsx` (sección 6) | spec 004 |
 | P7 Avance del registro | `pantallas/Avance.tsx` | US-65 de la spec 007 y US-79 de la spec 008 | `GET /api/avance` (secciones 14.2 y 15.5) | spec 008 (T046) |
+| P8 Resumen del curso | `pantallas/ResumenCurso.tsx` | US-92 y US-93 de la spec 009 | `GET /api/resumen-curso` y `GET /api/resumen-curso/cursos` (sección 16) | spec 009 (T030 y T031) |
 
 La sesión (`GET` y `DELETE /api/sesion`, sección 4 del contrato) la usan `App.tsx` y su botón «Salir». Las historias US-01 a US-04 (base, rol, periodo y usuarios) no tienen pantalla, porque en el MVP las ejecuta el administrador técnico con scripts. US-17 (despliegue) tampoco tiene pantalla propia, y su prueba de humo recorre P1, P2, P3 y P4 en el Front desplegado y, en el corte 2, el reemplazo desde P5.
 
@@ -319,6 +320,7 @@ La spec 005 (US-52, J-34) agrega la navegación por el fragmento de la direcció
 | `#/cargas/{carga_id}` | P4 |
 | `#/logros` | P6 |
 | `#/avance` | P7, solo para la coordinación (spec 007) |
+| `#/resumen` y `#/resumen?asignatura={codigo}` | P8, solo para la coordinación (spec 009), con el curso que trae el enlace de P7 |
 
 - **`history.state`** lleva solo la ruta y una marca del ingreso, nunca la constancia ni el borrador. Cada pantalla vuelve a pedir sus datos.
 - **Reemplazo tras la subida.** Después de una subida que termina en P4, `replaceState` reemplaza la entrada de P3 solo si la pantalla visible sigue siendo esa subida, de modo que atrás lleve a P2 sin repetir el POST. Una carga RECHAZADA ofrece «Subir otro archivo» (propuesta).
@@ -529,6 +531,28 @@ Construido con T046, con la ruta 17 de la sección 15.5 del contrato todavía si
 - **Carga.** Una fila con `carga_id` ofrece «Ver la carga» (propuesta), que abre P4 de esa carga, el único lugar del R-17.
 - **Sin secciones y errores.** Sin secciones, P7 dice la lista vacía de su alcance («La carrera no tiene secciones en este periodo.» o «El curso no tiene secciones en este periodo.») sin resumen ni filtro. Un error de la ruta 17 se muestra con su `detail` y ninguna fila.
 - **Lo que no muestra.** P7 no muestra porcentajes, niveles ni el campo `profesores`, cuyos correos esperan a D-47 en Ambiental y a D-51 en Industrial (US-66 de la spec 007). La navegación por fragmento `#/avance` espera a US-52 de la spec 005.
+
+## 13. Spec 009, resumen del curso para la coordinación
+
+La spec 009 del Back (`specs/009-resumen-del-curso/`, aprobada por Jefferson el 2026-11-24) lleva a la coordinación la página «Resumen Curso» del tablero de Power BI de Stefanny Montaño, con las cifras de la ruta 20 y sin recalcularlas (ADR-010 y BR-RESULTADOS-15). No agrega dependencias.
+
+### 13.1 Qué cambia en `src/`
+
+- `servicios/api.ts` suma `obtenerResumenCurso(periodo, asignatura)` y `listarCursosDelResumen(periodo)`. Las dos piden el periodo y lo validan con el patrón AAAA-C de `periodoCerrado()`, y la asignatura solo admite de uno a doce dígitos, o el pedido no sale y se lanza el 422 de la forma de la petición (S7044 y S8476 de SonarCloud). `servicios/tipos.ts` suma los tipos de las dos respuestas, `servicios/formato.ts` suma `promedio()` y `complementoDelPorcentaje()` y `servicios/rotulos.ts` suma `ROTULO_RESUMEN`.
+- `App.tsx` suma la vista «resumen» con su fragmento (sección 10.3) y el botón «Resumen del curso» del menú, entre «Avance del registro» y la pantalla de secciones. Solo el COORDINADOR lo ve, y el fragmento `#/resumen` del profesor cae a su pantalla de llegada. `pantallas/Avance.tsx` ofrece «Ver el resumen del curso» en cada asignatura, que abre P8 con ese curso.
+
+### 13.2 P8 Resumen del curso (US-92 y US-93)
+
+- **Cifras del curso.** Por cada PI del plan, P8 escribe «23 de 33 alumnos en el nivel esperado o superior (69,7 %)», «Promedio de calificación 2,91 de 4», «1 de 3 secciones publicadas en la meta», «1 sección sin carga publicada» y los alumnos sin evidencia, que no entran en el porcentaje ni en el promedio. La barra del curso tiene dos tramos, con su leyenda escrita («Nivel esperado o superior, 23 alumnos, 69,7 %» y «Debajo del nivel esperado, 10 alumnos, 30,3 %») y la línea de la meta. El segundo tramo es el resto hasta 100 de la cifra de la API y no otra medición.
+- **Tabla de secciones.** Una fila por sección, en orden de número y nunca de porcentaje, con los calificados, el porcentaje con su fracción, el promedio y «En la meta» o «Debajo de la meta». Cada barra marca «Meta 80 %» con una línea y con texto, y lleva `aria-hidden`, porque la fila escribe la cifra. La sección sin carga dice «Sin carga publicada» y no dibuja una barra de 0 %. La tabla vive en una región con nombre y `tabindex` 0, como la de rechazos de P4, así que a 375 px se desplaza dentro de su región y no la página.
+- **Lo que no mide.** Un curso sin cargas publicadas dice «Todavía no hay cargas publicadas en este curso.» y no dibuja barras. Con la meta o el nivel esperado sin definir, P8 lo escribe y no dibuja la línea ni el porcentaje. Un curso fuera del alcance dice «No hay cifras de este curso en este periodo para su cuenta.» sin revelar si existe.
+- **Provisional.** Con `provisional` verdadero, P8 muestra la franja «Cifras provisionales.» con el estilo de aviso de P6. La respuesta de la ruta 20 no trae el conjunto de reglas, así que el texto es general (propuesta).
+- **Selector de curso (US-93).** P8 pide la ruta 21 y muestra el selector «Curso» solo con dos o más cursos. Con el curso que trae el enlace de P7, la ruta 20 no espera a la 21, y la falla de la 21 no detiene la pantalla.
+- **Lo que no muestra.** Sin profesores, sin correos, sin torta de secciones (J-62), sin biblioteca de gráficos (J-24) y sin escribir en el almacenamiento del navegador. Sin periodo elegido, P8 lo dice y no pide nada.
+
+### 13.3 Pruebas
+
+`tests/spec009/resumen_del_curso.test.tsx` cubre los seis escenarios `@delegado_a_vitest` de US-92, con un `it` por escenario y su título exacto, y el selector de US-93, cuyos dos escenarios prueba el Back con pytest-bdd, y `tests/spec009/api_resumen.test.ts` las validaciones cerradas de las rutas 20 y 21. El escenario `@playwright` de US-92 vive en `e2e/visual.spec.ts` (P8 a 375 y a 1100 px, con las rutas 20 y 21 en `e2e/api_simulada.ts`). La prueba de humo de P8 está escrita en `e2e/humo_resumen.spec.ts` y espera las contraseñas de la vista previa, que asigna Jefferson (T033).
 
 ## Referencias
 

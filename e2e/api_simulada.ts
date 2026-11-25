@@ -3,7 +3,9 @@ import {
   avance5643,
   cargaRechazada701,
   constanciaPublicada701,
+  cursosDeQuimica,
   indicador,
+  resumen5643,
   seccion701,
   seccionConCarga,
   usuarioCoordinacionCurso,
@@ -134,6 +136,9 @@ export async function simularApi(page: Page, cuenta: Cuenta) {
       "GET /api/cargas/31/mejora": mejora31,
       "GET /api/resultados": resultados701,
       "GET /api/avance": avance5643,
+      // Spec 009, T032. Las rutas 20 y 21 de la coordinación del curso (contrato, sección 16).
+      "GET /api/resumen-curso": resumen5643,
+      "GET /api/resumen-curso/cursos": cursosDeQuimica,
     };
     if (clave in respuestas) return responder(ruta, 200, respuestas[clave]);
     sinRespuesta.push(clave);
