@@ -124,7 +124,7 @@ test("La coordinación del curso abre «Resumen del curso» y ve las cifras del 
     page.getByText(`${sinCarga} ${sinCarga === 1 ? "sección" : "secciones"} sin carga publicada`, { exact: true }),
   ).toBeVisible();
 
-  // Las dos barras de cada fila y la del curso son dibujos ocultos al lector de pantalla, y la 704 no dibuja una de 0 %.
+  // La barra de cada fila y la del curso son dibujos ocultos al lector de pantalla, y la 704 no dibuja una de 0 %.
   await expect(page.locator("[data-barra='curso']")).toHaveAttribute("aria-hidden", "true");
   await expect(page.locator("[data-barra='seccion']")).toHaveCount(publicadas.length);
   await expect(fila("704").locator("[data-barra]")).toHaveCount(0);

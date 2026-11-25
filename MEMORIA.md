@@ -37,6 +37,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-25 00:20 (Lima) · feat/009-resumen-curso · Revisión independiente del Front de la spec 009
+- Quién: Claude Code, revisor Opus independiente de un workflow, que no escribió el código revisado, solo y sin Codex.
+- Qué cambió: la sección 13.3 de `docs/01-arquitectura/frontend.md` ya no dice que los dos escenarios de US-93 tienen un `it` con su título, porque son del Back y los prueba pytest-bdd. Un comentario de `e2e/humo_resumen.spec.ts` decía «las dos barras de cada fila» y cada fila tiene una. Un comentario de `tests/respuestas.ts` pierde los dos puntos.
+- Por qué: revisión del diff contra `origin/develop` de T030 a T033 de la spec 009, con BR-RESULTADOS-15 y los escenarios de `pantalla_resumen_del_curso.feature`.
+- Lo que debe hacer, cómo se probó: `npx tsc --noEmit`, `npm run build` y `npx vitest run` terminan en 0, con 420 pruebas aprobadas y 1 `todo`. `npx playwright test e2e/visual.spec.ts` da 12 passed y `bash scripts/preflight.sh --pr origin/develop` no falla.
+- Lo que no debe hacer, cómo se probó: ningún archivo de `src/` cambia, como muestra `git diff --stat`.
+- Correcciones: las tres de «Qué cambió». Quedan descritas sin corregir la cifra del segundo tramo, que P8 calcula como 100 menos la de la API y puede diferir en una décima del redondeo de PostgreSQL (BR-RESULTADOS-15), y el selector, que muestra el primer curso cuando el de P7 no viene en la ruta 21.
+- Cómo se reporta: esta entrada y el informe del revisor al workflow.
+- Pendiente y siguiente paso: los de «Punto actual».
+
 ### 2026-11-24 23:59 (Lima) · feat/009-resumen-curso · Documentos de P8 y CHANGELOG (T011 y T012 al día)
 - Quién: Claude Code (subagente de un workflow, `Implementer`), solo, sin Codex.
 - Qué cambió: `docs/01-arquitectura/frontend.md` suma P8 a la tabla de pantallas, el fragmento `#/resumen` a la tabla de la sección 10.3 y la sección 13 con lo que cambia en `src/`, lo que muestra P8 y sus pruebas. `docs/specs/feature-index.md` y `docs/specs/api-contracts.md` pasan a BR-RESULTADOS-01 a BR-RESULTADOS-15, y ADR-008 señala en su cabecera la enmienda parcial de ADR-010. `CHANGELOG.md` anota P8.

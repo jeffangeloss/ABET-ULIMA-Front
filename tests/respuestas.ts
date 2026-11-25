@@ -492,7 +492,7 @@ export const constanciaPublicada701: Constancia = {
 };
 
 // Spec 009. Respuestas de la ruta 20 y de la ruta 21 (contrato, sección 16) con las cifras del primer escenario de
-// resumen_del_curso.feature del Back: la 701 con [1, 2, 4, 3], la 702 con [0, 1, 5, 4], la 703 con [2, 4, 4, 3] y un alumno
+// resumen_del_curso.feature del Back, con la 701 con [1, 2, 4, 3], la 702 con [0, 1, 5, 4], la 703 con [2, 4, 4, 3] y un alumno
 // sin evidencia, y la 704 sin carga.
 
 /** Una sección publicada de 5643 de la ruta 20. */

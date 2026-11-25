@@ -552,7 +552,7 @@ La spec 009 del Back (`specs/009-resumen-del-curso/`, aprobada por Jefferson el 
 
 ### 13.3 Pruebas
 
-`tests/spec009/resumen_del_curso.test.tsx` cubre los seis escenarios `@delegado_a_vitest` de US-92 y los dos de US-93 que dibuja el selector, con un `it` por escenario y su título exacto, y `tests/spec009/api_resumen.test.ts` las validaciones cerradas de las rutas 20 y 21. El escenario `@playwright` de US-92 vive en `e2e/visual.spec.ts` (P8 a 375 y a 1100 px, con las rutas 20 y 21 en `e2e/api_simulada.ts`). La prueba de humo de P8 está escrita en `e2e/humo_resumen.spec.ts` y espera las contraseñas de la vista previa, que asigna Jefferson (T033).
+`tests/spec009/resumen_del_curso.test.tsx` cubre los seis escenarios `@delegado_a_vitest` de US-92, con un `it` por escenario y su título exacto, y el selector de US-93, cuyos dos escenarios prueba el Back con pytest-bdd, y `tests/spec009/api_resumen.test.ts` las validaciones cerradas de las rutas 20 y 21. El escenario `@playwright` de US-92 vive en `e2e/visual.spec.ts` (P8 a 375 y a 1100 px, con las rutas 20 y 21 en `e2e/api_simulada.ts`). La prueba de humo de P8 está escrita en `e2e/humo_resumen.spec.ts` y espera las contraseñas de la vista previa, que asigna Jefferson (T033).
 
 ## Referencias
 
