@@ -125,7 +125,8 @@ describe("US-65 · La coordinación entra a P7 y ve cuántas secciones faltan", 
       expect(botones).not.toContain("Avance del registro");
       expect(pedidas).not.toContain("GET /api/avance");
     } else {
-      expect(botones.slice(0, 2)).toEqual(["Avance del registro", "Secciones de la carrera"]);
+      // Cambio del 2026-11-24 (spec 009, T031). «Resumen del curso» va entre P7 y P2, solo para la coordinación.
+      expect(botones.slice(0, 3)).toEqual(["Avance del registro", "Resumen del curso", "Secciones de la carrera"]);
       // La llegada es P7, así que P2 no se pide hasta que la coordinación la abre.
       expect(pedidas).toContain("GET /api/avance");
       expect(pedidas).not.toContain("GET /api/secciones");

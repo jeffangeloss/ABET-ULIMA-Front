@@ -282,3 +282,66 @@ export interface BorradorGuardado {
   version: number;
   actualizado_en: string | null;
 }
+
+/**
+ * Spec 009, US-91. El curso o una sección en la ruta 20 (contrato, sección 16.2). Las cifras llegan redondeadas desde
+ * PostgreSQL y P8 las escribe tal cual. Un curso sin cargas publicadas trae calificados 0 y el resto en null.
+ */
+export interface CifrasDelCurso {
+  estudiantes_por_nivel: number[];
+  logrados: number;
+  calificados: number;
+  sin_evidencia: number;
+  total: number;
+  pct_sobre_calificados: number | null;
+  promedio_nivel: number | null;
+  en_meta: boolean | null;
+}
+
+/** Spec 009, US-91. Una sección del curso. Sin carga publicada, las cifras llegan en null. */
+export interface SeccionDelResumen {
+  seccion_id: number;
+  numero: string;
+  estado: EstadoSeccion;
+  carga_id: number | null;
+  logrados: number | null;
+  calificados: number | null;
+  sin_evidencia: number | null;
+  pct_sobre_calificados: number | null;
+  promedio_nivel: number | null;
+  en_meta: boolean | null;
+}
+
+/** Spec 009, FR-006. El conteo de secciones cuenta la meta solo sobre las publicadas. */
+export interface ConteoDeSecciones {
+  total: number;
+  publicadas: number;
+  en_meta: number;
+  debajo_de_la_meta: number;
+  sin_dato: number;
+}
+
+/** Spec 009, FR-003. Un PI del plan con las cifras del curso y de cada sección, en orden de número. */
+export interface IndicadorDelResumen {
+  so: number;
+  pi: string;
+  nivel_esperado: number | null;
+  meta_pct: number | null;
+  provisional: boolean;
+  curso: CifrasDelCurso;
+  conteo_secciones: ConteoDeSecciones;
+  secciones: SeccionDelResumen[];
+}
+
+/** Spec 009, US-91. Cuerpo de GET /api/resumen-curso, la ruta 20. Fuera del alcance, indicadores llega vacío. */
+export interface ResumenCurso {
+  periodo: string;
+  asignatura: { codigo: string; nombre: string };
+  indicadores: IndicadorDelResumen[];
+}
+
+/** Spec 009, US-93. Cuerpo de GET /api/resumen-curso/cursos, la ruta 21. */
+export interface CursosDelResumen {
+  periodo: string;
+  cursos: { codigo: string; nombre: string }[];
+}

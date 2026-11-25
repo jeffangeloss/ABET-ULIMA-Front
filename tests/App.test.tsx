@@ -271,10 +271,10 @@ describe("App", () => {
 
   // US-63, esquema «La cabecera nombra lo que ve cada cuenta» de rotulos_por_cuenta.feature. Cambio del 2026-11-23 (T046 de
   // la spec 008). Desde la etapa B el coordinador llega a P7 y su menú suma «Avance del registro» antes de los tres
-  // botones del esquema (US-65 de la spec 007), así que la prueba abre P2 desde el menú antes de mirar su título.
+  // botones del esquema (US-65 de la spec 007) y, desde la spec 009, «Resumen del curso», así que la prueba abre P2 desde el menú antes de mirar su título.
   it.each([
     { usuario: usuarioProfesor, antes: [], secciones: "Mis secciones", logros: "Ver mis logros por SO", otro: "Secciones de la carrera" },
-    { usuario: usuarioCoordinador, antes: ["Avance del registro"], secciones: "Secciones de la carrera", logros: "Ver los logros por SO de la carrera", otro: "Mis secciones" },
+    { usuario: usuarioCoordinador, antes: ["Avance del registro", "Resumen del curso"], secciones: "Secciones de la carrera", logros: "Ver los logros por SO de la carrera", otro: "Mis secciones" },
   ])("con el rol $usuario.rol la cabecera dice «$secciones», «Cargas» y «$logros», y P2 lleva el título de su botón", async ({ usuario, antes, secciones, logros, otro }) => {
     simularApi({
       "GET /api/sesion": json(200, usuario),

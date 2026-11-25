@@ -3,6 +3,10 @@ import type {
   Avance,
   CargaResumida,
   Constancia,
+  CursosDelResumen,
+  IndicadorDelResumen,
+  ResumenCurso,
+  SeccionDelResumen,
   Indicador,
   Resultados,
   Seccion,
@@ -485,4 +489,59 @@ export const constanciaPublicada701: Constancia = {
   hoja: "gc_SINTETICO_20261_5643_701_f",
   columnas: [{ pi: "6.1", puntaje_maximo_declarado: 4 }],
   subida_por: "docente701@example.invalid",
+};
+
+// Spec 009. Respuestas de la ruta 20 y de la ruta 21 (contrato, sección 16) con las cifras del primer escenario de
+// resumen_del_curso.feature del Back, con la 701 con [1, 2, 4, 3], la 702 con [0, 1, 5, 4], la 703 con [2, 4, 4, 3] y un alumno
+// sin evidencia, y la 704 sin carga.
+
+/** Una sección publicada de 5643 de la ruta 20. */
+export function seccionDeResumen(seccionId: number, numero: string, cargaId: number, logrados: number, calificados: number,
+                                 pct: number, promedio: number, enMeta: boolean,
+                                 cambios: Partial<SeccionDelResumen> = {}): SeccionDelResumen {
+  return {
+    seccion_id: seccionId, numero, estado: "PUBLICADA", carga_id: cargaId, logrados, calificados, sin_evidencia: 0,
+    pct_sobre_calificados: pct, promedio_nivel: promedio, en_meta: enMeta, ...cambios,
+  };
+}
+
+export const seccion704SinCarga: SeccionDelResumen = {
+  seccion_id: 24, numero: "704", estado: "SIN_CARGA", carga_id: null, logrados: null, calificados: null, sin_evidencia: null,
+  pct_sobre_calificados: null, promedio_nivel: null, en_meta: null,
+};
+
+export const indicadorDelResumen61: IndicadorDelResumen = {
+  so: 6, pi: "6.1", nivel_esperado: 3, meta_pct: 80.0, provisional: false,
+  curso: {
+    estudiantes_por_nivel: [3, 7, 13, 10], logrados: 23, calificados: 33, sin_evidencia: 1, total: 34,
+    pct_sobre_calificados: 69.7, promedio_nivel: 2.91, en_meta: false,
+  },
+  conteo_secciones: { total: 4, publicadas: 3, en_meta: 1, debajo_de_la_meta: 2, sin_dato: 1 },
+  secciones: [
+    seccionDeResumen(21, "701", 31, 7, 10, 70.0, 2.9, false),
+    seccionDeResumen(22, "702", 32, 9, 10, 90.0, 3.3, true),
+    seccionDeResumen(23, "703", 33, 7, 13, 53.8, 2.62, false, { sin_evidencia: 1 }),
+    seccion704SinCarga,
+  ],
+};
+
+export const resumen5643: ResumenCurso = {
+  periodo: "2026-1",
+  asignatura: { codigo: "5643", nombre: "Química General" },
+  indicadores: [indicadorDelResumen61],
+};
+
+/** La ruta 21 de la coordinación del curso, con un solo curso. */
+export const cursosDeQuimica: CursosDelResumen = {
+  periodo: "2026-1",
+  cursos: [{ codigo: "5643", nombre: "Química General" }],
+};
+
+/** La ruta 21 de la coordinación de la carrera de Ambiental en 2026-2, con dos cursos. */
+export const cursosDeAmbiental: CursosDelResumen = {
+  periodo: "2026-2",
+  cursos: [
+    { codigo: "450002", nombre: "Principios de Ingeniería Sostenible" },
+    { codigo: "450010", nombre: "Gestión Sostenible de Residuos" },
+  ],
 };

@@ -41,6 +41,23 @@ export function meta(valor: number): string {
   return `${Number.isInteger(valor) ? String(valor) : valor.toFixed(1).replace(".", ",")} %`;
 }
 
+/** «2,91», el promedio de calificación de la ruta 20 con dos decimales y coma, sin redondear otra vez (spec 009). */
+export function promedio(valor: number): string {
+  return valor.toFixed(2).replace(".", ",");
+}
+
+/**
+ * La parte sobre el total en porcentaje con un decimal, redondeada como ROUND(numeric, 1) de PostgreSQL, que lleva la
+ * mitad hacia arriba. Trabaja con enteros, así que no arrastra el error del punto flotante. P8 la usa para el tramo
+ * «Debajo del nivel esperado», que la ruta 20 no trae y que restar a 100 alejaría una décima (BR-RESULTADOS-15).
+ */
+export function porcentajeDeConteos(parte: number, total: number): number {
+  if (!Number.isSafeInteger(parte) || !Number.isSafeInteger(total) || total <= 0 || parte < 0 || parte > total) {
+    throw new RangeError("Los conteos no forman un porcentaje.");
+  }
+  return Math.floor((2000 * parte + total) / (2 * total)) / 10;
+}
+
 /** «9 de 11», cuántos estudiantes logran el nivel esperado de cuántos. */
 export function fraccion(logrados: number, de: number): string {
   return `${logrados} de ${de}`;
