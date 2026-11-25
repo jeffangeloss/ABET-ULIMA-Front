@@ -99,7 +99,32 @@ async function secciones(page: Page, periodo = PERIODO): Promise<SeccionApi[]> {
   return (await r.json()) as SeccionApi[];
 }
 
+/**
+ * Spec 005, J-32. P4 ofrece «Descargar R-17» solo con la declaración del profesor (causa y acción por PI). Si la carga
+ * ya tiene declaración vigente, el enlace ya está y no se declara de nuevo; si no, se llenan los PI con textos inventados.
+ */
+async function declararSiHaceFalta(page: Page) {
+  const analisis = page.getByRole("region", { name: "Análisis por indicador" });
+  const enlace = page.getByRole("link", { name: "Descargar R-17" });
+  const boton = page.getByRole("button", { name: "Descargar R-17" });
+  await expect(enlace.or(boton)).toBeVisible();
+  if (await enlace.isVisible()) return;
+  const bloques = analisis.locator("[data-pi]");
+  const n = await bloques.count();
+  expect(n, "bloques de PI en «Análisis por indicador»").toBeGreaterThan(0);
+  for (let i = 0; i < n; i++) {
+    const bloque = bloques.nth(i);
+    const pi = await bloque.getAttribute("data-pi");
+    await bloque.getByLabel("Causa probable").fill(`Causa inventada del PI ${pi} para la prueba de humo.`);
+    await bloque.getByLabel("Acción de mejora").fill(`Acción inventada del PI ${pi} para la prueba de humo.`);
+  }
+  await analisis.getByRole("button", { name: "Guardar declaración" }).click();
+  await expect(analisis.getByText(/^Declarado el \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/)).toBeVisible();
+  await expect(enlace).toBeVisible();
+}
+
 async function descargarR17(page: Page): Promise<Buffer> {
+  await declararSiHaceFalta(page);
   const descarga = page.waitForEvent("download");
   await page.getByRole("link", { name: "Descargar R-17" }).click();
   const archivo = await descarga;
