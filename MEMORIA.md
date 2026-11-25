@@ -13,11 +13,11 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-25
-- **Rama de trabajo**: `feat/009-resumen-curso`, desde `develop` 3b0247e, con P8 «Resumen del curso» de la spec 009 (T030 a T033)
+- **Rama de trabajo**: `docs/010-nombre-del-profesor`, con el contrato de la spec 010 (D10 del R-17 con los profesores asignados). La spec 005 ya está en `develop` (PR #41, 45732de) y el contrato de los recuadros del R-17 está en `docs/r17-recuadros-y-filas-de-pi`, ya en `develop` (PR #42, 3b0247e)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
-- **Último cambio**: Cierre de la spec 009 en el Front (T040), con la suite verde. Antes, prueba de humo de P8 en `e2e/humo_resumen.spec.ts`, escrita y sin correr (T033). Antes, P8 en `e2e/visual.spec.ts` (T032) y P8 con sus rutas y su menú (T030 y T031)
-- **En curso**: el Front de la spec 009 está completo y verificado, salvo la corrida de T033, sin push.
-- **Siguiente paso**: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` contra la vista previa, y empujar `feat/009-resumen-curso` solo con el permiso de Jefferson.
+- **Último cambio**: el contrato dice, en la ruta 7 y en la sección 13.6, que D10 del R-17 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (spec 010, propuesta). Antes, el contrato de los recuadros del R-17 con el rótulo del PI en su propia línea
+- **En curso**: el PR de este contrato, que acompaña al de `docs/010-nombre-del-profesor` del Back, y la prueba de humo de D10 (T040 de la spec 010), que espera a la construcción
+- **Siguiente paso**: fusionar los dos PR de la spec 010 con el permiso de Jefferson y, después de la fusión de `fix/r17-recuadros-y-filas-de-pi`, construir la spec 010 en el Back; la demo de Química sigue con la coordinación y T046 contra la vista previa de `develop` sigue pendiente
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
 
@@ -37,6 +37,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 
 ## Registro
 
+### 2026-11-25 06:00 (Lima) · feat/009-resumen-curso · Cierre de la spec 009 en el Front (T040)
+- Quién: Implementer (Sonnet) delegado por la sesión principal, solo. No usó subagentes.
+- Qué cambió: `CHANGELOG.md` suma el cierre en «Sin publicar» y esta memoria queda al día. Sin cambios de código.
+- Por qué: T040 de la spec 009, con el cruce de historias y pruebas en `specs/009-resumen-del-curso/audit.md` del Back.
+- Lo que debe hacer, cómo se probó: `npm run build` y `npx tsc --noEmit` salen con 0, `npm test` da 28 archivos y 420 pruebas aprobadas con 1 todo, `npx playwright test e2e/visual.spec.ts` da 12 passed (P8 a 375 y 1100 px y con teclado) y `bash scripts/preflight.sh` termina sin fallas.
+- Lo que no debe hacer, cómo se probó: el preflight no halla correos prohibidos ni códigos de ocho cifras fuera del rango inventado.
+- Correcciones: ninguna falla de la corrida.
+- Cómo se reporta: CHANGELOG y `audit.md` del Back.
+- Pendiente y siguiente paso: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` (T033) con las contraseñas de Jefferson, y empujar solo con su permiso.
+
 ### 2026-11-25 01:30 (Lima) · feat/009-resumen-curso · Tramo de la barra de P8 desde los conteos y selector con el curso de P7
 - Quién: Claude Code en la sesión principal, sin subagentes ni Codex, con los dos pendientes que dejó el revisor Opus del workflow.
 - Qué cambió: `porcentajeDeConteos()` de `src/servicios/formato.ts` reemplaza a `complementoDelPorcentaje()` y da la parte sobre el total con un decimal y la mitad hacia arriba, en enteros. `BarraDelCurso` de `src/pantallas/ResumenCurso.tsx` calcula el tramo «Debajo del nivel esperado» desde los conteos. El selector de P8 pone primero el curso que llega desde P7 cuando la ruta 21 no lo trae, y `App.tsx` pasa `alCambiarCurso`, que cambia el fragmento al elegir otro curso.
@@ -47,15 +57,15 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Cómo se reporta: esta entrada y el PR de `feat/009-resumen-curso` del Front.
 - Pendiente y siguiente paso: los PR de la spec 009 en el Back y el Front; T033 contra la vista previa con las contraseñas de Jefferson.
 
-### 2026-11-25 06:00 (Lima) · feat/009-resumen-curso · Cierre de la spec 009 en el Front (T040)
-- Quién: Implementer (Sonnet) delegado por la sesión principal, solo. No usó subagentes.
-- Qué cambió: `CHANGELOG.md` suma el cierre en «Sin publicar» y esta memoria queda al día. Sin cambios de código.
-- Por qué: T040 de la spec 009, con el cruce de historias y pruebas en `specs/009-resumen-del-curso/audit.md` del Back.
-- Lo que debe hacer, cómo se probó: `npm run build` y `npx tsc --noEmit` salen con 0, `npm test` da 28 archivos y 420 pruebas aprobadas con 1 todo, `npx playwright test e2e/visual.spec.ts` da 12 passed (P8 a 375 y 1100 px y con teclado) y `bash scripts/preflight.sh` termina sin fallas.
-- Lo que no debe hacer, cómo se probó: el preflight no halla correos prohibidos ni códigos de ocho cifras fuera del rango inventado.
-- Correcciones: ninguna falla de la corrida.
-- Cómo se reporta: CHANGELOG y `audit.md` del Back.
-- Pendiente y siguiente paso: correr `bash scripts/e2e.sh e2e/humo_resumen.spec.ts` (T033) con las contraseñas de Jefferson, y empujar solo con su permiso.
+### 2026-11-25 00:50 (Lima) · docs/010-nombre-del-profesor · Contrato de la spec 010, D10 del R-17 con los profesores asignados
+- Quién: Implementer (Sonnet) delegado por la sesión principal, sin subagentes ni Codex. La sesión principal revisa el diff antes de aceptarlo.
+- Qué cambió: `docs/03-api/contrato.md` suma una línea «Cambio del 2026-11-25 (spec 010, propuesta)» en las reglas de la ruta 7 y en la sección 13.6, que dice que D10 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (AD-76). El punto 2 de la sección 13.7 aclara que el nombre del docente sale solo en D10.
+- Por qué: la spec 010 del Back guarda el nombre del profesor en `acceso.usuario_autorizado` y llena D10 del R-17 (US-97 y BR-R17-14), y el contrato del Front debe decirlo antes del código.
+- Lo que debe hacer, cómo se probó: `git diff --stat` muestra solo `docs/03-api/contrato.md` y `MEMORIA.md`, y `bash scripts/preflight.sh` termina sin fallas. No se corren `npm run build` ni `npm test`, porque el cambio no toca código.
+- Lo que no debe hacer, cómo se probó: ningún archivo de `src/`, `tests/` ni `e2e/` cambia, como muestra `git diff --stat`, y la lista de rutas del contrato no gana ninguna.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada y el PR del Front que acompaña al de `docs/010-nombre-del-profesor` del Back.
+- Pendiente y siguiente paso: la fusión de los dos PR con el permiso de Jefferson y la prueba de humo de D10 (T040 de la spec 010) después de construir el Back.
 
 ### 2026-11-25 00:20 (Lima) · feat/009-resumen-curso · Revisión independiente del Front de la spec 009
 - Quién: Claude Code, revisor Opus independiente de un workflow, que no escribió el código revisado, solo y sin Codex.
@@ -106,6 +116,7 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 - Correcciones: ninguna. Valores provisionales de texto, que decide Jefferson o la coordinación. La franja dice «Cifras provisionales.» con un texto general, porque la ruta 20 no trae el conjunto de reglas. La región de la tabla se desplaza dentro de sí a 375 px, y el segundo tramo de la barra es el resto hasta 100 de la cifra de la API. T011 y T012 ya estaban en `develop` desde el contrato de la spec 009 (76b2428).
 - Cómo se reporta: esta entrada. No marca `tasks.md` del Back, que lo hace el agente del Back.
 - Pendiente y siguiente paso: T032, T033 y el cierre, que son los de «Punto actual».
+
 
 ### 2026-11-24 23:10 (Lima) · docs/r17-recuadros-y-filas-de-pi · Contrato con el formato nuevo de los recuadros del R-17
 - Quién: Claude Code en la sesión principal, sin subagentes ni Codex.
