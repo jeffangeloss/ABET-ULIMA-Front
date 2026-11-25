@@ -13,10 +13,10 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ## Punto actual
 
 - **Fecha**: 2026-11-25
-- **Rama de trabajo**: `docs/010-nombre-del-profesor`, con el contrato de la spec 010 (D10 del R-17 con los profesores asignados). La spec 005 ya está en `develop` (PR #41, 45732de) y el contrato de los recuadros del R-17 está en `docs/r17-recuadros-y-filas-de-pi`, ya en `develop` (PR #42, 3b0247e)
+- **Rama de trabajo**: `feat/010-nombre-del-profesor`, con la prueba de humo de D10 escrita (T040) y, antes, con el contrato de la spec 010 (D10 del R-17 con los profesores asignados). La spec 005 ya está en `develop` (PR #41, 45732de) y el contrato de los recuadros del R-17 está en `docs/r17-recuadros-y-filas-de-pi`, ya en `develop` (PR #42, 3b0247e)
 - **Versión publicada**: 0.3.0, con el tag `v0.3.0` sobre 39ceeb0 de `main` (PR #31) y su Release, en Production de Vercel desde el 2026-11-22. Antes, la 0.2.0 (6eb421c) y la 0.1.0 (0d693b9)
 - **Último cambio**: el contrato dice, en la ruta 7 y en la sección 13.6, que D10 del R-17 lleva los profesores asignados separados por comas y que ninguna ruta ni JSON cambia (spec 010, propuesta). Antes, el contrato de los recuadros del R-17 con el rótulo del PI en su propia línea
-- **En curso**: el PR de este contrato, que acompaña al de `docs/010-nombre-del-profesor` del Back, y la prueba de humo de D10 (T040 de la spec 010), que espera a la construcción
+- **En curso**: la prueba de humo de D10 (T040 de la spec 010) queda escrita en `e2e/humo_quimica.spec.ts` y espera su corrida contra la vista previa, que necesita las contraseñas de Jefferson
 - **Siguiente paso**: fusionar los dos PR de la spec 010 con el permiso de Jefferson y, después de la fusión de `fix/r17-recuadros-y-filas-de-pi`, construir la spec 010 en el Back; la demo de Química sigue con la coordinación y T046 contra la vista previa de `develop` sigue pendiente
 - **Bloqueos**: US-20 (código de acceso por correo en P1) espera a T018, el dominio y la cuenta de Resend de Jefferson; D-32 a D-34 de la spec 004 y D-35 a D-37 de la spec 005 esperan a la Coordinación de Ambiental o a la Oficina de Calidad; Snyk espera que Jefferson importe los repos en su consola (`docs/devops.md` del Back); el entrenamiento de IA del equipo de Vercel lo apaga Jefferson en Team Settings, Data Preferences (T070 del Back)
 - **Repos relacionados**: `jeffangeloss/ABET-ULIMA-Back` (versión 0.3.0, con el tag `v0.3.0` sobre 3ff2c06 de `main`, PR #46, sin migraciones y con la rama principal de Neon en V1_11)
@@ -36,6 +36,16 @@ Este archivo es la memoria de trabajo del repositorio. Lo lee primero cualquier 
 ```
 
 ## Registro
+
+### 2026-11-25 01:10 (Lima) · feat/010-nombre-del-profesor · Prueba de humo de D10 del R-17 (T040)
+- Quién: Implementer (Sonnet) delegado por la sesión principal, sin subagentes ni Codex.
+- Qué cambió: `e2e/humo_quimica.spec.ts` suma la prueba «El R-17 del profesor de la 701 lleva su nombre inventado en D10 y en ninguna otra celda», que lee D10 de `r17DelProfesor` con `celdasDelLibro` y espera «Profesor Inventado Setecientos Uno».
+- Por qué: US-97 y BR-R17-14 de la spec 010. Ninguna ruta ni pantalla cambia.
+- Lo que debe hacer, cómo se probó: `npx playwright test e2e/humo_quimica.spec.ts --list` lista 11 pruebas con la nueva, y `npx tsc --noEmit`, `npm run build` y `npm test` siguen en verde (378 pruebas, 1 pendiente). La corrida contra la vista previa no se hizo, porque necesita las contraseñas de Jefferson.
+- Lo que no debe hacer, cómo se probó: la prueba falla si otra celda de la hoja contiene «Profesor Inventado» o repite el nombre de la 701, con `todasLasCeldas` sin D10.
+- Correcciones: ninguna.
+- Cómo se reporta: esta entrada. El tasks.md del Back no se marca.
+- Pendiente y siguiente paso: correr el humo contra la vista previa con la construcción de la spec 010 ya desplegada.
 
 ### 2026-11-25 00:50 (Lima) · docs/010-nombre-del-profesor · Contrato de la spec 010, D10 del R-17 con los profesores asignados
 - Quién: Implementer (Sonnet) delegado por la sesión principal, sin subagentes ni Codex. La sesión principal revisa el diff antes de aceptarlo.
